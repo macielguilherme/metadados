@@ -1,293 +1,1015 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocL - Configuração de Embarque de Metadados</title>
     <style>
         /* ===== RESET E BASE ===== */
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    color: #555555;
-    background-color: #f0f0f0;
-    background-image: url('tela.png');
-    background-size: 1536px 864px;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    padding: 20px;
-    min-height: 100vh;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+        }
 
-        /* Container principal */
-        .main-container { max-width: 1400px; margin: 0 auto; width: 100%; }
+        /* FUNDO DA PÁGINA = IMAGEM DO SISTEMA (tela.png) */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #555555;
+
+            background-color: #ffffff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Container principal - posicionamento dinâmico que acompanha o fundo */
+        .main-container {
+            max-width: 1320px;
+            margin: 0 auto;
+            width: 90%;
+            background: transparent;
+            position: relative;
+        }
+
+        /* Ajuste automático baseado no tamanho da tela */
+        @media (min-width: 1537px) {
+            .main-container {
+                margin-top: calc((100vh - 864px) / 2 + 20px);
+            }
+        }
+
+        @media (min-width: 1920px) {
+            .main-container {
+                margin-top: calc((100vh - 864px) / 2 + 30px);
+                width: 85%;
+            }
+        }
+
+        @media (min-width: 2560px) {
+            .main-container {
+                margin-top: calc((100vh - 864px) / 2 + 50px);
+                width: 75%;
+            }
+        }
+
+        @media (min-width: 1366px) and (max-width: 1536px) {
+            .main-container {
+                margin-top: 8%;
+            }
+        }
+
+        @media (max-height: 900px) {
+            .main-container {
+                margin-top: 5%;
+            }
+        }
 
         /* Top row com dois cards lado a lado */
-        .top-row { display: flex; gap: 20px; margin-bottom: 20px; width: 100%; }
-        .top-row .widget { flex: 1; width: 50%; min-width: 0; }
+        .top-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .top-row .widget {
+            flex: 1;
+            width: 50%;
+            min-width: 0;
+        }
 
         /* Widget base (cards) */
-        .widget { background: #ffffff; border: 1px solid #cdcdcd; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; }
-        .widget-bottom { width: 100%; }
+        .widget {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(1px);
+            border: 1px solid rgba(205, 205, 205, 0.8);
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .widget-bottom {
+            width: 100%;
+        }
 
         /* Cabeçalho dos cards */
-        .title { height: 36px; background: linear-gradient(to bottom, #fdfdfd 0%, #eaeaea 100%); border-bottom: 1px solid #cdcdcd; display: flex; align-items: center; justify-content: space-between; }
-        .title-left { display: flex; align-items: center; height: 100%; }
-        .titleIcon { padding: 0 14px; border-right: 1px solid #d5d5d5; height: 100%; display: flex; align-items: center; justify-content: center; }
-        .titleIcon svg { fill: #777; }
-        .title h6 { font-size: 12px; font-weight: bold; color: #595959; padding-left: 12px; }
-        .topIcons { padding-right: 12px; cursor: pointer; }
+        .title {
+            height: 36px;
+            background: linear-gradient(to bottom, #fdfdfd 0%, #eaeaea 100%);
+            border-bottom: 1px solid #cdcdcd;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .title-left {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .titleIcon {
+            padding: 0 14px;
+            border-right: 1px solid #d5d5d5;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .titleIcon svg {
+            fill: #777;
+        }
+
+        .title h6 {
+            font-size: 12px;
+            font-weight: bold;
+            color: #595959;
+            padding-left: 12px;
+        }
 
         /* Lista de Regras */
-        .rule-list { display: flex; flex-direction: column; }
-        .rule-item { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #e2e2e2; background-color: #fff; transition: background-color 0.2s; cursor: pointer; }
-        .rule-item.active { background-color: #eef6dc; border-left: 3px solid #88b62a; }
-        .rule-item:hover { background-color: #fdfdfd; }
-        .rule-icon { margin-right: 15px; flex-shrink: 0; }
-        .rule-icon img { width: 32px; height: 32px; border: 1px solid #ccc; border-radius: 3px; padding: 2px; background-color: #f9f9f9; }
-        .rule-info { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-        .rule-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .rule-title { color: #296594; font-weight: bold; font-size: 13px; }
-        .rule-status { font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .status-active { color: #008000; }
-        .status-draft { color: #999999; }
-        .rule-meta { color: #777777; font-style: italic; font-size: 12px; }
-        .action-x { color: #c86363; font-weight: bold; font-size: 14px; cursor: pointer; transition: color 0.2s; display: flex; align-items: center; justify-content: center; }
-        .action-x:hover { color: #ff0000; }
+        .rule-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e2e2;
+            background-color: rgba(255, 255, 255, 0.9);
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .rule-item.active {
+            background-color: #eef6dc;
+            border-left: 3px solid #88b62a;
+        }
+
+        .rule-item:hover {
+            background-color: #fdfdfd;
+        }
+
+        .rule-icon {
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .rule-icon img {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 2px;
+            background-color: #f9f9f9;
+        }
+
+        .rule-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .rule-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .rule-title {
+            color: #296594;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .rule-status {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            color: #008000;
+        }
+
+        .status-draft {
+            color: #999999;
+        }
+
+        .rule-meta {
+            color: #777777;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        .new-rule-btn {
+            margin: 12px;
+            padding: 10px;
+            text-align: center;
+            border: 1px dashed #aaa;
+            border-radius: 4px;
+            background: #f9f9f9;
+            cursor: pointer;
+            font-size: 12px;
+            color: #296594;
+            font-weight: bold;
+        }
+
+        .new-rule-btn:hover {
+            background: #eef6dc;
+            border-color: #88b62a;
+        }
+
+        .action-x {
+            color: #c86363;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-x:hover {
+            color: #ff0000;
+        }
 
         /* Configuração de Chaves */
-        .formRow { padding: 9px 14px; border-bottom: 1px solid #e2e2e2; display: flex; align-items: center; }
-        .formRow:last-child { border-bottom: none; }
-        .formRow > label { width: 130px; color: #595959; font-size: 12px; flex-shrink: 0; font-weight: normal; }
-        .formRight { flex-grow: 1; display: flex; align-items: center; }
-        .formRight input, .formRight select { width: 100%; padding: 5px 6px; border: 1px solid #ddd; font-size: 11px; color: #656565; border-radius: 2px; background: white; }
-        .chzn-single { display: flex; justify-content: space-between; align-items: center; height: 26px; border: 1px solid #d8d8d8; background: linear-gradient(to bottom, #ffffff 0%, #eeeeee 100%); padding: 0 0 0 8px; color: #595959; font-size: 11px; border-radius: 2px; width: 100%; cursor: pointer; }
-        .chzn-single span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chzn-single div { width: 24px; height: 100%; border-left: 1px solid #d8d8d8; display: flex; align-items: center; justify-content: center; background: #f4f4f4; }
-        .chzn-single div b { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid #666; }
-        .chzn-disabled { background: #f4f4f4; color: #888; cursor: not-allowed; }
+        .formRow {
+            padding: 9px 14px;
+            border-bottom: 1px solid #e2e2e2;
+            display: flex;
+            align-items: center;
+        }
+
+        .formRow:last-child {
+            border-bottom: none;
+        }
+
+        .formRow>label {
+            width: 130px;
+            color: #595959;
+            font-size: 12px;
+            flex-shrink: 0;
+            font-weight: normal;
+        }
+
+        .formRight {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .formRight input,
+        .formRight select {
+            width: 100%;
+            padding: 5px 6px;
+            border: 1px solid #ddd;
+            font-size: 11px;
+            color: #656565;
+            border-radius: 2px;
+            background: white;
+        }
+
+        .chzn-single {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 26px;
+            border: 1px solid #d8d8d8;
+            background: linear-gradient(to bottom, #ffffff 0%, #eeeeee 100%);
+            padding: 0 0 0 8px;
+            color: #595959;
+            font-size: 11px;
+            border-radius: 2px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .chzn-single span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chzn-single div {
+            width: 24px;
+            height: 100%;
+            border-left: 1px solid #d8d8d8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f4f4f4;
+        }
+
+        .chzn-single div b {
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid #666;
+        }
+
+        .chzn-disabled {
+            background: #f4f4f4;
+            color: #888;
+            cursor: not-allowed;
+        }
 
         /* Tabela de Campos */
-        .table-controls-top { background: #f4f4f4; border-bottom: 1px solid #d5d5d5; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
-        .header-titles h2 { font-size: 14px; color: #333; margin-bottom: 3px; }
-        .header-titles span { font-size: 11px; color: #777; }
-        .btn-add { background: linear-gradient(to bottom, #9dcc3d 0%, #74a01c 100%); border: 1px solid #6c9618; color: #fff; font-weight: bold; font-size: 11px; padding: 6px 12px; border-radius: 3px; cursor: pointer; text-transform: uppercase; }
-        table.data-table { width: 100%; border-collapse: collapse; background: #fff; text-align: center; }
-        table.data-table th, table.data-table td { border-bottom: 1px solid #e2e2e2; border-right: 1px solid #e2e2e2; padding: 8px 10px; vertical-align: middle; white-space: nowrap; }
-        table.data-table th:last-child, table.data-table td:last-child { border-right: none; }
-        table.data-table th { background: linear-gradient(to bottom, #fdfdfd 0%, #f0f0f0 100%); color: #666; font-weight: bold; position: relative; padding-right: 20px; }
-        .sort-icon { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 1px; opacity: 0.5; }
-        .sort-icon svg { width: 8px; height: 6px; fill: #555; }
-        table.data-table tbody tr:nth-child(even) { background-color: #f9f9f9; }
-        .col-left { text-align: left !important; }
-        .state-yes { color: #2b6893; font-weight: bold; }
-        .table-controls-bottom { background: #f4f4f4; border-top: 1px solid #d5d5d5; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
-        .search-box { display: flex; align-items: center; gap: 5px; }
-        .search-box input { padding: 4px 6px; border: 1px solid #ccc; border-radius: 2px; width: 150px; font-size: 11px; }
-        .pagination button { background: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 100%); border: 1px solid #ccc; color: #555; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 11px; }
+        .table-controls-top {
+            background: #f4f4f4;
+            border-bottom: 1px solid #d5d5d5;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        /* ===== MODAL PADRÃO DOCZ ===== */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9999; }
-        .modal-overlay.show { display: flex; }
-        .ui-dialog { background: #585858; padding: 5px; border-radius: 5px; box-shadow: 0 0 15px rgba(0,0,0,0.5); width: 750px; max-width: 95%; }
-        .ui-dialog-titlebar { background: url("https://docz.sosdocs.com.br/Docz/app/images/backgrounds/titleBg.png") repeat-x 0 0; border-bottom: 1px solid #cdcdcd; height: 36px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
-        .ui-dialog-title { font-weight: bold; color: #595959; font-size: 12px; }
-        .close-x { text-decoration: none; color: #595959; font-weight: bold; font-size: 16px; cursor: pointer; }
-        .close-x:hover { color: #000; }
-        .ui-dialog-content { background-color: #fafafa; padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .header-titles h2 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 3px;
+        }
 
-        /* Formulário interno do modal */
-        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .field { margin-bottom: 12px; }
-        .field label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 11px; color: #444; }
-        .field input, .field select { width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 12px; background: #fff; }
-        .formula-box { border: 1px solid #ddd; background: #f5f5f5; padding: 10px; min-height: 70px; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; border-radius: 3px; }
-        .chip { background: #eef6dc; border: 1px solid #bcd88a; padding: 4px 10px; border-radius: 15px; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
-        .chip span:last-child { font-weight: bold; }
-        .pill-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-        .pill { background: #efefef; color: #5f5f5f; border-radius: 20px; padding: 5px 12px; font-size: 11px; cursor: pointer; border: 1px solid #ddd; }
-        .pill:hover { background: #e0e0e0; }
-        .formula-preview { margin-top: 12px; background: #f9f9f9; padding: 8px; border-radius: 4px; font-size: 11px; border-left: 3px solid #88b62a; }
-        
-        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd; }
-        .btn { font-size: 11px; font-weight: bold; background-image: url("https://docz.sosdocs.com.br/Docz/app/images/ui/usualButtons.png"); background-repeat: repeat-x; text-transform: uppercase; cursor: pointer; padding: 8px 20px; border-radius: 2px; color: #fff; border: none; font-family: Arial; }
-        .btn-green { background-position: 0 -425px; border: 1px solid #7ca82a; }
-        .btn-grey { background-position: 0 0; border: 1px solid #999; color: #555; background-image: url("https://docz.sosdocs.com.br/Docz/app/images/ui/usualButtons.png"); }
-        .info-strip { background: #eef6dc; border: 1px solid #d9e6b8; padding: 8px 12px; border-radius: 3px; margin-bottom: 15px; font-size: 11px; color: #5f7f1c; }
+        .header-titles span {
+            font-size: 11px;
+            color: #777;
+        }
 
-        @media (max-width: 800px) { .top-row { flex-direction: column; } .form-grid-3 { grid-template-columns: 1fr; } }
+        .btn-add {
+            background: linear-gradient(to bottom, #9dcc3d 0%, #74a01c 100%);
+            border: 1px solid #6c9618;
+            color: #fff;
+            font-weight: bold;
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-add:hover {
+            background: linear-gradient(to bottom, #a7d647 0%, #7ca822 100%);
+        }
+
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.95);
+            text-align: center;
+        }
+
+        table.data-table th,
+        table.data-table td {
+            border-bottom: 1px solid #e2e2e2;
+            border-right: 1px solid #e2e2e2;
+            padding: 8px 10px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        table.data-table th:last-child,
+        table.data-table td:last-child {
+            border-right: none;
+        }
+
+        table.data-table th {
+            background: linear-gradient(to bottom, #fdfdfd 0%, #f0f0f0 100%);
+            color: #666;
+            font-weight: bold;
+            position: relative;
+            padding-right: 20px;
+        }
+
+        table.data-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .col-left {
+            text-align: left !important;
+        }
+
+        .state-yes {
+            color: #2b6893;
+            font-weight: bold;
+        }
+
+        .table-controls-bottom {
+            background: #f4f4f4;
+            border-top: 1px solid #d5d5d5;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .search-box input {
+            padding: 4px 6px;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+            width: 150px;
+            font-size: 11px;
+        }
+
+        .pagination button {
+            background: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 100%);
+            border: 1px solid #ccc;
+            color: #555;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        /* ===== MODAL PADRÃO DOCZ (completo) ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .ui-dialog {
+            background: #585858;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            width: 780px;
+            max-width: 95%;
+        }
+
+        .ui-dialog-titlebar {
+            background: url("https://docz.sosdocs.com.br/Docz/app/images/backgrounds/titleBg.png") repeat-x 0 0;
+            border-bottom: 1px solid #cdcdcd;
+            height: 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .ui-dialog-title {
+            font-weight: bold;
+            color: #595959;
+            font-size: 12px;
+        }
+
+        .close-x {
+            text-decoration: none;
+            color: #595959;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .close-x:hover {
+            color: #000;
+        }
+
+        .ui-dialog-content {
+            background-color: #fafafa;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .field {
+            margin-bottom: 12px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 11px;
+            color: #444;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+            background: #fff;
+        }
+
+        .formula-box {
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            padding: 10px;
+            min-height: 70px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+            border-radius: 3px;
+        }
+
+        .chip {
+            background: #eef6dc;
+            border: 1px solid #bcd88a;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .pill {
+            background: #efefef;
+            color: #5f5f5f;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+
+        .pill:hover {
+            background: #e0e0e0;
+        }
+
+        .formula-preview {
+            margin-top: 12px;
+            background: #f9f9f9;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            border-left: 3px solid #88b62a;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .btn {
+            font-size: 11px;
+            font-weight: bold;
+            background-image: url("https://docz.sosdocs.com.br/Docz/app/images/ui/usualButtons.png");
+            background-repeat: repeat-x;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding: 8px 20px;
+            border-radius: 2px;
+            color: #fff;
+            border: none;
+            font-family: Arial;
+        }
+
+        .btn-green {
+            background-position: 0 -425px;
+            border: 1px solid #7ca82a;
+        }
+
+        .btn-grey {
+            background-position: 0 0;
+            border: 1px solid #999;
+            color: #555;
+        }
+
+        .info-strip {
+            background: #eef6dc;
+            border: 1px solid #d9e6b8;
+            padding: 8px 12px;
+            border-radius: 3px;
+            margin-bottom: 15px;
+            font-size: 11px;
+            color: #5f7f1c;
+        }
+
+        .check-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .check-option input {
+            width: auto;
+            margin: 0;
+        }
+
+        .small-title {
+            font-weight: bold;
+            font-size: 11px;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        .mini {
+            border: 1px solid #ddd;
+            background: #fafafa;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                width: 95%;
+            }
+
+            .top-row {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .form-grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Ajuste de rolagem suave */
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
+    <script>
+        function ajustarPosicao() {
+            const container = document.querySelector('.main-container');
+            if (!container) return;
+            const windowHeight = window.innerHeight;
+            const fundoAltura = 864;
+            if (windowHeight > fundoAltura) {
+                container.style.marginTop = Math.max(20, (windowHeight - fundoAltura) / 2 + 20) + 'px';
+            } else {
+                container.style.marginTop = '5%';
+            }
+        }
+        window.addEventListener('load', ajustarPosicao);
+        window.addEventListener('resize', ajustarPosicao);
+    </script>
 </head>
+
 <body>
-<div class="main-container">
-    <!-- LINHA SUPERIOR: DOIS CARDS -->
-    <div class="top-row">
-        <!-- Card: Lista de Regras -->
-        <div class="widget">
-            <div class="title">
-                <div class="title-left"><div class="titleIcon"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div><h6>Lista de Regras Cadastradas</h6></div>
+    <div class="main-container">
+        <!-- LINHA SUPERIOR: DOIS CARDS -->
+        <div class="top-row">
+            <!-- Card: Lista de Regras -->
+            <div class="widget">
+                <div class="title">
+                    <div class="title-left">
+                        <div class="titleIcon">
+                            <svg width="16" height="16" viewBox="0 0 24 24">
+                                <path
+                                    d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                            </svg>
+                        </div>
+                        <h6>Lista de Regras Cadastradas</h6>
+                    </div>
+                </div>
+                <div class="rule-list" id="ruleList"></div>
+                <div class="new-rule-btn" id="newRuleBtn">+ Nova regra dinâmica</div>
             </div>
-            <div class="rule-list" id="ruleList"></div>
+
+            <!-- Card: Configuração de Chaves -->
+            <div class="widget">
+                <div class="title">
+                    <div class="title-left">
+                        <div class="titleIcon">
+                            <svg width="14" height="12" viewBox="0 0 14 12">
+                                <rect y="1" width="14" height="1.5" />
+                                <rect y="5" width="14" height="1.5" />
+                                <rect y="9" width="14" height="1.5" />
+                            </svg>
+                        </div>
+                        <h6>Configuração de Chaves</h6>
+                    </div>
+                </div>
+                <div class="formRow">
+                    <label>Projeto:</label>
+                    <div class="formRight">
+                        <div class="chzn-single chzn-disabled">
+                            <span>SES-DF</span>
+                            <div><b></b></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="formRow">
+                    <label>Valor da Chave:</label>
+                    <div class="formRight">
+                        <input type="text" id="configNameField">
+                    </div>
+                </div>
+                <div class="formRow">
+                    <label>Chave de decisão:</label>
+                    <div class="formRight">
+                        <select id="decisionKeyField">
+                            <option>Sem Definição</option>
+                            <option>Tipo Documental</option>
+                            <option>Tipologia</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="formRow">
+                    <label id="decisionOptionLabel">Selecionar:</label>
+                    <div class="formRight">
+                        <select id="decisionOptionField"></select>
+                    </div>
+                </div>
+                <div class="formRow">
+                    <label>Status:</label>
+                    <div class="formRight">
+                        <select id="statusField">
+                            <option>Ativa</option>
+                            <option>Desativada</option>
+                            <option>Rascunho</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Card: Configuração de Chaves -->
-        <div class="widget">
-            <div class="title"><div class="title-left"><div class="titleIcon"><svg width="14" height="12" viewBox="0 0 14 12"><rect y="1" width="14" height="1.5"/><rect y="5" width="14" height="1.5"/><rect y="9" width="14" height="1.5"/></svg></div><h6>Configuração de Chaves</h6></div></div>
-            <div class="formRow"><label>Projeto:</label><div class="formRight"><div class="chzn-single chzn-disabled"><span>SES-DF</span><div><b></b></div></div></div></div>
-            <div class="formRow"><label>Valor da Chave:</label><div class="formRight"><input type="text" id="configNameField"></div></div>
-            <div class="formRow"><label>Chave de decisão:</label><div class="formRight"><select id="decisionKeyField"><option>Sem Definição</option><option>Tipo Documental</option><option>Tipologia</option></select></div></div>
-            <div class="formRow"><label id="decisionOptionLabel">Selecionar:</label><div class="formRight"><select id="decisionOptionField"></select></div></div>
-            <div class="formRow"><label>Status:</label><div class="formRight"><select id="statusField"><option>Ativa</option><option>Desativada</option><option>Rascunho</option></select></div></div>
+        <!-- Tabela de Campos Configurados -->
+        <div class="widget widget-bottom">
+            <div class="table-controls-top">
+                <div class="header-titles">
+                    <h2>Campos Configurados por esta Regra</h2>
+                    <span>Preenchimento dinâmico conforme a tabela do tipo documental selecionado</span>
+                </div>
+                <button class="btn-add" id="addMetaBtn">+ Adicionar metadado</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="col-left">Metadado destino</th>
+                            <th class="col-left">Origem</th>
+                            <th class="col-left">Campo DocZ</th>
+                            <th>ID banco</th>
+                            <th>Valor fixo</th>
+                            <th>Nulos</th>
+                            <th>Obrig.</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metaTable"></tbody>
+                </table>
+            </div>
+            <div class="table-controls-bottom">
+                <div class="search-box">Buscar: <input type="text" placeholder="Filtrar..."></div>
+                <div class="pagination"><button>Primeiro</button><button>Anterior</button><span>1 de
+                        1</span><button>Seguinte</button><button>Ultimo</button></div>
+            </div>
         </div>
     </div>
 
-    <!-- Tabela de Campos Configurados -->
-    <div class="widget widget-bottom">
-        <div class="table-controls-top"><div class="header-titles"><h2>Campos Configurados por esta Regra</h2><span>Preenchimento dinâmico conforme a tabela do tipo documental selecionado</span></div><button class="btn-add" id="addMetaBtn">+ Adicionar metadado</button></div>
-        <div style="overflow-x: auto;"><table class="data-table"><thead><tr><th class="col-left">Metadado destino</th><th class="col-left">Origem</th><th class="col-left">Campo DocZ</th><th>ID banco</th><th>Valor fixo</th><th>Nulos</th><th>Obrig.</th><th>Ação</th></tr></thead><tbody id="metaTable"></tbody></table></div>
-        <div class="table-controls-bottom"><div class="search-box">Buscar: <input type="text" placeholder="Filtrar..."></div><div class="pagination"><button>Primeiro</button><button>Anterior</button><span>1 de 1</span><button>Seguinte</button><button>Ultimo</button></div></div>
-    </div>
-</div>
-
-<!-- MODAL PADRÃO DOCZ (estilo referência) -->
-<div id="modalOverlay" class="modal-overlay">
-    <div class="ui-dialog">
-        <div class="ui-dialog-titlebar"><span class="ui-dialog-title">Adicionar Metadado</span><a href="javascript:void(0)" class="close-x" id="modalCloseBtn">✖</a></div>
-        <div class="ui-dialog-content">
-            <div class="info-strip">Defina o metadado de destino, a origem do valor e como o sistema deve tratar campos vazios, concatenação e obrigatoriedade.</div>
-            <div class="form-grid-3">
-                <div class="field"><label>Metadado destino *</label><select id="modalDestino" class="input"><option>Assunto</option><option>Título</option><option>Autor (nome)</option><option>Classe</option><option>Data de produção</option></select></div>
-                <div class="field"><label>Origem do valor *</label><select id="modalOrigem"><option>Campo Único</option><option>Múltiplos Campos</option></select></div>
-                <div class="field"><label>Obrigatoriedade *</label><select id="modalObrigatorio"><option>Sim</option><option>Não</option></select></div>
+    <!-- MODAL COMPLETO (com todas as opções do protótipo) -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="ui-dialog">
+            <div class="ui-dialog-titlebar">
+                <span class="ui-dialog-title">Adicionar Metadado</span>
+                <a href="javascript:void(0)" class="close-x" id="modalCloseBtn">✖</a>
             </div>
-            <div class="field"><label>Separador da concatenação</label><select id="modalSeparador"><option>Pipe |</option><option>Hífen -</option><option>Barra /</option><option>Vírgula ,</option></select></div>
-            <div><div class="field"><label>Campos selecionados para a fórmula</label><div class="formula-box" id="modalFormulaChips"></div></div></div>
-            <div><label>Campos disponíveis do DocZ</label><div class="pill-list" id="modalAvailableFields"></div><div class="formula-preview" id="modalFormulaPreview"></div></div>
-            <div class="form-grid-3" style="margin-top:15px">
-                <div class="field"><label>Tratamento de nulos *</label><select id="modalNulos"><option>Ignorar nulos</option><option>Substituir por valor padrão</option></select></div>
-                <div class="field"><label>Valor padrão para nulos</label><input id="modalValorPadrao" placeholder="Ex.: NÃO INFORMADO"></div>
-                <div class="field"><label>Formato da saída</label><select id="modalFormato"><option>Texto simples</option></select></div>
+            <div class="ui-dialog-content">
+                <div class="info-strip">Defina o metadado de destino, a origem do valor e como o sistema deve tratar
+                    campos vazios, concatenação e obrigatoriedade.</div>
+                <div class="form-grid-3">
+                    <div class="field"><label>Metadado destino *</label><select id="modalDestino">
+                            <option>Assunto</option>
+                            <option>Título</option>
+                            <option>Autor (nome)</option>
+                            <option>Classe</option>
+                            <option>Data de produção</option>
+                            <option>Destinação final</option>
+                            <option>Prazo de guarda</option>
+                        </select></div>
+                    <div class="field"><label>Origem do valor *</label><select id="modalOrigem">
+                            <option>Campo Único</option>
+                            <option>Múltiplos Campos</option>
+                        </select></div>
+                    <div class="field"><label>Obrigatoriedade *</label><select id="modalObrigatorio">
+                            <option>Sim</option>
+                            <option>Não</option>
+                        </select></div>
+                </div>
+                <div class="field"><label>Separador da concatenação</label><select id="modalSeparador">
+                        <option>Pipe |</option>
+                        <option>Hífen -</option>
+                        <option>Barra /</option>
+                        <option>Vírgula ,</option>
+                        <option>Sem separador</option>
+                    </select></div>
+                <div>
+                    <div class="field"><label>Campos selecionados para a fórmula</label>
+                        <div class="formula-box" id="modalFormulaChips"></div>
+                    </div>
+                </div>
+                <div><label>Campos disponíveis do DocZ</label>
+                    <div class="pill-list" id="modalAvailableFields"></div>
+                    <div class="formula-preview" id="modalFormulaPreview"></div>
+                </div>
+                <div class="form-grid-3" style="margin-top:15px">
+                    <div class="field"><label>Tratamento de nulos *</label><select id="modalNulos">
+                            <option>Ignorar nulos</option>
+                            <option>Substituir por valor padrão</option>
+                            <option>Bloquear gravação</option>
+                        </select></div>
+                    <div class="field"><label>Valor padrão para nulos</label><input id="modalValorPadrao"
+                            placeholder="Ex.: NÃO INFORMADO"></div>
+                    <div class="field"><label>Formato da saída</label><select id="modalFormato">
+                            <option>Data dd/mm/aaaa</option>
+                            <option>Caixa alta</option>
+                            <option>Caixa baixa</option>
+                        </select></div>
+                </div>
+                <div class="field"><label class="check-option"><input type="checkbox" id="modalTrim" checked> Aplicar
+                        Trim Automático (Remover espaços desnecessários)</label></div>
+                <div class="modal-footer">
+                    <button class="btn btn-grey" id="modalCancelBtn">Cancelar</button>
+                    <button class="btn btn-green" id="modalSaveBtn">Adicionar metadado</button>
+                </div>
             </div>
-            <div class="modal-footer"><button class="btn btn-grey" id="modalCancelBtn">Cancelar</button><button class="btn btn-green" id="modalSaveBtn">Adicionar metadado</button></div>
         </div>
     </div>
-</div>
 
-<script>
-    // Dados simulados
-    const doczFieldIds = { 'Tipo Documental':'C1','Nome do Paciente':'C2','Nome da Mãe':'C3','Data do Atendimento':'C4','Número da Guia':'C5','Médico Responsável':'C6','Código de classificação':'C7','Destinação final':'C8','Prazo de guarda':'C9','Data da Última Movimentação':'C10','Nome do Servidor':'C11','Unidade de Saúde':'C12','Matrícula':'C13','Órgão':'C14','Setor':'C15' };
-    const withDoczIds = (fields) => fields.map(label => ({ label, id: doczFieldIds[label] || 'C0' }));
+    <script>
+        // Dados simulados (mesmo do protótipo)
+        const doczFieldIds = { 'Tipo Documental': 'C1', 'Nome do Paciente': 'C2', 'Nome da Mãe': 'C3', 'Data do Atendimento': 'C4', 'Número da Guia': 'C5', 'Médico Responsável': 'C6', 'Código de classificação': 'C7', 'Destinação final': 'C8', 'Prazo de guarda': 'C9', 'Data da Última Movimentação': 'C10', 'Nome do Servidor': 'C11', 'Unidade de Saúde': 'C12', 'Matrícula': 'C13', 'Órgão': 'C14', 'Setor': 'C15' };
+        const withDoczIds = (fields) => fields.map(label => ({ label, id: doczFieldIds[label] || 'C0' }));
 
-    let rules = [
-        { tipo: 'PRONTUÁRIO MÉDICO', tipologia: 'Prontuário Arquivístico', nomeConfiguracao: 'Regra Prontuário Médico', status: 'Ativa', metadadosMapeados: 8, assunto: ['Tipo Documental','Nome do Paciente','Unidade de Saúde'],
-          availableFields: withDoczIds(['Tipo Documental','Nome do Paciente','Nome da Mãe','Unidade de Saúde','Código de classificação','Destinação final','Prazo de guarda','Data da Última Movimentação']),
-          rows: [ ['Assunto','Concatenação dinâmica','Tipo Documental + Nome do Paciente','C1 + C2','—','Ignorar nulos','Sim'], ['Autor (nome)','Metadado de arquivo','Unidade de Saúde','C12','—','Ignorar nulos','Sim'], ['Título','Preenchimento manual','Nome do Paciente','C2','—','Ignorar nulos','Sim'], ['Classe','Preenchimento manual','Código de classificação','C7','—','Ignorar nulos','Sim'] ] },
-        { tipo: 'GUIA DE ATENDIMENTO DE EMERGÊNCIA - GAE', tipologia: 'Guia Assistencial', nomeConfiguracao: 'Regra Guia de Atendimento', status: 'Ativa', metadadosMapeados: 7, assunto: ['Tipo Documental','Nome do Paciente','Data do Atendimento'],
-          availableFields: withDoczIds(['Tipo Documental','Nome do Paciente','Data do Atendimento','Número da Guia','Unidade de Saúde','Médico Responsável','Código de classificação']),
-          rows: [ ['Assunto','Concatenação dinâmica','Tipo Documental + Nome do Paciente + Data do Atendimento','C1 + C2 + C4','—','Ignorar nulos','Sim'], ['Título','Preenchimento manual','Número da Guia','C5','—','Ignorar nulos','Sim'] ] },
-        { tipo: 'PASTA FUNCIONAL', tipologia: 'Dossiê Funcional', nomeConfiguracao: 'Regra Pasta Funcional', status: 'Rascunho', metadadosMapeados: 6, assunto: ['Tipo Documental','Nome do Servidor','Matrícula'],
-          availableFields: withDoczIds(['Tipo Documental','Nome do Servidor','Matrícula','Órgão','Setor','Código de classificação','Prazo de guarda']),
-          rows: [ ['Assunto','Concatenação dinâmica','Tipo Documental + Nome do Servidor + Matrícula','C1 + C11 + C13','—','Ignorar nulos','Sim'], ['Título','Preenchimento manual','Nome do Servidor','C11','—','Ignorar nulos','Sim'] ] }
-    ];
+        let rules = [
+            {
+                tipo: 'PRONTUÁRIO MÉDICO', tipologia: 'Prontuário Arquivístico', nomeConfiguracao: 'Regra Prontuário Médico', status: 'Ativa', metadadosMapeados: 8, assunto: ['Tipo Documental', 'Nome do Paciente', 'Unidade de Saúde'],
+                availableFields: withDoczIds(['Tipo Documental', 'Nome do Paciente', 'Nome da Mãe', 'Unidade de Saúde', 'Código de classificação', 'Destinação final', 'Prazo de guarda', 'Data da Última Movimentação']),
+                rows: [['Assunto', 'Concatenação dinâmica', 'Tipo Documental + Nome do Paciente', 'C1 + C2', '—', 'Ignorar nulos', 'Sim'], ['Autor (nome)', 'Metadado de arquivo', 'Unidade de Saúde', 'C12', '—', 'Ignorar nulos', 'Sim'], ['Título', 'Preenchimento manual', 'Nome do Paciente', 'C2', '—', 'Ignorar nulos', 'Sim'], ['Classe', 'Preenchimento manual', 'Código de classificação', 'C7', '—', 'Ignorar nulos', 'Sim']]
+            },
+            {
+                tipo: 'GUIA DE ATENDIMENTO DE EMERGÊNCIA - GAE', tipologia: 'Guia Assistencial', nomeConfiguracao: 'Regra Guia de Atendimento', status: 'Ativa', metadadosMapeados: 7, assunto: ['Tipo Documental', 'Nome do Paciente', 'Data do Atendimento'],
+                availableFields: withDoczIds(['Tipo Documental', 'Nome do Paciente', 'Data do Atendimento', 'Número da Guia', 'Unidade de Saúde', 'Médico Responsável', 'Código de classificação']),
+                rows: [['Assunto', 'Concatenação dinâmica', 'Tipo Documental + Nome do Paciente + Data do Atendimento', 'C1 + C2 + C4', '—', 'Ignorar nulos', 'Sim'], ['Título', 'Preenchimento manual', 'Número da Guia', 'C5', '—', 'Ignorar nulos', 'Sim']]
+            },
+            {
+                tipo: 'PASTA FUNCIONAL', tipologia: 'Dossiê Funcional', nomeConfiguracao: 'Regra Pasta Funcional', status: 'Rascunho', metadadosMapeados: 6, assunto: ['Tipo Documental', 'Nome do Servidor', 'Matrícula'],
+                availableFields: withDoczIds(['Tipo Documental', 'Nome do Servidor', 'Matrícula', 'Órgão', 'Setor', 'Código de classificação', 'Prazo de guarda']),
+                rows: [['Assunto', 'Concatenação dinâmica', 'Tipo Documental + Nome do Servidor + Matrícula', 'C1 + C11 + C13', '—', 'Ignorar nulos', 'Sim'], ['Título', 'Preenchimento manual', 'Nome do Servidor', 'C11', '—', 'Ignorar nulos', 'Sim']]
+            }
+        ];
 
-    let currentRuleIdx = 0;
-    let decisionKey = 'Sem Definição';
-    let formulaFields = ['Tipo Documental', 'Nome do Paciente'];
+        let currentRuleIdx = 0;
+        let decisionKey = 'Sem Definição';
+        let formulaFields = ['Tipo Documental', 'Nome do Paciente'];
 
-    function getFieldIdForRule(rule, label) { let m = rule.availableFields.find(f => f.label === label); return m ? m.id : ''; }
-    function getCampoBancoIds(rule, campoStr) { let parts = campoStr.split(' + ').map(s=>s.trim()); let ids = parts.map(p=>getFieldIdForRule(rule,p)).filter(id=>id); return ids.length ? ids.join(' + ') : '—'; }
-    
-    function renderRules() {
-        let container = document.getElementById('ruleList');
-        container.innerHTML = '';
-        rules.forEach((r, idx) => {
-            let div = document.createElement('div');
-            div.className = 'rule-item' + (idx === currentRuleIdx ? ' active' : '');
-            div.innerHTML = `<div class="rule-icon"><img src="https://doczhml.sosdocs.com.br/Docz/app/images/icons/control/32/form.png"></div><div class="rule-info"><div class="rule-header"><span class="rule-title">${r.nomeConfiguracao}</span><span class="rule-status ${r.status === 'Ativa' ? 'status-active' : 'status-draft'}">${r.status.toUpperCase()}</span></div><div class="rule-meta">${r.metadadosMapeados} metadados mapeados</div></div><div class="rule-action"><span class="action-x" data-idx="${idx}">✖</span></div>`;
-            div.querySelector('.rule-info').addEventListener('click', (e) => { e.stopPropagation(); currentRuleIdx = idx; renderAll(); });
-            let delBtn = div.querySelector('.action-x');
-            delBtn.addEventListener('click', (e) => { e.stopPropagation(); rules.splice(idx,1); if(currentRuleIdx >= rules.length) currentRuleIdx = 0; renderAll(); });
-            container.appendChild(div);
-        });
-    }
-    function renderDecisionFields() {
-        let keyField = document.getElementById('decisionKeyField');
-        let optionLabel = document.getElementById('decisionOptionLabel');
-        let optionField = document.getElementById('decisionOptionField');
-        keyField.value = decisionKey;
-        if (decisionKey === 'Sem Definição') { optionLabel.textContent = 'Selecionar:'; optionField.disabled = true; optionField.innerHTML = '<option>Sem definição</option>'; }
-        else { optionLabel.textContent = decisionKey === 'Tipo Documental' ? 'Selecionar Tipo Documental' : 'Selecionar Tipologia'; optionField.disabled = false; optionField.innerHTML = rules.map((r,i)=>`<option value="${i}" ${i===currentRuleIdx?'selected':''}>${decisionKey === 'Tipo Documental' ? r.tipo : r.tipologia}</option>`).join(''); }
-    }
-    function renderMainTable() {
-        let rule = rules[currentRuleIdx];
-        document.getElementById('configNameField').value = rule.nomeConfiguracao;
-        document.getElementById('statusField').value = rule.status;
-        let tbody = document.getElementById('metaTable');
-        tbody.innerHTML = '';
-        rule.rows.forEach(row => {
-            let idBanco = getCampoBancoIds(rule, row[2]);
-            let tr = document.createElement('tr');
-            tr.innerHTML = `<td class="col-left"><strong>${row[0]}</strong></td><td class="col-left">${row[1]}</td><td class="col-left">${row[2]}</td><td>${idBanco !== '—' ? idBanco : row[3]}</td><td>${row[4]}</td><td>${row[5]}</td><td><span class="${row[6] === 'Sim' ? 'state-yes' : ''}">${row[6]}</span></td><td class="action-x">✕</td>`;
-            let delCell = tr.querySelector('.action-x');
-            delCell.addEventListener('click', () => { let idx = rule.rows.findIndex(r => r[0] === row[0] && r[2] === row[2]); if(idx !== -1) rule.rows.splice(idx,1); rule.metadadosMapeados = rule.rows.length; renderMainTable(); renderRules(); });
-            tbody.appendChild(tr);
-        });
-    }
-    function renderAll() { renderRules(); renderDecisionFields(); renderMainTable(); }
+        function getFieldIdForRule(rule, label) { let m = rule.availableFields.find(f => f.label === label); return m ? m.id : ''; }
+        function getCampoBancoIds(rule, campoStr) { let parts = campoStr.split(' + ').map(s => s.trim()); let ids = parts.map(p => getFieldIdForRule(rule, p)).filter(id => id); return ids.length ? ids.join(' + ') : '—'; }
 
-    // MODAL
-    function openModal() { formulaFields = [...rules[currentRuleIdx].assunto.slice(0,2)]; document.getElementById('modalDestino').value = 'Assunto'; document.getElementById('modalOrigem').value = 'Múltiplos Campos'; document.getElementById('modalObrigatorio').value = 'Sim'; document.getElementById('modalSeparador').value = 'Pipe |'; document.getElementById('modalNulos').value = 'Ignorar nulos'; document.getElementById('modalValorPadrao').value = ''; renderModalFields(); renderFormulaUI(); document.getElementById('modalOverlay').classList.add('show'); }
-    function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
-    function renderModalFields() {
-        let rule = rules[currentRuleIdx];
-        let container = document.getElementById('modalAvailableFields');
-        container.innerHTML = '';
-        rule.availableFields.forEach(field => { let pill = document.createElement('div'); pill.className = 'pill'; pill.textContent = `${field.label} (${field.id})`; pill.onclick = () => { if(document.getElementById('modalOrigem').value === 'Campo Único') formulaFields = [field.label]; else if(!formulaFields.includes(field.label)) formulaFields.push(field.label); renderFormulaUI(); }; container.appendChild(pill); });
-    }
-    function renderFormulaUI() {
-        let chipsDiv = document.getElementById('modalFormulaChips');
-        chipsDiv.innerHTML = '';
-        formulaFields.forEach((f,i) => { let chip = document.createElement('div'); chip.className = 'chip'; chip.innerHTML = `${i+1}. ${f} <span style="margin-left:5px;">✕</span>`; chip.onclick = () => { formulaFields.splice(i,1); renderFormulaUI(); }; chipsDiv.appendChild(chip); });
-        if(formulaFields.length === 0) chipsDiv.innerHTML = '<span style="color:#888;">Nenhum campo selecionado</span>';
-        let sepMap = { 'Pipe |':' | ', 'Hífen -':' - ', 'Barra /':' / ', 'Vírgula ,':', ' };
-        let sep = sepMap[document.getElementById('modalSeparador').value] || ' | ';
-        document.getElementById('modalFormulaPreview').innerHTML = `<strong>Prévia da fórmula:</strong><br>${formulaFields.join(sep) || '—'}`;
-    }
-    function saveModal() {
-        let destino = document.getElementById('modalDestino').value;
-        let origem = document.getElementById('modalOrigem').value;
-        let obrig = document.getElementById('modalObrigatorio').value;
-        let nulos = document.getElementById('modalNulos').value;
-        let separadorRaw = document.getElementById('modalSeparador').value;
-        let separador = ' ';
-        if(separadorRaw === 'Pipe |') separador = ' | ';
-        else if(separadorRaw === 'Hífen -') separador = ' - ';
-        else if(separadorRaw === 'Barra /') separador = ' / ';
-        else if(separadorRaw === 'Vírgula ,') separador = ', ';
-        let campoDocz = formulaFields.join(separador);
-        let idBanco = formulaFields.map(f => getFieldIdForRule(rules[currentRuleIdx], f)).filter(id=>id).join(' + ') || '—';
-        let novaRow = [destino, origem, campoDocz, idBanco, '—', nulos, obrig];
-        rules[currentRuleIdx].rows.unshift(novaRow);
-        rules[currentRuleIdx].metadadosMapeados = rules[currentRuleIdx].rows.length;
+        function renderRules() {
+            let container = document.getElementById('ruleList');
+            container.innerHTML = '';
+            rules.forEach((r, idx) => {
+                let div = document.createElement('div');
+                div.className = 'rule-item' + (idx === currentRuleIdx ? ' active' : '');
+                div.innerHTML = `<div class="rule-icon"><img src="https://doczhml.sosdocs.com.br/Docz/app/images/icons/control/32/form.png"></div><div class="rule-info"><div class="rule-header"><span class="rule-title">${r.nomeConfiguracao}</span><span class="rule-status ${r.status === 'Ativa' ? 'status-active' : 'status-draft'}">${r.status.toUpperCase()}</span></div><div class="rule-meta">${r.metadadosMapeados} metadados mapeados</div></div><div class="rule-action"><span class="action-x">✖</span></div>`;
+                div.querySelector('.rule-info').addEventListener('click', (e) => { e.stopPropagation(); currentRuleIdx = idx; renderAll(); });
+                div.querySelector('.action-x').addEventListener('click', (e) => { e.stopPropagation(); rules.splice(idx, 1); if (currentRuleIdx >= rules.length) currentRuleIdx = 0; renderAll(); });
+                container.appendChild(div);
+            });
+        }
+
+        function renderDecisionFields() {
+            document.getElementById('decisionKeyField').value = decisionKey;
+            let optionLabel = document.getElementById('decisionOptionLabel');
+            let optionField = document.getElementById('decisionOptionField');
+            if (decisionKey === 'Sem Definição') {
+                optionLabel.textContent = 'Selecionar:';
+                optionField.disabled = true;
+                optionField.innerHTML = '<option>Sem definição</option>';
+            } else {
+                optionLabel.textContent = decisionKey === 'Tipo Documental' ? 'Selecionar Tipo Documental' : 'Selecionar Tipologia';
+                optionField.disabled = false;
+                optionField.innerHTML = rules.map((r, i) => `<option value="${i}" ${i === currentRuleIdx ? 'selected' : ''}>${decisionKey === 'Tipo Documental' ? r.tipo : r.tipologia}</option>`).join('');
+            }
+        }
+
+        function renderMainTable() {
+            let rule = rules[currentRuleIdx];
+            document.getElementById('configNameField').value = rule.nomeConfiguracao;
+            document.getElementById('statusField').value = rule.status;
+            let tbody = document.getElementById('metaTable');
+            tbody.innerHTML = '';
+            rule.rows.forEach(row => {
+                let idBanco = getCampoBancoIds(rule, row[2]);
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td class="col-left"><strong>${row[0]}</strong></td><td class="col-left">${row[1]}</td><td class="col-left">${row[2]}</td><td>${idBanco !== '—' ? idBanco : row[3]}</td><td>${row[4]}</td><td>${row[5]}</td><td><span class="${row[6] === 'Sim' ? 'state-yes' : ''}">${row[6]}</span></td><td class="action-x">✕</td>`;
+                tr.querySelector('.action-x').addEventListener('click', () => {
+                    let idx = rule.rows.findIndex(r => r[0] === row[0] && r[2] === row[2]);
+                    if (idx !== -1) rule.rows.splice(idx, 1);
+                    rule.metadadosMapeados = rule.rows.length;
+                    renderMainTable();
+                    renderRules();
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderAll() { renderRules(); renderDecisionFields(); renderMainTable(); }
+
+        // Modal
+        function openModal() { formulaFields = [...rules[currentRuleIdx].assunto.slice(0, 2)]; document.getElementById('modalDestino').value = 'Assunto'; document.getElementById('modalOrigem').value = 'Múltiplos Campos'; document.getElementById('modalObrigatorio').value = 'Sim'; document.getElementById('modalSeparador').value = 'Pipe |'; document.getElementById('modalNulos').value = 'Ignorar nulos'; document.getElementById('modalFormato').value = 'Texto simples'; document.getElementById('modalTrim').checked = true; document.getElementById('modalValorPadrao').value = ''; renderModalFields(); renderFormulaUI(); document.getElementById('modalOverlay').classList.add('show'); }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+        function renderModalFields() {
+            let rule = rules[currentRuleIdx];
+            let container = document.getElementById('modalAvailableFields');
+            container.innerHTML = '';
+            rule.availableFields.forEach(field => {
+                let pill = document.createElement('div'); pill.className = 'pill'; pill.textContent = `${field.label} (${field.id})`;
+                pill.onclick = () => { if (document.getElementById('modalOrigem').value === 'Campo Único') formulaFields = [field.label]; else if (!formulaFields.includes(field.label)) formulaFields.push(field.label); renderFormulaUI(); };
+                container.appendChild(pill);
+            });
+        }
+        function renderFormulaUI() {
+            let chipsDiv = document.getElementById('modalFormulaChips');
+            chipsDiv.innerHTML = '';
+            formulaFields.forEach((f, i) => {
+                let chip = document.createElement('div'); chip.className = 'chip'; chip.innerHTML = `${i + 1}. ${f} <span style="margin-left:5px;">✕</span>`;
+                chip.onclick = () => { formulaFields.splice(i, 1); renderFormulaUI(); };
+                chipsDiv.appendChild(chip);
+            });
+            if (formulaFields.length === 0) chipsDiv.innerHTML = '<span style="color:#888;">Nenhum campo selecionado</span>';
+            let sepMap = { 'Pipe |': ' | ', 'Hífen -': ' - ', 'Barra /': ' / ', 'Vírgula ,': ', ', 'Sem separador': '' };
+            let sep = sepMap[document.getElementById('modalSeparador').value] || ' | ';
+            document.getElementById('modalFormulaPreview').innerHTML = `<strong>Prévia da fórmula:</strong><br>${formulaFields.join(sep) || '—'}`;
+        }
+        function saveModal() {
+            let destino = document.getElementById('modalDestino').value;
+            let origem = document.getElementById('modalOrigem').value;
+            let obrig = document.getElementById('modalObrigatorio').value;
+            let nulos = document.getElementById('modalNulos').value;
+            let separadorRaw = document.getElementById('modalSeparador').value;
+            let separador = { 'Pipe |': ' | ', 'Hífen -': ' - ', 'Barra /': ' / ', 'Vírgula ,': ', ', 'Sem separador': '' }[separadorRaw] || ' ';
+            let campoDocz = formulaFields.join(separador);
+            let idBanco = formulaFields.map(f => getFieldIdForRule(rules[currentRuleIdx], f)).filter(id => id).join(' + ') || '—';
+            let novaRow = [destino, origem, campoDocz, idBanco, '—', nulos, obrig];
+            rules[currentRuleIdx].rows.unshift(novaRow);
+            rules[currentRuleIdx].metadadosMapeados = rules[currentRuleIdx].rows.length;
+            renderAll();
+            closeModal();
+        }
+
+        document.getElementById('addMetaBtn').onclick = openModal;
+        document.getElementById('newRuleBtn').onclick = () => alert('Nova regra dinâmica - Funcionalidade em desenvolvimento');
+        document.getElementById('modalCloseBtn').onclick = closeModal;
+        document.getElementById('modalCancelBtn').onclick = closeModal;
+        document.getElementById('modalSaveBtn').onclick = saveModal;
+        document.getElementById('modalOrigem').onchange = () => { let single = document.getElementById('modalOrigem').value === 'Campo Único'; if (single && formulaFields.length > 1) formulaFields = [formulaFields[0]]; renderFormulaUI(); };
+        document.getElementById('modalSeparador').onchange = renderFormulaUI;
+        document.getElementById('decisionKeyField').onchange = (e) => { decisionKey = e.target.value; renderDecisionFields(); if (decisionKey !== 'Sem Definição') currentRuleIdx = 0; renderAll(); };
+        document.getElementById('decisionOptionField').onchange = (e) => { if (decisionKey !== 'Sem Definição') { currentRuleIdx = parseInt(e.target.value); renderAll(); } };
+        document.getElementById('statusField').onchange = (e) => { rules[currentRuleIdx].status = e.target.value; renderAll(); };
+        document.getElementById('configNameField').oninput = (e) => { rules[currentRuleIdx].nomeConfiguracao = e.target.value; renderRules(); };
+
         renderAll();
-        closeModal();
-    }
-
-    // Eventos
-    document.getElementById('addMetaBtn').onclick = openModal;
-    document.getElementById('modalCloseBtn').onclick = closeModal;
-    document.getElementById('modalCancelBtn').onclick = closeModal;
-    document.getElementById('modalSaveBtn').onclick = saveModal;
-    document.getElementById('modalOrigem').onchange = () => { let single = document.getElementById('modalOrigem').value === 'Campo Único'; if(single && formulaFields.length > 1) formulaFields = [formulaFields[0]]; renderFormulaUI(); };
-    document.getElementById('modalSeparador').onchange = renderFormulaUI;
-    document.getElementById('decisionKeyField').onchange = (e) => { decisionKey = e.target.value; renderDecisionFields(); if(decisionKey !== 'Sem Definição') currentRuleIdx = 0; renderAll(); };
-    document.getElementById('decisionOptionField').onchange = (e) => { if(decisionKey !== 'Sem Definição') { currentRuleIdx = parseInt(e.target.value); renderAll(); } };
-    document.getElementById('statusField').onchange = (e) => { rules[currentRuleIdx].status = e.target.value; renderAll(); };
-    document.getElementById('configNameField').oninput = (e) => { rules[currentRuleIdx].nomeConfiguracao = e.target.value; renderRules(); };
-    
-    renderAll();
-</script>
+    </script>
 </body>
+
 </html>
