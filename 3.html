@@ -303,8 +303,19 @@
           </label>
         </div>
 
-        <!-- Linha 2: Chave de decisão + Selecionar -->
+        <!-- Linha 2: Selecione o Campo do Projeto + Chave de Decisão -->
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+            <span>Selecione o Campo do Projeto</span>
+            <select id="campoProjetoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
+              <option disabled selected>Selecione um campo</option>
+              <option>Nome do Paciente</option>
+              <option>Número da Guia</option>
+              <option>Data do Atendimento</option>
+              <option>Médico Responsável</option>
+              <option>Unidade de Saúde</option>
+            </select>
+          </label>
           <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
             <span>Chave de Decisão</span>
             <select id="chaveDecisaoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
@@ -313,6 +324,10 @@
               <option>TipologiaArquivo</option>
             </select>
           </label>
+        </div>
+
+        <!-- Linha 3: Selecionar -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
             <span>Selecionar</span>
             <select id="selecionarField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
@@ -327,7 +342,7 @@
 
         <hr class="border-zinc-200">
 
-        <!-- Linha 3: Checkboxes Validações -->
+        <!-- Linha 4: Checkboxes Validações -->
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
           <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
             <input type="checkbox" id="exigirTipologia" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
@@ -345,7 +360,7 @@
           </label>
         </div>
 
-        <!-- Linha 4: Checkboxes Assinatura -->
+        <!-- Linha 5: Checkboxes Assinatura -->
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
           <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
             <input type="checkbox" id="assinaturaUltimaPagina" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
@@ -365,7 +380,7 @@
 
         <hr class="border-zinc-200">
 
-        <!-- Linha 5: Status Final + Status da Regra -->
+        <!-- Linha 6: Status Final + Status da Regra -->
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
             <span>Status Final</span>
@@ -584,6 +599,7 @@ let rules = [
     metadados: 3,
     projeto: 'DEMO',
     valorChave: 'VALUE001',
+    campoProjeto: 'Nome do Paciente',
     chaveDecisao: 'tipodocumento',
     selecionar: '1| Resolução',
     exigirTipologia: false,
@@ -605,6 +621,7 @@ let rules = [
     metadados: 2,
     projeto: 'Presi',
     valorChave: 'VALUE002',
+    campoProjeto: 'Número da Guia',
     chaveDecisao: 'TipologiaArquivo',
     selecionar: '2| Contrato',
     exigirTipologia: true,
@@ -694,6 +711,7 @@ function renderConfigForm() {
   
   document.getElementById('projetoField').value = rule.projeto || '';
   document.getElementById('valorChaveField').value = rule.valorChave || '';
+  document.getElementById('campoProjetoField').value = rule.campoProjeto || '';
   document.getElementById('chaveDecisaoField').value = rule.chaveDecisao || '';
   document.getElementById('selecionarField').value = rule.selecionar || '';
   document.getElementById('exigirTipologia').checked = rule.exigirTipologia || false;
@@ -710,6 +728,7 @@ function saveConfigForm() {
   
   rule.projeto = document.getElementById('projetoField').value;
   rule.valorChave = document.getElementById('valorChaveField').value;
+  rule.campoProjeto = document.getElementById('campoProjetoField').value;
   rule.chaveDecisao = document.getElementById('chaveDecisaoField').value;
   rule.selecionar = document.getElementById('selecionarField').value;
   rule.exigirTipologia = document.getElementById('exigirTipologia').checked;
@@ -1001,6 +1020,7 @@ document.getElementById('newRuleBtn').addEventListener('click', () => {
     metadados: 0,
     projeto: 'DEMO',
     valorChave: '',
+    campoProjeto: '',
     chaveDecisao: '',
     selecionar: '',
     exigirTipologia: false,
