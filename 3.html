@@ -121,6 +121,11 @@
             outline: none;
             ring: 2px solid #3b82f6;
         }
+        .field input:disabled, .field select:disabled {
+            background: #f3f4f6;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
         .formula-box {
             border: 1px solid #d1d5db;
             background: #f9fafb;
@@ -165,6 +170,11 @@
         }
         .pill:hover {
             background: #e5e7eb;
+        }
+        .pill.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
         }
         .formula-preview {
             margin-top: 12px;
@@ -214,6 +224,9 @@
             margin-bottom: 16px;
             font-size: 13px;
             color: #1e40af;
+        }
+        .hidden-field {
+            display: none;
         }
         @media (max-width: 640px) {
             .form-grid-3 {
@@ -343,7 +356,7 @@
           </label>
         </div>
 
-        <!-- Linha 3: Selecionar -->
+        <!-- Linha 3: Selecionar + Campo Fixo -->
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
             <span>Selecionar</span>
@@ -354,6 +367,21 @@
               <option>3| Ofício</option>
               <option>4| Portaria</option>
             </select>
+          </label>
+          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+            <span>Campo Fixo</span>
+            <select id="campoFixoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
+              <option value="nao">Não</option>
+              <option value="sim">Sim</option>
+            </select>
+          </label>
+        </div>
+
+        <!-- Linha 3.5: Valor Fixo (aparece quando Campo Fixo = Sim) -->
+        <div id="valorFixoContainer" class="hidden grid grid-cols-1 gap-4 md:grid-cols-2">
+          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+            <span>Valor Fixo</span>
+            <input type="text" id="valorFixoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Digite o valor fixo">
           </label>
         </div>
 
@@ -619,6 +647,8 @@ let rules = [
     campoProjeto: 'Nome do Paciente',
     chaveDecisao: 'tipodocumento',
     selecionar: '1| Resolução',
+    campoFixo: 'nao',
+    valorFixo: '',
     exigirTipologia: false,
     ativarValidacao: true,
     assinaturaUltimaPagina: false,
@@ -641,6 +671,8 @@ let rules = [
     campoProjeto: 'Número da Guia',
     chaveDecisao: 'TipologiaArquivo',
     selecionar: '2| Contrato',
+    campoFixo: 'sim',
+    valorFixo: 'Valor Fixo Exemplo',
     exigirTipologia: true,
     ativarValidacao: false,
     assinaturaUltimaPagina: true,
@@ -731,12 +763,34 @@ function renderConfigForm() {
   document.getElementById('campoProjetoField').value = rule.campoProjeto || '';
   document.getElementById('chaveDecisaoField').value = rule.chaveDecisao || '';
   document.getElementById('selecionarField').value = rule.selecionar || '';
+  document.getElementById('campoFixoField').value = rule.campoFixo || 'nao';
+  document.getElementById('valorFixoField').value = rule.valorFixo || '';
   document.getElementById('exigirTipologia').checked = rule.exigirTipologia || false;
   document.getElementById('ativarValidacao').checked = rule.ativarValidacao || false;
   document.getElementById('assinaturaUltimaPagina').checked = rule.assinaturaUltimaPagina || false;
   document.getElementById('carimboTempo').checked = rule.carimboTempo || false;
   document.getElementById('statusFinalField').value = rule.statusFinal || '';
   document.getElementById('statusRegraField').value = rule.statusRegra || 'Ativa';
+  
+  // Controlar visibilidade do Valor Fixo
+  toggleValorFixo(rule.campoFixo === 'sim');
+}
+
+function toggleValorFixo(show) {
+  const container = document.getElementById('valorFixoContainer');
+  const fields = document.querySelectorAll('#selecionarField, #chaveDecisaoField, #campoProjetoField, #exigirTipologia, #ativarValidacao, #assinaturaUltimaPagina, #carimboTempo, #statusFinalField, #statusRegraField, #projetoField, #valorChaveField');
+  
+  if (show) {
+    container.classList.remove('hidden');
+    // Desabilitar todos os campos abaixo (exceto Valor Fixo)
+    fields.forEach(field => field.disabled = true);
+    // O campo Valor Fixo deve ficar habilitado
+    document.getElementById('valorFixoField').disabled = false;
+  } else {
+    container.classList.add('hidden');
+    fields.forEach(field => field.disabled = false);
+    document.getElementById('valorFixoField').disabled = true;
+  }
 }
 
 function saveConfigForm() {
@@ -748,6 +802,8 @@ function saveConfigForm() {
   rule.campoProjeto = document.getElementById('campoProjetoField').value;
   rule.chaveDecisao = document.getElementById('chaveDecisaoField').value;
   rule.selecionar = document.getElementById('selecionarField').value;
+  rule.campoFixo = document.getElementById('campoFixoField').value;
+  rule.valorFixo = document.getElementById('valorFixoField').value;
   rule.exigirTipologia = document.getElementById('exigirTipologia').checked;
   rule.ativarValidacao = document.getElementById('ativarValidacao').checked;
   rule.assinaturaUltimaPagina = document.getElementById('assinaturaUltimaPagina').checked;
@@ -755,6 +811,13 @@ function saveConfigForm() {
   rule.statusFinal = document.getElementById('statusFinalField').value;
   rule.statusRegra = document.getElementById('statusRegraField').value;
 }
+
+// Event listener para Campo Fixo
+document.getElementById('campoFixoField').addEventListener('change', function() {
+  const show = this.value === 'sim';
+  toggleValorFixo(show);
+  saveConfigForm();
+});
 
 // Event listeners para salvar automaticamente
 document.querySelectorAll('#configForm input, #configForm select').forEach(el => {
@@ -1040,6 +1103,8 @@ document.getElementById('newRuleBtn').addEventListener('click', () => {
     campoProjeto: '',
     chaveDecisao: '',
     selecionar: '',
+    campoFixo: 'nao',
+    valorFixo: '',
     exigirTipologia: false,
     ativarValidacao: false,
     assinaturaUltimaPagina: false,
