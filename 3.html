@@ -1168,8 +1168,17 @@
                 valorFixoInput.value = '';
             }
 
-            // Separador - sempre habilitado
-            document.getElementById('modalSeparador').disabled = false;
+            // Separador - desabilitado quando Campo Fixo
+            document.getElementById('modalSeparador').disabled = isCampoFixo;
+
+            // Tratamento de Nulos - desabilitado quando Campo Fixo
+            document.getElementById('modalNulos').disabled = isCampoFixo;
+
+            // Valor Padrão para Nulos - desabilitado quando Campo Fixo
+            document.getElementById('modalValorPadrao').disabled = isCampoFixo;
+
+            // Formato da Saída - desabilitado quando Campo Fixo
+            document.getElementById('modalFormato').disabled = isCampoFixo;
         }
 
         function renderFormulaUI() {
