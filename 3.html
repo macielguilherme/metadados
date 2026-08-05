@@ -98,12 +98,6 @@
             gap: 16px;
             margin-bottom: 16px;
         }
-        .form-grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
         .field {
             margin-bottom: 12px;
         }
@@ -139,25 +133,6 @@
         }
         .field input:disabled::placeholder {
             color: #9ca3af;
-        }
-        .field-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-top: 6px;
-        }
-        .field-checkbox input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: #3b82f6;
-        }
-        .field-checkbox label {
-            font-weight: 600;
-            font-size: 12px;
-            color: #374151;
-            cursor: pointer;
-            margin-bottom: 0;
         }
         .formula-box {
             border: 1px solid #d1d5db;
@@ -324,9 +299,6 @@
             .form-grid-3 {
                 grid-template-columns: 1fr;
             }
-            .form-grid-2 {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
@@ -394,8 +366,8 @@
                 <form class="space-y-4 p-4 sm:p-6 flex-1" id="configForm" aria-describedby="regra-selecionada">
                     <p id="regra-selecionada" class="sr-only">Editando regra selecionada</p>
 
-                    <!-- Linha 1: Projeto + Nome da Regra -->
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <!-- Linha 1: Projeto (linha completa) -->
+                    <div class="grid grid-cols-1 gap-4">
                         <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
                             <span>Projeto</span>
                             <select id="projetoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
@@ -405,13 +377,26 @@
                                 <option>GDI Connect</option>
                             </select>
                         </label>
+                    </div>
+
+                    <!-- Linha 2: Nome da Regra + Regra Genérica (checkbox card) -->
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
                             <span>Nome da Regra</span>
                             <input type="text" id="nomeRegraField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Informe o nome da regra">
                         </label>
+                        <div class="flex items-end">
+                            <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition w-full">
+                                <input type="checkbox" id="regraGenericaCheckbox" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
+                                <div class="card-content">
+                                    <span class="font-medium text-zinc-700">Regra Genérica</span>
+                                    <p class="text-xs text-zinc-500">Define se a regra é genérica</p>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
-                    <!-- Linha 2: Selecione o Campo do Projeto + Chave de Decisão -->
+                    <!-- Linha 3: Selecione o Campo do Projeto + Chave de Decisão -->
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
                             <span>Selecione o Campo do Projeto</span>
@@ -450,8 +435,8 @@
                         </label>
                     </div>
 
-                    <!-- Linha 3: Selecionar + Regra Genérica (checkbox) + Nome da Regra -->
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <!-- Linha 4: Selecionar -->
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
                             <span>Selecionar</span>
                             <select id="selecionarField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
@@ -462,22 +447,11 @@
                                 <option>4| Portaria</option>
                             </select>
                         </label>
-                        <div class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-                            <span>Regra Genérica</span>
-                            <div class="field-checkbox">
-                                <input type="checkbox" id="regraGenericaCheckbox">
-                                <label for="regraGenericaCheckbox">Regra Genérica</label>
-                            </div>
-                        </div>
-                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-                            <span>Nome da Regra</span>
-                            <input type="text" id="valorChaveField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Informe o nome da regra">
-                        </label>
                     </div>
 
                     <hr class="border-zinc-200">
 
-                    <!-- Linha 4: Checkboxes Validações -->
+                    <!-- Linha 5: Checkboxes Validações -->
                     <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
                         <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
                             <input type="checkbox" id="exigirTipologia" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
@@ -495,7 +469,7 @@
                         </label>
                     </div>
 
-                    <!-- Linha 5: Checkboxes Assinatura -->
+                    <!-- Linha 6: Checkboxes Assinatura -->
                     <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
                         <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
                             <input type="checkbox" id="assinaturaUltimaPagina" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
@@ -515,7 +489,7 @@
 
                     <hr class="border-zinc-200">
 
-                    <!-- Linha 6: Status Final + Status da Regra -->
+                    <!-- Linha 7: Status Final + Status da Regra -->
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
                             <span>Status Final</span>
@@ -546,7 +520,7 @@
                 <div class="min-w-0">
                     <div class="flex items-center gap-3">
                         <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-500" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                         </span>
                         <div>
                             <h2 id="campos-title" class="text-lg font-semibold text-zinc-900">Campos Configurados por Esta Regra</h2>
@@ -787,15 +761,14 @@
         let rules = [{
             id: 1,
             nome: 'Regra Genérica',
-            nomeRegra: 'Regra Genérica 1',
             status: 'Ativa',
             metadados: 3,
             projeto: 'DEMO',
-            valorChave: 'VALUE001',
+            nomeRegra: 'Minha Regra 1',
+            regraGenerica: false,
             campoProjeto: 'Nome do Paciente',
             chaveDecisao: 'Tipo Documento',
             selecionar: '1| Resolução',
-            regraGenerica: true,
             exigirTipologia: false,
             ativarValidacao: true,
             assinaturaUltimaPagina: false,
@@ -812,15 +785,14 @@
         }, {
             id: 2,
             nome: 'Regra Fábio',
-            nomeRegra: 'Regra Fábio',
             status: 'Ativa',
             metadados: 2,
             projeto: 'Presi',
-            valorChave: 'VALUE002',
+            nomeRegra: 'Regra do Fábio',
+            regraGenerica: true,
             campoProjeto: 'Número da Guia',
             chaveDecisao: 'Tipologia Arquivo',
             selecionar: '2| Contrato',
-            regraGenerica: false,
             exigirTipologia: true,
             ativarValidacao: false,
             assinaturaUltimaPagina: true,
@@ -907,12 +879,11 @@
             if (!rule) return;
 
             document.getElementById('projetoField').value = rule.projeto || '';
-            document.getElementById('nomeRegraField').value = rule.nome || '';
+            document.getElementById('nomeRegraField').value = rule.nomeRegra || '';
+            document.getElementById('regraGenericaCheckbox').checked = rule.regraGenerica || false;
             document.getElementById('campoProjetoField').value = rule.campoProjeto || '';
             document.getElementById('chaveDecisaoField').value = rule.chaveDecisao || '';
             document.getElementById('selecionarField').value = rule.selecionar || '';
-            document.getElementById('regraGenericaCheckbox').checked = rule.regraGenerica || false;
-            document.getElementById('valorChaveField').value = rule.valorChave || '';
             document.getElementById('exigirTipologia').checked = rule.exigirTipologia || false;
             document.getElementById('ativarValidacao').checked = rule.ativarValidacao || false;
             document.getElementById('assinaturaUltimaPagina').checked = rule.assinaturaUltimaPagina || false;
@@ -926,12 +897,11 @@
             if (!rule) return;
 
             rule.projeto = document.getElementById('projetoField').value;
-            rule.nome = document.getElementById('nomeRegraField').value;
+            rule.nomeRegra = document.getElementById('nomeRegraField').value;
+            rule.regraGenerica = document.getElementById('regraGenericaCheckbox').checked;
             rule.campoProjeto = document.getElementById('campoProjetoField').value;
             rule.chaveDecisao = document.getElementById('chaveDecisaoField').value;
             rule.selecionar = document.getElementById('selecionarField').value;
-            rule.regraGenerica = document.getElementById('regraGenericaCheckbox').checked;
-            rule.valorChave = document.getElementById('valorChaveField').value;
             rule.exigirTipologia = document.getElementById('exigirTipologia').checked;
             rule.ativarValidacao = document.getElementById('ativarValidacao').checked;
             rule.assinaturaUltimaPagina = document.getElementById('assinaturaUltimaPagina').checked;
@@ -1314,15 +1284,14 @@
             rules.push({
                 id: newId,
                 nome: `Nova Regra ${newId}`,
-                nomeRegra: '',
                 status: 'Rascunho',
                 metadados: 0,
                 projeto: 'DEMO',
-                valorChave: '',
+                nomeRegra: '',
+                regraGenerica: false,
                 campoProjeto: '',
                 chaveDecisao: '',
                 selecionar: '',
-                regraGenerica: false,
                 exigirTipologia: false,
                 ativarValidacao: false,
                 assinaturaUltimaPagina: false,
@@ -1335,7 +1304,8 @@
             renderAll();
         });
 
-        // ===== SEARCH =====        document.getElementById('searchField').addEventListener('input', function() {
+        // ===== SEARCH =====
+        document.getElementById('searchField').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
             const rule = getCurrentRule();
             if (!rule) return;
