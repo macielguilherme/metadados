@@ -98,6 +98,12 @@
             gap: 16px;
             margin-bottom: 16px;
         }
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
         .field {
             margin-bottom: 12px;
         }
@@ -133,6 +139,25 @@
         }
         .field input:disabled::placeholder {
             color: #9ca3af;
+        }
+        .field-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-top: 6px;
+        }
+        .field-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+        .field-checkbox label {
+            font-weight: 600;
+            font-size: 12px;
+            color: #374151;
+            cursor: pointer;
+            margin-bottom: 0;
         }
         .formula-box {
             border: 1px solid #d1d5db;
@@ -299,6 +324,9 @@
             .form-grid-3 {
                 grid-template-columns: 1fr;
             }
+            .form-grid-2 {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -366,7 +394,7 @@
                 <form class="space-y-4 p-4 sm:p-6 flex-1" id="configForm" aria-describedby="regra-selecionada">
                     <p id="regra-selecionada" class="sr-only">Editando regra selecionada</p>
 
-                    <!-- Linha 1: Projeto + Valor da Chave -->
+                    <!-- Linha 1: Projeto + Nome da Regra -->
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
                             <span>Projeto</span>
@@ -379,7 +407,7 @@
                         </label>
                         <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
                             <span>Nome da Regra</span>
-                            <input type="text" id="valorChaveField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Informe o nome da regra">
+                            <input type="text" id="nomeRegraField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Informe o nome da regra">
                         </label>
                     </div>
 
@@ -389,28 +417,27 @@
                             <span>Selecione o Campo do Projeto</span>
                             <select id="campoProjetoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
                                 <option disabled selected>Selecione um campo</option>
-                                <option>Identificador SOS</option>
-                                <option value="c1">Identificador SOS - C1</option>
-                                <option value="c2">Localização - C2</option>
-                                <option value="c3">Status - C3</option>
-                                <option value="c4">Serviço - C4</option>
-                                <option value="c5">ID Cliente - C5</option>
-                                <option value="c6">Descrição - C6</option>
-                                <option value="c7">Departamento - C7</option>
-                                <option value="c8">Tipo Objeto - C8</option>
-                                <option value="c9">Lacre 01 - C9</option>
-                                <option value="c12">Número do Processo - C12</option>
-                                <option value="c13">Situação Processo - C13</option>
-                                <option value="c14">Volume - C14</option>
-                                <option value="c15">Anexo - C15</option>
-                                <option value="c16">Nome do Interessado - C16</option>
-                                <option value="n1">Ano Inicial - N1</option>
-                                <option value="n2">Ano Final - N2</option>
-                                <option value="c17">Classificação - C17</option>
-                                <option value="c18">Fase Corrente - C18</option>
-                                <option value="c19">Fase Intermediária - C19</option>
-                                <option value="c20">Destinação Final - C20</option>
-                                <option value="data_criacao">Data Cadastro - DATA_CRIACAO</option>
+                                <option value="Identificador SOS">Identificador SOS</option>
+                                <option value="Localização">Localização</option>
+                                <option value="Status">Status</option>
+                                <option value="Serviço">Serviço</option>
+                                <option value="ID Cliente">ID Cliente</option>
+                                <option value="Descrição">Descrição</option>
+                                <option value="Departamento">Departamento</option>
+                                <option value="Tipo Objeto">Tipo Objeto</option>
+                                <option value="Lacre 01">Lacre 01</option>
+                                <option value="Número do Processo">Número do Processo</option>
+                                <option value="Situação Processo">Situação Processo</option>
+                                <option value="Volume">Volume</option>
+                                <option value="Anexo">Anexo</option>
+                                <option value="Nome do Interessado">Nome do Interessado</option>
+                                <option value="Ano Inicial">Ano Inicial</option>
+                                <option value="Ano Final">Ano Final</option>
+                                <option value="Classificação">Classificação</option>
+                                <option value="Fase Corrente">Fase Corrente</option>
+                                <option value="Fase Intermediária">Fase Intermediária</option>
+                                <option value="Destinação Final">Destinação Final</option>
+                                <option value="Data Cadastro">Data Cadastro</option>
                             </select>
                         </label>
                         <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
@@ -423,8 +450,8 @@
                         </label>
                     </div>
 
-                    <!-- Linha 3: Selecionar -->
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <!-- Linha 3: Selecionar + Regra Genérica (checkbox) + Nome da Regra -->
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                         <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
                             <span>Selecionar</span>
                             <select id="selecionarField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
@@ -434,6 +461,17 @@
                                 <option>3| Ofício</option>
                                 <option>4| Portaria</option>
                             </select>
+                        </label>
+                        <div class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+                            <span>Regra Genérica</span>
+                            <div class="field-checkbox">
+                                <input type="checkbox" id="regraGenericaCheckbox">
+                                <label for="regraGenericaCheckbox">Regra Genérica</label>
+                            </div>
+                        </div>
+                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+                            <span>Nome da Regra</span>
+                            <input type="text" id="valorChaveField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Informe o nome da regra">
                         </label>
                     </div>
 
@@ -629,25 +667,25 @@
                     <div class="formula-box" id="modalFormulaChips"></div>
                 </div>
 
-                <!-- BLOCO 1: METADADOS DE OBJETOS DO PROJETO -->
+                <!-- BLOCO 1: METADADOS DE OBJETOS DO PROJETO (com siglas) -->
                 <div class="pill-list-container" id="pillContainer1">
                     <label>Metadados de Objetos do Projeto</label>
                     <div class="pill-list" id="modalAvailableFields1"></div>
                 </div>
 
-                <!-- BLOCO 2: METADADOS DO ARQUIVO -->
+                <!-- BLOCO 2: METADADOS DO ARQUIVO (sem siglas) -->
                 <div class="pill-list-container" id="pillContainer2">
                     <label>Metadados do Arquivo</label>
                     <div class="pill-list" id="modalAvailableFields2"></div>
                 </div>
 
-                <!-- BLOCO 3: INFORMAÇÕES DO PROJETO -->
+                <!-- BLOCO 3: INFORMAÇÕES DO PROJETO (sem siglas) -->
                 <div class="pill-list-container" id="pillContainer3">
                     <label>Informações do Projeto</label>
                     <div class="pill-list" id="modalAvailableFields3"></div>
                 </div>
 
-                <!-- BLOCO 4: INFORMAÇÕES DO CLIENTE -->
+                <!-- BLOCO 4: INFORMAÇÕES DO CLIENTE (sem siglas) -->
                 <div class="pill-list-container" id="pillContainer4">
                     <label>Informações do Cliente</label>
                     <div class="pill-list" id="modalAvailableFields4"></div>
@@ -695,8 +733,8 @@
 
     <script>
         // ===== DADOS =====
-        const doczFieldIds = {
-            // Metadados de Objetos do Projeto
+        // Mapeamento dos IDs para o card "Metadados de Objetos do Projeto" (com siglas)
+        const doczFieldIdsWithSiglas = {
             'Tipo Documental': 'C1',
             'Nome do Paciente': 'C2',
             'Nome da Mãe': 'C3',
@@ -711,26 +749,27 @@
             'Unidade de Saúde': 'C12',
             'Matrícula': 'C13',
             'Órgão': 'C14',
-            'Setor': 'C15',
-            // Metadados do Arquivo
-            'Tipologia': 'A1',
-            'Data': 'A2',
-            'Ano': 'A3',
-            'Número': 'A4',
-            'Volume': 'A5',
-            'Páginas': 'A6',
-            // Informações do Projeto
-            'Cliente': 'P1',
-            'Produtor': 'P2',
-            'Idioma': 'P3',
-            'Projeto': 'P4',
-            'Código do Projeto': 'P5',
-            // Informações do Cliente
-            'Nome do Cliente': 'CL1',
-            'CPF/CNPJ': 'CL2',
-            'Endereço': 'CL3',
-            'Telefone': 'CL4',
-            'E-mail': 'CL5'
+            'Setor': 'C15'
+        };
+
+        // Mapeamento para os demais cards (sem siglas)
+        const doczFieldIdsWithoutSiglas = {
+            'Tipologia': 'Tipologia',
+            'Data': 'Data',
+            'Ano': 'Ano',
+            'Número': 'Número',
+            'Volume': 'Volume',
+            'Páginas': 'Páginas',
+            'Cliente': 'Cliente',
+            'Produtor': 'Produtor',
+            'Idioma': 'Idioma',
+            'Projeto': 'Projeto',
+            'Código do Projeto': 'Código do Projeto',
+            'Nome do Cliente': 'Nome do Cliente',
+            'CPF/CNPJ': 'CPF/CNPJ',
+            'Endereço': 'Endereço',
+            'Telefone': 'Telefone',
+            'E-mail': 'E-mail'
         };
 
         // Definição dos grupos de campos
@@ -748,6 +787,7 @@
         let rules = [{
             id: 1,
             nome: 'Regra Genérica',
+            nomeRegra: 'Regra Genérica 1',
             status: 'Ativa',
             metadados: 3,
             projeto: 'DEMO',
@@ -755,6 +795,7 @@
             campoProjeto: 'Nome do Paciente',
             chaveDecisao: 'Tipo Documento',
             selecionar: '1| Resolução',
+            regraGenerica: true,
             exigirTipologia: false,
             ativarValidacao: true,
             assinaturaUltimaPagina: false,
@@ -762,15 +803,16 @@
             statusFinal: 'Enviar para o SEI',
             statusRegra: 'Ativa',
             rows: [
-                ['Autor (Nome)', 'Campo Único', 'Identificador SOS', 'C7', '—', 'Ignorar Nulos', 'Sim'],
-                ['Assunto', 'Campo Único', 'Identificador SOS', 'C10', '—', 'Ignorar Nulos', 'Sim'],
-                ['Autor (Nome)', 'Concatenação Dinâmica', 'Identificador SOS + Localização + Status', 'C11', '—',
+                ['Autor (Nome)', 'Campo Único', 'Identificador SOS', 'Identificador SOS', '—', 'Ignorar Nulos', 'Sim'],
+                ['Assunto', 'Campo Único', 'Identificador SOS', 'Identificador SOS', '—', 'Ignorar Nulos', 'Sim'],
+                ['Autor (Nome)', 'Concatenação Dinâmica', 'Identificador SOS + Localização + Status', 'Identificador SOS + Localização + Status', '—',
                     'Ignorar Nulos', 'Sim'
                 ]
             ]
         }, {
             id: 2,
             nome: 'Regra Fábio',
+            nomeRegra: 'Regra Fábio',
             status: 'Ativa',
             metadados: 2,
             projeto: 'Presi',
@@ -778,6 +820,7 @@
             campoProjeto: 'Número da Guia',
             chaveDecisao: 'Tipologia Arquivo',
             selecionar: '2| Contrato',
+            regraGenerica: false,
             exigirTipologia: true,
             ativarValidacao: false,
             assinaturaUltimaPagina: true,
@@ -785,8 +828,8 @@
             statusFinal: 'Enviar para o Eternal',
             statusRegra: 'Ativa',
             rows: [
-                ['Título', 'Campo Único', 'Número da Guia', 'C5', '—', 'Ignorar Nulos', 'Sim'],
-                ['Classe', 'Preenchimento Manual', 'Código de Classificação', 'C7', '—', 'Ignorar Nulos', 'Sim']
+                ['Título', 'Campo Único', 'Número da Guia', 'Número da Guia', '—', 'Ignorar Nulos', 'Sim'],
+                ['Classe', 'Preenchimento Manual', 'Código de Classificação', 'Código de Classificação', '—', 'Ignorar Nulos', 'Sim']
             ]
         }];
 
@@ -864,10 +907,12 @@
             if (!rule) return;
 
             document.getElementById('projetoField').value = rule.projeto || '';
-            document.getElementById('valorChaveField').value = rule.valorChave || '';
+            document.getElementById('nomeRegraField').value = rule.nome || '';
             document.getElementById('campoProjetoField').value = rule.campoProjeto || '';
             document.getElementById('chaveDecisaoField').value = rule.chaveDecisao || '';
             document.getElementById('selecionarField').value = rule.selecionar || '';
+            document.getElementById('regraGenericaCheckbox').checked = rule.regraGenerica || false;
+            document.getElementById('valorChaveField').value = rule.valorChave || '';
             document.getElementById('exigirTipologia').checked = rule.exigirTipologia || false;
             document.getElementById('ativarValidacao').checked = rule.ativarValidacao || false;
             document.getElementById('assinaturaUltimaPagina').checked = rule.assinaturaUltimaPagina || false;
@@ -881,10 +926,12 @@
             if (!rule) return;
 
             rule.projeto = document.getElementById('projetoField').value;
-            rule.valorChave = document.getElementById('valorChaveField').value;
+            rule.nome = document.getElementById('nomeRegraField').value;
             rule.campoProjeto = document.getElementById('campoProjetoField').value;
             rule.chaveDecisao = document.getElementById('chaveDecisaoField').value;
             rule.selecionar = document.getElementById('selecionarField').value;
+            rule.regraGenerica = document.getElementById('regraGenericaCheckbox').checked;
+            rule.valorChave = document.getElementById('valorChaveField').value;
             rule.exigirTipologia = document.getElementById('exigirTipologia').checked;
             rule.ativarValidacao = document.getElementById('ativarValidacao').checked;
             rule.assinaturaUltimaPagina = document.getElementById('assinaturaUltimaPagina').checked;
@@ -1075,10 +1122,10 @@
 
             // Renderizar cada grupo de campos
             const containers = [
-                { list: document.getElementById('modalAvailableFields1'), container: document.getElementById('pillContainer1') },
-                { list: document.getElementById('modalAvailableFields2'), container: document.getElementById('pillContainer2') },
-                { list: document.getElementById('modalAvailableFields3'), container: document.getElementById('pillContainer3') },
-                { list: document.getElementById('modalAvailableFields4'), container: document.getElementById('pillContainer4') }
+                { list: document.getElementById('modalAvailableFields1'), container: document.getElementById('pillContainer1'), withSigla: true },
+                { list: document.getElementById('modalAvailableFields2'), container: document.getElementById('pillContainer2'), withSigla: false },
+                { list: document.getElementById('modalAvailableFields3'), container: document.getElementById('pillContainer3'), withSigla: false },
+                { list: document.getElementById('modalAvailableFields4'), container: document.getElementById('pillContainer4'), withSigla: false }
             ];
 
             const groups = [fieldGroups.group1, fieldGroups.group2, fieldGroups.group3, fieldGroups.group4];
@@ -1099,7 +1146,14 @@
                 fields.forEach(label => {
                     const pill = document.createElement('div');
                     pill.className = `pill ${isCampoFixo ? 'pill-disabled' : ''}`;
-                    pill.textContent = `${label} (${doczFieldIds[label] || 'C0'})`;
+                    
+                    // Adiciona a sigla apenas para o primeiro grupo (Metadados de Objetos do Projeto)
+                    if (item.withSigla && doczFieldIdsWithSiglas[label]) {
+                        pill.textContent = `${label} (${doczFieldIdsWithSiglas[label]})`;
+                    } else {
+                        pill.textContent = label;
+                    }
+                    
                     if (!isCampoFixo) {
                         pill.onclick = () => {
                             if (document.getElementById('modalOrigem').value === 'Campo Único') {
@@ -1220,7 +1274,7 @@
                 };
                 const separador = sepMap[separadorRaw] || ' ';
                 campoDocz = formulaFields.join(separador);
-                idBanco = formulaFields.map(f => doczFieldIds[f] || 'C0').filter(id => id).join(' + ') || '—';
+                idBanco = formulaFields.join(separador);
             }
 
             const novaRow = [destino, origem, campoDocz, idBanco, valorFixo || '—', nulos, obrig];
@@ -1260,6 +1314,7 @@
             rules.push({
                 id: newId,
                 nome: `Nova Regra ${newId}`,
+                nomeRegra: '',
                 status: 'Rascunho',
                 metadados: 0,
                 projeto: 'DEMO',
@@ -1267,6 +1322,7 @@
                 campoProjeto: '',
                 chaveDecisao: '',
                 selecionar: '',
+                regraGenerica: false,
                 exigirTipologia: false,
                 ativarValidacao: false,
                 assinaturaUltimaPagina: false,
@@ -1279,8 +1335,7 @@
             renderAll();
         });
 
-        // ===== SEARCH =====
-        document.getElementById('searchField').addEventListener('input', function() {
+        // ===== SEARCH =====        document.getElementById('searchField').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
             const rule = getCurrentRule();
             if (!rule) return;
