@@ -309,8 +309,8 @@
         <!-- CABEÇALHO -->
         <div class="flex flex-col gap-3 border-b border-zinc-200 pb-3 md:flex-row md:items-center md:justify-between">
             <div>
-                <h1 id="embarque-title" class="text-2xl font-semibold text-zinc-900 sm:text-3xl"> Embarque de Metadados </h1>
-                <p class="mt-1 text-sm text-zinc-500"> Configure regras, chaves e campos de metadados para exportação. </p>
+                <h1 id="embarque-title" class="text-2xl font-semibold text-zinc-900 sm:text-3xl">Embarque de Metadados</h1>
+                <p class="mt-1 text-sm text-zinc-500">Configure regras, chaves e campos de metadados para exportação.</p>
             </div>
             <nav class="text-sm text-muted-foreground" aria-label="Breadcrumb">
                 <ol class="flex flex-wrap items-center gap-1">
@@ -321,7 +321,7 @@
                         <span class="mx-1 text-foreground/40">/</span>
                     </li>
                     <li class="flex items-center gap-1">
-                        <span class="text-zinc-500">Configuracoes</span>
+                        <span class="text-zinc-500">Configurações</span>
                         <span class="mx-1 text-foreground/40">/</span>
                     </li>
                     <li class="flex items-center gap-1">
@@ -341,7 +341,7 @@
                         <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500" aria-hidden="true">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
                         </span>
-                        <h2 id="regras-title" class="truncate text-lg font-semibold text-zinc-900"> Lista de Regras Cadastradas </h2>
+                        <h2 id="regras-title" class="truncate text-lg font-semibold text-zinc-900">Lista de Regras Cadastradas</h2>
                     </div>
                 </header>
 
@@ -349,7 +349,7 @@
 
                 <div class="border-t border-zinc-200 p-4 sm:px-6 mt-auto">
                     <button type="button" id="newRuleBtn" class="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 px-4 py-3 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 12H3"></path><path d="M16 6H3"></path><path d="M16 18H3"></path><path d="M18 9v6"></path><path d="M21 12h-6"></path></svg> Nova regra dinâmica
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 12H3"></path><path d="M16 6H3"></path><path d="M16 18H3"></path><path d="M18 9v6"></path><path d="M21 12h-6"></path></svg> Nova Regra Dinâmica
                     </button>
                 </div>
             </section>
@@ -374,12 +374,12 @@
                                 <option disabled>Selecione um projeto</option>
                                 <option>DEMO</option>
                                 <option>Presi</option>
-                                <option>GDI CONNECT</option>
+                                <option>GDI Connect</option>
                             </select>
                         </label>
                         <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
                             <span>Nome da Regra</span>
-                            <input type="text" id="valorChaveField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Informe o valor da chave">
+                            <input type="text" id="valorChaveField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Informe o nome da regra">
                         </label>
                     </div>
 
@@ -390,35 +390,35 @@
                             <select id="campoProjetoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
                                 <option disabled selected>Selecione um campo</option>
                                 <option>Identificador SOS</option>
-                                <option value="c1">Identificador SOS - c1</option>
-                                <option value="c2">Localização - c2</option>
-                                <option value="c3">Status - c3</option>
-                                <option value="c4">Serviço - c4</option>
-                                <option value="c5">ID Cliente - c5</option>
-                                <option value="c6">Descrição - c6</option>
-                                <option value="c7">Departamento - c7</option>
-                                <option value="c8">Tipo Objeto - c8</option>
-                                <option value="c9">Lacre 01 - c9</option>
-                                <option value="c12">Número do Processo - c12</option>
-                                <option value="c13">Situação Processo - c13</option>
-                                <option value="c14">Volume - c14</option>
-                                <option value="c15">Anexo - c15</option>
-                                <option value="c16">Nome do interessado - c16</option>
-                                <option value="n1">Ano Inicial - n1</option>
-                                <option value="n2">Ano Final - n2</option>
-                                <option value="c17">Classificação - c17</option>
-                                <option value="c18">Fase Corrente - c18</option>
-                                <option value="c19">Fase Intermediária - c19</option>
-                                <option value="c20">Destinação Final - c20</option>
-                                <option value="data_criacao">Data Cadastro - data_criacao</option>
+                                <option value="c1">Identificador SOS - C1</option>
+                                <option value="c2">Localização - C2</option>
+                                <option value="c3">Status - C3</option>
+                                <option value="c4">Serviço - C4</option>
+                                <option value="c5">ID Cliente - C5</option>
+                                <option value="c6">Descrição - C6</option>
+                                <option value="c7">Departamento - C7</option>
+                                <option value="c8">Tipo Objeto - C8</option>
+                                <option value="c9">Lacre 01 - C9</option>
+                                <option value="c12">Número do Processo - C12</option>
+                                <option value="c13">Situação Processo - C13</option>
+                                <option value="c14">Volume - C14</option>
+                                <option value="c15">Anexo - C15</option>
+                                <option value="c16">Nome do Interessado - C16</option>
+                                <option value="n1">Ano Inicial - N1</option>
+                                <option value="n2">Ano Final - N2</option>
+                                <option value="c17">Classificação - C17</option>
+                                <option value="c18">Fase Corrente - C18</option>
+                                <option value="c19">Fase Intermediária - C19</option>
+                                <option value="c20">Destinação Final - C20</option>
+                                <option value="data_criacao">Data Cadastro - DATA_CRIACAO</option>
                             </select>
                         </label>
                         <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
                             <span>Chave de Decisão</span>
                             <select id="chaveDecisaoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
                                 <option>Selecione uma chave</option>
-                                <option>tipodocumento</option>
-                                <option>TipologiaArquivo</option>
+                                <option>Tipo Documento</option>
+                                <option>Tipologia Arquivo</option>
                             </select>
                         </label>
                     </div>
@@ -511,8 +511,8 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                         </span>
                         <div>
-                            <h2 id="campos-title" class="text-lg font-semibold text-zinc-900"> Campos Configurados por esta Regra </h2>
-                            <p class="mt-1 text-sm text-zinc-500"> Preenchimento dinâmico conforme a tabela do tipo documental selecionado. </p>
+                            <h2 id="campos-title" class="text-lg font-semibold text-zinc-900">Campos Configurados por Esta Regra</h2>
+                            <p class="mt-1 text-sm text-zinc-500">Preenchimento dinâmico conforme a tabela do tipo documental selecionado.</p>
                         </div>
                     </div>
                 </div>
@@ -524,7 +524,7 @@
 
             <div class="border-b border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-6">
                 <label class="flex max-w-sm flex-col gap-2 text-sm font-medium text-zinc-700">
-                    <span>Buscar metadado</span>
+                    <span>Buscar Metadado</span>
                     <span class="relative">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                         <input id="searchField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white pl-10 pr-3 text-sm outline-none transition focus:border-blue-500" placeholder="Filtrar..." aria-label="Filtrar campos configurados">
@@ -536,11 +536,11 @@
                 <table class="min-w-full divide-y divide-zinc-200 text-sm">
                     <thead class="bg-zinc-50 text-left text-zinc-500">
                         <tr>
-                            <th scope="col" class="px-5 py-4 font-bold">Metadado destino</th>
+                            <th scope="col" class="px-5 py-4 font-bold">Metadado Destino</th>
                             <th scope="col" class="px-5 py-4 font-bold">Origem</th>
                             <th scope="col" class="px-5 py-4 font-bold">Campo DocZ</th>
-                            <th scope="col" class="px-5 py-4 text-center font-bold">ID banco</th>
-                            <th scope="col" class="px-5 py-4 text-center font-bold">Valor fixo</th>
+                            <th scope="col" class="px-5 py-4 text-center font-bold">ID Banco</th>
+                            <th scope="col" class="px-5 py-4 text-center font-bold">Valor Fixo</th>
                             <th scope="col" class="px-5 py-4 text-center font-bold">Nulos</th>
                             <th scope="col" class="px-5 py-4 text-center font-bold">Obrig.</th>
                             <th scope="col" class="px-5 py-4 text-center font-bold">Ação</th>
@@ -558,8 +558,8 @@
                     <p class="mt-0.5">Página <span id="currentPageDisplay">1</span> de <span id="totalPagesDisplay">1</span></p>
                 </div>
                 <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-                    <button id="prevPageBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-500 w-full sm:w-auto" disabled> Anterior </button>
-                    <button id="nextPageBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-500 w-full sm:w-auto" disabled> Próxima </button>
+                    <button id="prevPageBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-500 w-full sm:w-auto" disabled>Anterior</button>
+                    <button id="nextPageBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-500 w-full sm:w-auto" disabled>Próxima</button>
                 </div>
             </footer>
         </section>
@@ -578,19 +578,19 @@
 
             <div class="form-grid-3">
                 <div class="field">
-                    <label>Metadado destino *</label>
+                    <label>Metadado Destino *</label>
                     <select id="modalDestino">
                         <option>Assunto</option>
                         <option>Título</option>
-                        <option>Autor (nome)</option>
+                        <option>Autor (Nome)</option>
                         <option>Classe</option>
-                        <option>Data de produção</option>
-                        <option>Destinação final</option>
-                        <option>Prazo de guarda</option>
+                        <option>Data de Produção</option>
+                        <option>Destinação Final</option>
+                        <option>Prazo de Guarda</option>
                     </select>
                 </div>
                 <div class="field">
-                    <label>Origem do valor *</label>
+                    <label>Origem do Valor *</label>
                     <select id="modalOrigem">
                         <option>Campo Único</option>
                         <option>Múltiplos Campos</option>
@@ -613,19 +613,19 @@
             </div>
 
             <div class="field">
-                <label>Separador da concatenação</label>
+                <label>Separador da Concatenação</label>
                 <select id="modalSeparador">
                     <option>Pipe |</option>
                     <option>Hífen -</option>
                     <option>Barra /</option>
                     <option>Vírgula ,</option>
-                    <option>Sem separador</option>
+                    <option>Sem Separador</option>
                 </select>
             </div>
 
             <div id="camposSelecionadosContainer">
                 <div class="field">
-                    <label>Campos selecionados para a fórmula</label>
+                    <label>Campos Selecionados para a Fórmula</label>
                     <div class="formula-box" id="modalFormulaChips"></div>
                 </div>
 
@@ -658,19 +658,19 @@
 
             <div class="form-grid-3" style="margin-top:16px">
                 <div class="field">
-                    <label>Tratamento de nulos *</label>
+                    <label>Tratamento de Nulos *</label>
                     <select id="modalNulos">
-                        <option>Ignorar nulos</option>
-                        <option>Substituir por valor padrão</option>
-                        <option>Bloquear gravação</option>
+                        <option>Ignorar Nulos</option>
+                        <option>Substituir por Valor Padrão</option>
+                        <option>Bloquear Gravação</option>
                     </select>
                 </div>
                 <div class="field">
-                    <label>Valor padrão para nulos</label>
+                    <label>Valor Padrão para Nulos</label>
                     <input id="modalValorPadrao" placeholder="Ex.: NÃO INFORMADO">
                 </div>
                 <div class="field">
-                    <label>Formato da saída</label>
+                    <label>Formato da Saída</label>
                     <select id="modalFormato">
                         <option>Data - DD/MM/AAAA</option>
                         <option>Caixa Alta (Maiúsculo)</option>
@@ -688,7 +688,7 @@
 
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="modalCancelBtn">Cancelar</button>
-                <button class="btn btn-primary" id="modalSaveBtn">Adicionar metadado</button>
+                <button class="btn btn-primary" id="modalSaveBtn">Adicionar Metadado</button>
             </div>
         </div>
     </div>
@@ -703,9 +703,9 @@
             'Data do Atendimento': 'C4',
             'Número da Guia': 'C5',
             'Médico Responsável': 'C6',
-            'Código de classificação': 'C7',
-            'Destinação final': 'C8',
-            'Prazo de guarda': 'C9',
+            'Código de Classificação': 'C7',
+            'Destinação Final': 'C8',
+            'Prazo de Guarda': 'C9',
             'Data da Última Movimentação': 'C10',
             'Nome do Servidor': 'C11',
             'Unidade de Saúde': 'C12',
@@ -730,30 +730,30 @@
             'CPF/CNPJ': 'CL2',
             'Endereço': 'CL3',
             'Telefone': 'CL4',
-            'Email': 'CL5'
+            'E-mail': 'CL5'
         };
 
         // Definição dos grupos de campos
         const fieldGroups = {
             group1: ['Tipo Documental', 'Nome do Paciente', 'Nome da Mãe', 'Data do Atendimento', 'Número da Guia',
-                'Médico Responsável', 'Código de classificação', 'Destinação final', 'Prazo de guarda',
+                'Médico Responsável', 'Código de Classificação', 'Destinação Final', 'Prazo de Guarda',
                 'Data da Última Movimentação', 'Nome do Servidor', 'Unidade de Saúde', 'Matrícula', 'Órgão',
                 'Setor'
             ],
             group2: ['Tipologia', 'Data', 'Ano', 'Número', 'Volume', 'Páginas'],
             group3: ['Cliente', 'Produtor', 'Idioma', 'Projeto', 'Código do Projeto'],
-            group4: ['Nome do Cliente', 'CPF/CNPJ', 'Endereço', 'Telefone', 'Email']
+            group4: ['Nome do Cliente', 'CPF/CNPJ', 'Endereço', 'Telefone', 'E-mail']
         };
 
         let rules = [{
             id: 1,
-            nome: 'Regra Generica',
+            nome: 'Regra Genérica',
             status: 'Ativa',
             metadados: 3,
             projeto: 'DEMO',
             valorChave: 'VALUE001',
             campoProjeto: 'Nome do Paciente',
-            chaveDecisao: 'tipodocumento',
+            chaveDecisao: 'Tipo Documento',
             selecionar: '1| Resolução',
             exigirTipologia: false,
             ativarValidacao: true,
@@ -762,10 +762,10 @@
             statusFinal: 'Enviar para o SEI',
             statusRegra: 'Ativa',
             rows: [
-                ['Autor (nome)', 'Campo unico', 'Identificador SOS', 'C7', '—', 'Ignorar nulos', 'Sim'],
-                ['Assunto', 'Campo unico', 'Identificador SOS', 'C10', '—', 'Ignorar nulos', 'Sim'],
-                ['Autor (nome)', 'Concatenacao dinamica', 'Identificador SOS + Localização + Status', 'C11', '—',
-                    'Ignorar nulos', 'Sim'
+                ['Autor (Nome)', 'Campo Único', 'Identificador SOS', 'C7', '—', 'Ignorar Nulos', 'Sim'],
+                ['Assunto', 'Campo Único', 'Identificador SOS', 'C10', '—', 'Ignorar Nulos', 'Sim'],
+                ['Autor (Nome)', 'Concatenação Dinâmica', 'Identificador SOS + Localização + Status', 'C11', '—',
+                    'Ignorar Nulos', 'Sim'
                 ]
             ]
         }, {
@@ -776,7 +776,7 @@
             projeto: 'Presi',
             valorChave: 'VALUE002',
             campoProjeto: 'Número da Guia',
-            chaveDecisao: 'TipologiaArquivo',
+            chaveDecisao: 'Tipologia Arquivo',
             selecionar: '2| Contrato',
             exigirTipologia: true,
             ativarValidacao: false,
@@ -785,8 +785,8 @@
             statusFinal: 'Enviar para o Eternal',
             statusRegra: 'Ativa',
             rows: [
-                ['Título', 'Campo unico', 'Número da Guia', 'C5', '—', 'Ignorar nulos', 'Sim'],
-                ['Classe', 'Preenchimento manual', 'Código de classificação', 'C7', '—', 'Ignorar nulos', 'Sim']
+                ['Título', 'Campo Único', 'Número da Guia', 'C5', '—', 'Ignorar Nulos', 'Sim'],
+                ['Classe', 'Preenchimento Manual', 'Código de Classificação', 'C7', '—', 'Ignorar Nulos', 'Sim']
             ]
         }];
 
@@ -957,7 +957,7 @@
                     card.innerHTML = `
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
-                                <p class="text-xs font-medium uppercase tracking-wide text-zinc-500">Metadado destino</p>
+                                <p class="text-xs font-medium uppercase tracking-wide text-zinc-500">Metadado Destino</p>
                                 <h3 class="break-words text-base font-semibold text-zinc-900">${row[0]}</h3>
                             </div>
                             <button type="button" class="delete-meta-mobile inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${start + idx}">
@@ -967,7 +967,7 @@
                         <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-zinc-700 sm:grid-cols-2">
                             <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Origem</dt><dd>${row[1]}</dd></div>
                             <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Campo DocZ</dt><dd>${row[2]}</dd></div>
-                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">ID banco</dt><dd>${row[3]}</dd></div>
+                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">ID Banco</dt><dd>${row[3]}</dd></div>
                             <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Obrigatório</dt><dd class="font-semibold text-blue-700">${row[6]}</dd></div>
                         </dl>
                     `;
@@ -1051,7 +1051,7 @@
             document.getElementById('modalOrigem').value = 'Campo Único';
             document.getElementById('modalObrigatorio').value = 'Sim';
             document.getElementById('modalSeparador').value = 'Pipe |';
-            document.getElementById('modalNulos').value = 'Ignorar nulos';
+            document.getElementById('modalNulos').value = 'Ignorar Nulos';
             document.getElementById('modalFormato').value = 'Texto simples';
             document.getElementById('modalTrim').checked = true;
             document.getElementById('modalValorPadrao').value = '';
@@ -1157,7 +1157,7 @@
             if (isCampoFixo) {
                 chipsDiv.innerHTML = '<span style="color:#888; font-style:italic;">Campos desabilitados para valor fixo</span>';
                 document.getElementById('modalFormulaPreview').innerHTML =
-                    '<strong>Prévia da fórmula:</strong><br><span style="color:#888;">—</span>';
+                    '<strong>Prévia da Fórmula:</strong><br><span style="color:#888;">—</span>';
                 return;
             }
 
@@ -1181,11 +1181,11 @@
                 'Hífen -': ' - ',
                 'Barra /': ' / ',
                 'Vírgula ,': ', ',
-                'Sem separador': ''
+                'Sem Separador': ''
             };
             const sep = sepMap[document.getElementById('modalSeparador').value] || ' | ';
             document.getElementById('modalFormulaPreview').innerHTML =
-                `<strong>Prévia da fórmula:</strong><br>${formulaFields.join(sep) || '—'}`;
+                `<strong>Prévia da Fórmula:</strong><br>${formulaFields.join(sep) || '—'}`;
         }
 
         function saveModal() {
@@ -1216,7 +1216,7 @@
                     'Hífen -': ' - ',
                     'Barra /': ' / ',
                     'Vírgula ,': ', ',
-                    'Sem separador': ''
+                    'Sem Separador': ''
                 };
                 const separador = sepMap[separadorRaw] || ' ';
                 campoDocz = formulaFields.join(separador);
@@ -1331,7 +1331,7 @@
                     card.innerHTML = `
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
-                                <p class="text-xs font-medium uppercase tracking-wide text-zinc-500">Metadado destino</p>
+                                <p class="text-xs font-medium uppercase tracking-wide text-zinc-500">Metadado Destino</p>
                                 <h3 class="break-words text-base font-semibold text-zinc-900">${row[0]}</h3>
                             </div>
                             <button type="button" class="delete-meta-mobile inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${rule.rows.indexOf(row)}">
@@ -1341,7 +1341,7 @@
                         <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-zinc-700 sm:grid-cols-2">
                             <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Origem</dt><dd>${row[1]}</dd></div>
                             <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Campo DocZ</dt><dd>${row[2]}</dd></div>
-                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">ID banco</dt><dd>${row[3]}</dd></div>
+                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">ID Banco</dt><dd>${row[3]}</dd></div>
                             <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Obrigatório</dt><dd class="font-semibold text-blue-700">${row[6]}</dd></div>
                         </dl>
                     `;
