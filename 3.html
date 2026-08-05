@@ -126,9 +126,13 @@
         }
         .field input:disabled,
         .field select:disabled {
-            background: #f3f4f6;
+            background: #e5e7eb;
             cursor: not-allowed;
-            opacity: 0.6;
+            opacity: 0.7;
+            color: #6b7280;
+        }
+        .field input:disabled::placeholder {
+            color: #9ca3af;
         }
         .formula-box {
             border: 1px solid #d1d5db;
@@ -140,6 +144,11 @@
             gap: 8px;
             margin-top: 4px;
             border-radius: 8px;
+        }
+        .formula-box-disabled {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+            opacity: 0.6;
         }
         .chip {
             background: #dbeafe;
@@ -156,21 +165,46 @@
         .chip:hover {
             background: #bfdbfe;
         }
+        .chip-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
         .pill-list {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 8px;
             margin-top: 8px;
+            overflow-x: auto;
+            padding: 8px 4px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        .pill-list::-webkit-scrollbar {
+            height: 4px;
+        }
+        .pill-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 2px;
+        }
+        .pill-list::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 2px;
+        }
+        .pill-list::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
         }
         .pill {
             background: #f3f4f6;
             color: #4b5563;
             border-radius: 20px;
-            padding: 4px 14px;
+            padding: 6px 16px;
             font-size: 12px;
             cursor: pointer;
             border: 1px solid #d1d5db;
             transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         .pill:hover {
             background: #e5e7eb;
@@ -179,6 +213,25 @@
             opacity: 0.5;
             cursor: not-allowed;
             pointer-events: none;
+            background: #e5e7eb;
+        }
+        .pill-list-container {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 4px 8px;
+            margin-top: 4px;
+        }
+        .pill-list-container label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            display: block;
+            padding: 4px 0 2px 4px;
+        }
+        .pill-list-container-disabled {
+            opacity: 0.6;
+            background: #f3f4f6;
         }
         .formula-preview {
             margin-top: 12px;
@@ -188,6 +241,12 @@
             font-size: 12px;
             border-left: 3px solid #22c55e;
             color: #166534;
+        }
+        .formula-preview-disabled {
+            opacity: 0.5;
+            background: #f3f4f6;
+            border-left-color: #9ca3af;
+            color: #6b7280;
         }
         .modal-footer {
             display: flex;
@@ -231,6 +290,10 @@
         }
         .hidden-field {
             display: none;
+        }
+        .meta-block-divider {
+            border-top: 2px dashed #d1d5db;
+            margin: 20px 0 16px 0;
         }
         @media (max-width: 640px) {
             .form-grid-3 {
@@ -543,8 +606,8 @@
                 </div>
             </div>
 
-            <!-- Campo Fixo (exibido quando selecionado) -->
-            <div class="field" id="valorFixoContainer" style="display: none;">
+            <!-- Campo Fixo -->
+            <div class="field" id="valorFixoContainer">
                 <label>Valor Fixo *</label>
                 <input type="text" id="modalValorFixo" placeholder="Digite o valor fixo" class="w-full">
             </div>
@@ -566,11 +629,31 @@
                     <div class="formula-box" id="modalFormulaChips"></div>
                 </div>
 
-                <div>
-                    <label>Campos disponíveis do DocZ</label>
-                    <div class="pill-list" id="modalAvailableFields"></div>
-                    <div class="formula-preview" id="modalFormulaPreview"></div>
+                <!-- BLOCO 1: METADADOS DE OBJETOS DO PROJETO -->
+                <div class="pill-list-container" id="pillContainer1">
+                    <label>Metadados de Objetos do Projeto</label>
+                    <div class="pill-list" id="modalAvailableFields1"></div>
                 </div>
+
+                <!-- BLOCO 2: METADADOS DO ARQUIVO -->
+                <div class="pill-list-container" id="pillContainer2">
+                    <label>Metadados do Arquivo</label>
+                    <div class="pill-list" id="modalAvailableFields2"></div>
+                </div>
+
+                <!-- BLOCO 3: INFORMAÇÕES DO PROJETO -->
+                <div class="pill-list-container" id="pillContainer3">
+                    <label>Informações do Projeto</label>
+                    <div class="pill-list" id="modalAvailableFields3"></div>
+                </div>
+
+                <!-- BLOCO 4: INFORMAÇÕES DO CLIENTE -->
+                <div class="pill-list-container" id="pillContainer4">
+                    <label>Informações do Cliente</label>
+                    <div class="pill-list" id="modalAvailableFields4"></div>
+                </div>
+
+                <div class="formula-preview" id="modalFormulaPreview"></div>
             </div>
 
             <div class="form-grid-3" style="margin-top:16px">
@@ -613,6 +696,7 @@
     <script>
         // ===== DADOS =====
         const doczFieldIds = {
+            // Metadados de Objetos do Projeto
             'Tipo Documental': 'C1',
             'Nome do Paciente': 'C2',
             'Nome da Mãe': 'C3',
@@ -627,10 +711,39 @@
             'Unidade de Saúde': 'C12',
             'Matrícula': 'C13',
             'Órgão': 'C14',
-            'Setor': 'C15'
+            'Setor': 'C15',
+            // Metadados do Arquivo
+            'Tipologia': 'A1',
+            'Data': 'A2',
+            'Ano': 'A3',
+            'Número': 'A4',
+            'Volume': 'A5',
+            'Páginas': 'A6',
+            // Informações do Projeto
+            'Cliente': 'P1',
+            'Produtor': 'P2',
+            'Idioma': 'P3',
+            'Projeto': 'P4',
+            'Código do Projeto': 'P5',
+            // Informações do Cliente
+            'Nome do Cliente': 'CL1',
+            'CPF/CNPJ': 'CL2',
+            'Endereço': 'CL3',
+            'Telefone': 'CL4',
+            'Email': 'CL5'
         };
 
-        const withDoczIds = (fields) => fields.map(label => ({ label, id: doczFieldIds[label] || 'C0' }));
+        // Definição dos grupos de campos
+        const fieldGroups = {
+            group1: ['Tipo Documental', 'Nome do Paciente', 'Nome da Mãe', 'Data do Atendimento', 'Número da Guia',
+                'Médico Responsável', 'Código de classificação', 'Destinação final', 'Prazo de guarda',
+                'Data da Última Movimentação', 'Nome do Servidor', 'Unidade de Saúde', 'Matrícula', 'Órgão',
+                'Setor'
+            ],
+            group2: ['Tipologia', 'Data', 'Ano', 'Número', 'Volume', 'Páginas'],
+            group3: ['Cliente', 'Produtor', 'Idioma', 'Projeto', 'Código do Projeto'],
+            group4: ['Nome do Cliente', 'CPF/CNPJ', 'Endereço', 'Telefone', 'Email']
+        };
 
         let rules = [{
             id: 1,
@@ -944,8 +1057,8 @@
             document.getElementById('modalValorPadrao').value = '';
             document.getElementById('modalValorFixo').value = '';
 
-            // Resetar visibilidade
-            document.getElementById('valorFixoContainer').style.display = 'none';
+            // Resetar visibilidade - todos os campos ficam visíveis
+            document.getElementById('valorFixoContainer').style.display = 'block';
             document.getElementById('camposSelecionadosContainer').style.display = 'block';
 
             renderModalFields();
@@ -958,34 +1071,81 @@
         }
 
         function renderModalFields() {
-            const container = document.getElementById('modalAvailableFields');
-            container.innerHTML = '';
+            const isCampoFixo = document.getElementById('modalOrigem').value === 'Campo Fixo';
 
-            const fields = ['Tipo Documental', 'Nome do Paciente', 'Nome da Mãe', 'Data do Atendimento',
-                'Número da Guia', 'Médico Responsável', 'Código de classificação',
-                'Destinação final', 'Prazo de guarda', 'Data da Última Movimentação',
-                'Nome do Servidor', 'Unidade de Saúde', 'Matrícula', 'Órgão', 'Setor'
+            // Renderizar cada grupo de campos
+            const containers = [
+                { list: document.getElementById('modalAvailableFields1'), container: document.getElementById('pillContainer1') },
+                { list: document.getElementById('modalAvailableFields2'), container: document.getElementById('pillContainer2') },
+                { list: document.getElementById('modalAvailableFields3'), container: document.getElementById('pillContainer3') },
+                { list: document.getElementById('modalAvailableFields4'), container: document.getElementById('pillContainer4') }
             ];
 
-            const origemSelecionada = document.getElementById('modalOrigem').value;
-            const isCampoFixo = origemSelecionada === 'Campo Fixo';
+            const groups = [fieldGroups.group1, fieldGroups.group2, fieldGroups.group3, fieldGroups.group4];
 
-            fields.forEach(label => {
-                const pill = document.createElement('div');
-                pill.className = `pill ${isCampoFixo ? 'pill-disabled' : ''}`;
-                pill.textContent = `${label} (${doczFieldIds[label] || 'C0'})`;
-                if (!isCampoFixo) {
-                    pill.onclick = () => {
-                        if (document.getElementById('modalOrigem').value === 'Campo Único') {
-                            formulaFields = [label];
-                        } else if (!formulaFields.includes(label)) {
-                            formulaFields.push(label);
-                        }
-                        renderFormulaUI();
-                    };
+            containers.forEach((item, index) => {
+                const container = item.container;
+                const list = item.list;
+                list.innerHTML = '';
+                const fields = groups[index] || [];
+
+                // Aplicar classe disabled no container
+                if (isCampoFixo) {
+                    container.classList.add('pill-list-container-disabled');
+                } else {
+                    container.classList.remove('pill-list-container-disabled');
                 }
-                container.appendChild(pill);
+
+                fields.forEach(label => {
+                    const pill = document.createElement('div');
+                    pill.className = `pill ${isCampoFixo ? 'pill-disabled' : ''}`;
+                    pill.textContent = `${label} (${doczFieldIds[label] || 'C0'})`;
+                    if (!isCampoFixo) {
+                        pill.onclick = () => {
+                            if (document.getElementById('modalOrigem').value === 'Campo Único') {
+                                formulaFields = [label];
+                            } else if (!formulaFields.includes(label)) {
+                                formulaFields.push(label);
+                            }
+                            renderFormulaUI();
+                        };
+                    }
+                    list.appendChild(pill);
+                });
             });
+
+            // Desabilitar campos relacionados
+            const formulaChips = document.getElementById('modalFormulaChips');
+            if (isCampoFixo) {
+                formulaChips.classList.add('formula-box-disabled');
+            } else {
+                formulaChips.classList.remove('formula-box-disabled');
+            }
+
+            // Desabilitar preview
+            const preview = document.getElementById('modalFormulaPreview');
+            if (isCampoFixo) {
+                preview.classList.add('formula-preview-disabled');
+            } else {
+                preview.classList.remove('formula-preview-disabled');
+            }
+
+            // Habilitar/desabilitar obrigatoriedade
+            document.getElementById('modalObrigatorio').disabled = isCampoFixo;
+
+            // Valor Fixo - sempre visível, mas só habilita quando Campo Fixo
+            const valorFixoInput = document.getElementById('modalValorFixo');
+            if (isCampoFixo) {
+                valorFixoInput.disabled = false;
+                valorFixoInput.placeholder = 'Digite o valor fixo';
+            } else {
+                valorFixoInput.disabled = true;
+                valorFixoInput.placeholder = 'Selecione "Campo Fixo" para habilitar';
+                valorFixoInput.value = '';
+            }
+
+            // Separador - sempre habilitado
+            document.getElementById('modalSeparador').disabled = false;
         }
 
         function renderFormulaUI() {
@@ -994,11 +1154,10 @@
 
             const isCampoFixo = document.getElementById('modalOrigem').value === 'Campo Fixo';
 
-            // Mostrar/esconder containers
-            document.getElementById('valorFixoContainer').style.display = isCampoFixo ? 'block' : 'none';
-            document.getElementById('camposSelecionadosContainer').style.display = isCampoFixo ? 'none' : 'block';
-
             if (isCampoFixo) {
+                chipsDiv.innerHTML = '<span style="color:#888; font-style:italic;">Campos desabilitados para valor fixo</span>';
+                document.getElementById('modalFormulaPreview').innerHTML =
+                    '<strong>Prévia da fórmula:</strong><br><span style="color:#888;">—</span>';
                 return;
             }
 
