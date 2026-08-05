@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocZ - Embarque de Metadados</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4">
+    </script>
     <style>
         :root {
             --default-font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -67,7 +68,7 @@
             max-height: 90vh;
             overflow-y: auto;
             padding: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
         .modal-header {
             display: flex;
@@ -107,7 +108,8 @@
             font-size: 12px;
             color: #374151;
         }
-        .field input, .field select {
+        .field input,
+        .field select {
             width: 100%;
             padding: 8px 12px;
             border: 1px solid #d1d5db;
@@ -116,12 +118,14 @@
             background: white;
             transition: border-color 0.2s;
         }
-        .field input:focus, .field select:focus {
+        .field input:focus,
+        .field select:focus {
             border-color: #3b82f6;
             outline: none;
             ring: 2px solid #3b82f6;
         }
-        .field input:disabled, .field select:disabled {
+        .field input:disabled,
+        .field select:disabled {
             background: #f3f4f6;
             cursor: not-allowed;
             opacity: 0.6;
@@ -171,8 +175,8 @@
         .pill:hover {
             background: #e5e7eb;
         }
-        .pill.disabled {
-            opacity: 0.4;
+        .pill-disabled {
+            opacity: 0.5;
             cursor: not-allowed;
             pointer-events: none;
         }
@@ -237,981 +241,980 @@
 </head>
 <body>
 
-<main class="h-full min-w-0 w-full overflow-x-hidden overflow-y-auto bg-zinc-100 px-3 py-4 sm:px-4 lg:px-8" aria-labelledby="embarque-title">
-  
-  <!-- CABEÇALHO -->
-  <div class="flex flex-col gap-3 border-b border-zinc-200 pb-3 md:flex-row md:items-center md:justify-between">
-    <div>
-      <h1 id="embarque-title" class="text-2xl font-semibold text-zinc-900 sm:text-3xl"> Embarque de Metadados </h1>
-      <p class="mt-1 text-sm text-zinc-500"> Configure regras, chaves e campos de metadados para exportação. </p>
-    </div>
-    <nav class="text-sm text-muted-foreground" aria-label="Breadcrumb">
-      <ol class="flex flex-wrap items-center gap-1">
-        <li class="flex items-center gap-1">
-          <a href="/Docz/app/painel" class="hover:underline hover:text-foreground text-foreground/70 transition-colors font-normal">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-          </a>
-          <span class="mx-1 text-foreground/40">/</span>
-        </li>
-        <li class="flex items-center gap-1">
-          <span class="text-zinc-500">Configuracoes</span>
-          <span class="mx-1 text-foreground/40">/</span>
-        </li>
-        <li class="flex items-center gap-1">
-          <span class="text-zinc-700 font-medium">Embarque de Metadados</span>
-        </li>
-      </ol>
-    </nav>
-  </div>
+    <main class="h-full min-w-0 w-full overflow-x-hidden overflow-y-auto bg-zinc-100 px-3 py-4 sm:px-4 lg:px-8" aria-labelledby="embarque-title">
 
-  <!-- DOIS CARDS -->
-  <div class="mt-6 grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-2">
-    
-    <!-- Card 1: Lista de Regras -->
-    <section class="min-w-0 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm flex flex-col" aria-labelledby="regras-title">
-      <header class="flex items-center justify-between gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-6">
-        <div class="flex min-w-0 items-center gap-3">
-          <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
-          </span>
-          <h2 id="regras-title" class="truncate text-lg font-semibold text-zinc-900"> Lista de Regras Cadastradas </h2>
-        </div>
-      </header>
-      
-      <ul class="divide-y divide-zinc-200 flex-1" id="ruleList" aria-label="Regras cadastradas"></ul>
-      
-      <div class="border-t border-zinc-200 p-4 sm:px-6 mt-auto">
-        <button type="button" id="newRuleBtn" class="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 px-4 py-3 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 12H3"></path><path d="M16 6H3"></path><path d="M16 18H3"></path><path d="M18 9v6"></path><path d="M21 12h-6"></path></svg> Nova regra dinâmica
-        </button>
-      </div>
-    </section>
-
-    <!-- Card 2: Configurações do Modelo de Dados -->
-    <section class="min-w-0 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm flex flex-col" aria-labelledby="configuracao-title">
-      <header class="flex items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-6">
-        <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-        </span>
-        <h2 id="configuracao-title" class="text-lg font-semibold text-zinc-900">Configurações do Modelo de Dados</h2>
-      </header>
-      
-      <form class="space-y-4 p-4 sm:p-6 flex-1" id="configForm" aria-describedby="regra-selecionada">
-        <p id="regra-selecionada" class="sr-only">Editando regra selecionada</p>
-        
-        <!-- Linha 1: Projeto + Valor da Chave -->
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            <span>Projeto</span>
-            <select id="projetoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-              <option disabled>Selecione um projeto</option>
-              <option>DEMO</option>
-              <option>Presi</option>
-              <option>GDI CONNECT</option>
-            </select>
-          </label>
-          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            <span>Nome da Regra</span>
-            <input type="text" id="valorChaveField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Informe o valor da chave">
-          </label>
-        </div>
-
-        <!-- Linha 2: Selecione o Campo do Projeto + Chave de Decisão -->
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            <span>Selecione o Campo do Projeto</span>
-            <select id="campoProjetoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-              <option disabled selected>Selecione um campo</option>
-              <option>Identificador SOS</option>
-<option value="c1">Identificador SOS - c1</option>
-<option value="c2">Localização - c2</option>
-<option value="c3">Status - c3</option>
-<option value="c4">Serviço - c4</option>
-<option value="c5">ID Cliente - c5</option>
-<option value="c6">Descrição - c6</option>
-<option value="c7">Departamento - c7</option>
-<option value="c8">Tipo Objeto - c8</option>
-<option value="c9">Lacre 01 - c9</option>
-<option value="c12">Número do Processo - c12</option>
-<option value="c13">Situação Processo - c13</option>
-<option value="c14">Volume - c14</option>
-<option value="c15">Anexo - c15</option>
-<option value="c16">Nome do interessado - c16</option>
-<option value="n1">Ano Inicial - n1</option>
-<option value="n2">Ano Final - n2</option>
-<option value="c17">Classificação - c17</option>
-<option value="c18">Fase Corrente - c18</option>
-<option value="c19">Fase Intermediária - c19</option>
-<option value="c20">Destinação Final - c20</option>
-<option value="data_criacao">Data Cadastro - data_criacao</option>
-            </select>
-          </label>
-          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            <span>Chave de Decisão</span>
-            <select id="chaveDecisaoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-              <option>Selecione uma chave</option>
-              <option>tipodocumento</option>
-              <option>TipologiaArquivo</option>
-            </select>
-          </label>
-        </div>
-
-        <!-- Linha 3: Selecionar + Campo Fixo -->
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            <span>Selecionar</span>
-            <select id="selecionarField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-              <option disabled selected>Selecione um tipo</option>
-              <option>1| Resolução</option>
-              <option>2| Contrato</option>
-              <option>3| Ofício</option>
-              <option>4| Portaria</option>
-            </select>
-          </label>
-          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            <span>Campo Fixo</span>
-            <select id="campoFixoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-              <option value="nao">Não</option>
-              <option value="sim">Sim</option>
-            </select>
-          </label>
-        </div>
-
-        <!-- Linha 3.5: Valor Fixo (aparece quando Campo Fixo = Sim) -->
-        <div id="valorFixoContainer" class="hidden grid grid-cols-1 gap-4 md:grid-cols-2">
-          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            <span>Valor Fixo</span>
-            <input type="text" id="valorFixoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Digite o valor fixo">
-          </label>
-        </div>
-
-        <hr class="border-zinc-200">
-
-        <!-- Linha 4: Checkboxes Validações -->
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
-            <input type="checkbox" id="exigirTipologia" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
-            <div class="card-content">
-              <span class="font-medium text-zinc-700">Exigir Tipologia do Arquivo</span>
-              <p class="text-xs text-zinc-500">Obriga a seleção da tipologia</p>
+        <!-- CABEÇALHO -->
+        <div class="flex flex-col gap-3 border-b border-zinc-200 pb-3 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 id="embarque-title" class="text-2xl font-semibold text-zinc-900 sm:text-3xl"> Embarque de Metadados </h1>
+                <p class="mt-1 text-sm text-zinc-500"> Configure regras, chaves e campos de metadados para exportação. </p>
             </div>
-          </label>
-          <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
-            <input type="checkbox" id="ativarValidacao" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
-            <div class="card-content">
-              <span class="font-medium text-zinc-700">Ativar Validação</span>
-              <p class="text-xs text-zinc-500">Valida os campos obrigatórios</p>
+            <nav class="text-sm text-muted-foreground" aria-label="Breadcrumb">
+                <ol class="flex flex-wrap items-center gap-1">
+                    <li class="flex items-center gap-1">
+                        <a href="/Docz/app/painel" class="hover:underline hover:text-foreground text-foreground/70 transition-colors font-normal">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                        </a>
+                        <span class="mx-1 text-foreground/40">/</span>
+                    </li>
+                    <li class="flex items-center gap-1">
+                        <span class="text-zinc-500">Configuracoes</span>
+                        <span class="mx-1 text-foreground/40">/</span>
+                    </li>
+                    <li class="flex items-center gap-1">
+                        <span class="text-zinc-700 font-medium">Embarque de Metadados</span>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- DOIS CARDS -->
+        <div class="mt-6 grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-2">
+
+            <!-- Card 1: Lista de Regras -->
+            <section class="min-w-0 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm flex flex-col" aria-labelledby="regras-title">
+                <header class="flex items-center justify-between gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-6">
+                    <div class="flex min-w-0 items-center gap-3">
+                        <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                        </span>
+                        <h2 id="regras-title" class="truncate text-lg font-semibold text-zinc-900"> Lista de Regras Cadastradas </h2>
+                    </div>
+                </header>
+
+                <ul class="divide-y divide-zinc-200 flex-1" id="ruleList" aria-label="Regras cadastradas"></ul>
+
+                <div class="border-t border-zinc-200 p-4 sm:px-6 mt-auto">
+                    <button type="button" id="newRuleBtn" class="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 px-4 py-3 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 12H3"></path><path d="M16 6H3"></path><path d="M16 18H3"></path><path d="M18 9v6"></path><path d="M21 12h-6"></path></svg> Nova regra dinâmica
+                    </button>
+                </div>
+            </section>
+
+            <!-- Card 2: Configurações do Modelo de Dados -->
+            <section class="min-w-0 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm flex flex-col" aria-labelledby="configuracao-title">
+                <header class="flex items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-6">
+                    <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+                    </span>
+                    <h2 id="configuracao-title" class="text-lg font-semibold text-zinc-900">Configurações do Modelo de Dados</h2>
+                </header>
+
+                <form class="space-y-4 p-4 sm:p-6 flex-1" id="configForm" aria-describedby="regra-selecionada">
+                    <p id="regra-selecionada" class="sr-only">Editando regra selecionada</p>
+
+                    <!-- Linha 1: Projeto + Valor da Chave -->
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+                            <span>Projeto</span>
+                            <select id="projetoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
+                                <option disabled>Selecione um projeto</option>
+                                <option>DEMO</option>
+                                <option>Presi</option>
+                                <option>GDI CONNECT</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+                            <span>Nome da Regra</span>
+                            <input type="text" id="valorChaveField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Informe o valor da chave">
+                        </label>
+                    </div>
+
+                    <!-- Linha 2: Selecione o Campo do Projeto + Chave de Decisão -->
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+                            <span>Selecione o Campo do Projeto</span>
+                            <select id="campoProjetoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
+                                <option disabled selected>Selecione um campo</option>
+                                <option>Identificador SOS</option>
+                                <option value="c1">Identificador SOS - c1</option>
+                                <option value="c2">Localização - c2</option>
+                                <option value="c3">Status - c3</option>
+                                <option value="c4">Serviço - c4</option>
+                                <option value="c5">ID Cliente - c5</option>
+                                <option value="c6">Descrição - c6</option>
+                                <option value="c7">Departamento - c7</option>
+                                <option value="c8">Tipo Objeto - c8</option>
+                                <option value="c9">Lacre 01 - c9</option>
+                                <option value="c12">Número do Processo - c12</option>
+                                <option value="c13">Situação Processo - c13</option>
+                                <option value="c14">Volume - c14</option>
+                                <option value="c15">Anexo - c15</option>
+                                <option value="c16">Nome do interessado - c16</option>
+                                <option value="n1">Ano Inicial - n1</option>
+                                <option value="n2">Ano Final - n2</option>
+                                <option value="c17">Classificação - c17</option>
+                                <option value="c18">Fase Corrente - c18</option>
+                                <option value="c19">Fase Intermediária - c19</option>
+                                <option value="c20">Destinação Final - c20</option>
+                                <option value="data_criacao">Data Cadastro - data_criacao</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+                            <span>Chave de Decisão</span>
+                            <select id="chaveDecisaoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
+                                <option>Selecione uma chave</option>
+                                <option>tipodocumento</option>
+                                <option>TipologiaArquivo</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <!-- Linha 3: Selecionar -->
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+                            <span>Selecionar</span>
+                            <select id="selecionarField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
+                                <option disabled selected>Selecione um tipo</option>
+                                <option>1| Resolução</option>
+                                <option>2| Contrato</option>
+                                <option>3| Ofício</option>
+                                <option>4| Portaria</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <hr class="border-zinc-200">
+
+                    <!-- Linha 4: Checkboxes Validações -->
+                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
+                            <input type="checkbox" id="exigirTipologia" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
+                            <div class="card-content">
+                                <span class="font-medium text-zinc-700">Exigir Tipologia do Arquivo</span>
+                                <p class="text-xs text-zinc-500">Obriga a seleção da tipologia</p>
+                            </div>
+                        </label>
+                        <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
+                            <input type="checkbox" id="ativarValidacao" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
+                            <div class="card-content">
+                                <span class="font-medium text-zinc-700">Ativar Validação</span>
+                                <p class="text-xs text-zinc-500">Valida os campos obrigatórios</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Linha 5: Checkboxes Assinatura -->
+                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
+                            <input type="checkbox" id="assinaturaUltimaPagina" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
+                            <div class="card-content">
+                                <span class="font-medium text-zinc-700">Assinatura na Última Página</span>
+                                <p class="text-xs text-zinc-500">Adiciona assinatura digital</p>
+                            </div>
+                        </label>
+                        <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
+                            <input type="checkbox" id="carimboTempo" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
+                            <div class="card-content">
+                                <span class="font-medium text-zinc-700">Carimbo de Tempo</span>
+                                <p class="text-xs text-zinc-500">Adiciona timestamp de validação</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <hr class="border-zinc-200">
+
+                    <!-- Linha 6: Status Final + Status da Regra -->
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+                            <span>Status Final</span>
+                            <select id="statusFinalField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
+                                <option disabled selected>Selecione um status</option>
+                                <option>Enviar para o SEI</option>
+                                <option>Enviar para o Eternal</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
+                            <span>Status da Regra</span>
+                            <select id="statusRegraField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
+                                <option>Ativa</option>
+                                <option>Rascunho</option>
+                                <option>Inativa</option>
+                            </select>
+                        </label>
+                    </div>
+
+                </form>
+            </section>
+
+        </div>
+
+        <!-- TABELA DE CAMPOS CONFIGURADOS -->
+        <section class="mt-6 min-w-0 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm" aria-labelledby="campos-title">
+            <header class="flex flex-col gap-4 border-b border-zinc-200 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-500" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        </span>
+                        <div>
+                            <h2 id="campos-title" class="text-lg font-semibold text-zinc-900"> Campos Configurados por esta Regra </h2>
+                            <p class="mt-1 text-sm text-zinc-500"> Preenchimento dinâmico conforme a tabela do tipo documental selecionado. </p>
+                        </div>
+                    </div>
+                </div>
+                <button id="addMetaBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer bg-green-500 hover:bg-green-600 text-white focus-visible:ring-green-400 w-full lg:w-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Adicionar Metadado
+                </button>
+            </header>
+
+            <div class="border-b border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-6">
+                <label class="flex max-w-sm flex-col gap-2 text-sm font-medium text-zinc-700">
+                    <span>Buscar metadado</span>
+                    <span class="relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input id="searchField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white pl-10 pr-3 text-sm outline-none transition focus:border-blue-500" placeholder="Filtrar..." aria-label="Filtrar campos configurados">
+                    </span>
+                </label>
             </div>
-          </label>
-        </div>
 
-        <!-- Linha 5: Checkboxes Assinatura -->
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
-            <input type="checkbox" id="assinaturaUltimaPagina" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
-            <div class="card-content">
-              <span class="font-medium text-zinc-700">Assinatura na Última Página</span>
-              <p class="text-xs text-zinc-500">Adiciona assinatura digital</p>
+            <div class="hidden min-w-0 overflow-x-auto md:block">
+                <table class="min-w-full divide-y divide-zinc-200 text-sm">
+                    <thead class="bg-zinc-50 text-left text-zinc-500">
+                        <tr>
+                            <th scope="col" class="px-5 py-4 font-bold">Metadado destino</th>
+                            <th scope="col" class="px-5 py-4 font-bold">Origem</th>
+                            <th scope="col" class="px-5 py-4 font-bold">Campo DocZ</th>
+                            <th scope="col" class="px-5 py-4 text-center font-bold">ID banco</th>
+                            <th scope="col" class="px-5 py-4 text-center font-bold">Valor fixo</th>
+                            <th scope="col" class="px-5 py-4 text-center font-bold">Nulos</th>
+                            <th scope="col" class="px-5 py-4 text-center font-bold">Obrig.</th>
+                            <th scope="col" class="px-5 py-4 text-center font-bold">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metaTable" class="divide-y divide-zinc-200 bg-white"></tbody>
+                </table>
             </div>
-          </label>
-          <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
-            <input type="checkbox" id="carimboTempo" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
-            <div class="card-content">
-              <span class="font-medium text-zinc-700">Carimbo de Tempo</span>
-              <p class="text-xs text-zinc-500">Adiciona timestamp de validação</p>
+
+            <div class="space-y-4 p-4 sm:p-6 md:hidden" id="mobileMetaCards"></div>
+
+            <footer class="flex flex-col gap-3 border-t border-zinc-200 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between">
+                <div class="text-sm text-zinc-500" aria-live="polite">
+                    <p id="paginationInfo">Exibindo 0-0 de 0 metadados</p>
+                    <p class="mt-0.5">Página <span id="currentPageDisplay">1</span> de <span id="totalPagesDisplay">1</span></p>
+                </div>
+                <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+                    <button id="prevPageBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-500 w-full sm:w-auto" disabled> Anterior </button>
+                    <button id="nextPageBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-500 w-full sm:w-auto" disabled> Próxima </button>
+                </div>
+            </footer>
+        </section>
+
+    </main>
+
+    <!-- MODAL ADICIONAR METADADO -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Metadado</h2>
+                <span class="modal-close" id="modalCloseBtn">×</span>
             </div>
-          </label>
+
+            <div class="info-strip">Defina o metadado de destino, a origem do valor e como o sistema deve tratar campos vazios, concatenação e obrigatoriedade.</div>
+
+            <div class="form-grid-3">
+                <div class="field">
+                    <label>Metadado destino *</label>
+                    <select id="modalDestino">
+                        <option>Assunto</option>
+                        <option>Título</option>
+                        <option>Autor (nome)</option>
+                        <option>Classe</option>
+                        <option>Data de produção</option>
+                        <option>Destinação final</option>
+                        <option>Prazo de guarda</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Origem do valor *</label>
+                    <select id="modalOrigem">
+                        <option>Campo Único</option>
+                        <option>Múltiplos Campos</option>
+                        <option>Campo Fixo</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Obrigatoriedade *</label>
+                    <select id="modalObrigatorio">
+                        <option>Sim</option>
+                        <option>Não</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Campo Fixo (exibido quando selecionado) -->
+            <div class="field" id="valorFixoContainer" style="display: none;">
+                <label>Valor Fixo *</label>
+                <input type="text" id="modalValorFixo" placeholder="Digite o valor fixo" class="w-full">
+            </div>
+
+            <div class="field">
+                <label>Separador da concatenação</label>
+                <select id="modalSeparador">
+                    <option>Pipe |</option>
+                    <option>Hífen -</option>
+                    <option>Barra /</option>
+                    <option>Vírgula ,</option>
+                    <option>Sem separador</option>
+                </select>
+            </div>
+
+            <div id="camposSelecionadosContainer">
+                <div class="field">
+                    <label>Campos selecionados para a fórmula</label>
+                    <div class="formula-box" id="modalFormulaChips"></div>
+                </div>
+
+                <div>
+                    <label>Campos disponíveis do DocZ</label>
+                    <div class="pill-list" id="modalAvailableFields"></div>
+                    <div class="formula-preview" id="modalFormulaPreview"></div>
+                </div>
+            </div>
+
+            <div class="form-grid-3" style="margin-top:16px">
+                <div class="field">
+                    <label>Tratamento de nulos *</label>
+                    <select id="modalNulos">
+                        <option>Ignorar nulos</option>
+                        <option>Substituir por valor padrão</option>
+                        <option>Bloquear gravação</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Valor padrão para nulos</label>
+                    <input id="modalValorPadrao" placeholder="Ex.: NÃO INFORMADO">
+                </div>
+                <div class="field">
+                    <label>Formato da saída</label>
+                    <select id="modalFormato">
+                        <option>Data - DD/MM/AAAA</option>
+                        <option>Caixa Alta (Maiúsculo)</option>
+                        <option>Caixa Baixa (Minúsculo)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="modalTrim" checked>
+                    <span>Aplicar Trim Automático (Remover espaços desnecessários)</span>
+                </label>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modalCancelBtn">Cancelar</button>
+                <button class="btn btn-primary" id="modalSaveBtn">Adicionar metadado</button>
+            </div>
         </div>
-
-        <hr class="border-zinc-200">
-
-        <!-- Linha 6: Status Final + Status da Regra -->
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            <span>Status Final</span>
-            <select id="statusFinalField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-              <option disabled selected>Selecione um status</option>
-              <option>Enviar para o SEI</option>
-              <option>Enviar para o Eternal</option>
-            </select>
-          </label>
-          <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-            <span>Status da Regra</span>
-            <select id="statusRegraField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-              <option>Ativa</option>
-              <option>Rascunho</option>
-              <option>Inativa</option>
-            </select>
-          </label>
-        </div>
-        
-      </form>
-    </section>
-
-  </div>
-
-  <!-- TABELA DE CAMPOS CONFIGURADOS -->
-  <section class="mt-6 min-w-0 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm" aria-labelledby="campos-title">
-    <header class="flex flex-col gap-4 border-b border-zinc-200 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
-      <div class="min-w-0">
-        <div class="flex items-center gap-3">
-          <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-500" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          </span>
-          <div>
-            <h2 id="campos-title" class="text-lg font-semibold text-zinc-900"> Campos Configurados por esta Regra </h2>
-            <p class="mt-1 text-sm text-zinc-500"> Preenchimento dinâmico conforme a tabela do tipo documental selecionado. </p>
-          </div>
-        </div>
-      </div>
-      <button id="addMetaBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer bg-green-500 hover:bg-green-600 text-white focus-visible:ring-green-400 w-full lg:w-auto">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Adicionar Metadado
-      </button>
-    </header>
-    
-    <div class="border-b border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-6">
-      <label class="flex max-w-sm flex-col gap-2 text-sm font-medium text-zinc-700">
-        <span>Buscar metadado</span>
-        <span class="relative">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input id="searchField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white pl-10 pr-3 text-sm outline-none transition focus:border-blue-500" placeholder="Filtrar..." aria-label="Filtrar campos configurados">
-        </span>
-      </label>
     </div>
 
-    <div class="hidden min-w-0 overflow-x-auto md:block">
-      <table class="min-w-full divide-y divide-zinc-200 text-sm">
-        <thead class="bg-zinc-50 text-left text-zinc-500">
-          <tr>
-            <th scope="col" class="px-5 py-4 font-bold">Metadado destino</th>
-            <th scope="col" class="px-5 py-4 font-bold">Origem</th>
-            <th scope="col" class="px-5 py-4 font-bold">Campo DocZ</th>
-            <th scope="col" class="px-5 py-4 text-center font-bold">ID banco</th>
-            <th scope="col" class="px-5 py-4 text-center font-bold">Valor fixo</th>
-            <th scope="col" class="px-5 py-4 text-center font-bold">Nulos</th>
-            <th scope="col" class="px-5 py-4 text-center font-bold">Obrig.</th>
-            <th scope="col" class="px-5 py-4 text-center font-bold">Ação</th>
-          </tr>
-        </thead>
-        <tbody id="metaTable" class="divide-y divide-zinc-200 bg-white"></tbody>
-      </table>
-    </div>
+    <script>
+        // ===== DADOS =====
+        const doczFieldIds = {
+            'Tipo Documental': 'C1',
+            'Nome do Paciente': 'C2',
+            'Nome da Mãe': 'C3',
+            'Data do Atendimento': 'C4',
+            'Número da Guia': 'C5',
+            'Médico Responsável': 'C6',
+            'Código de classificação': 'C7',
+            'Destinação final': 'C8',
+            'Prazo de guarda': 'C9',
+            'Data da Última Movimentação': 'C10',
+            'Nome do Servidor': 'C11',
+            'Unidade de Saúde': 'C12',
+            'Matrícula': 'C13',
+            'Órgão': 'C14',
+            'Setor': 'C15'
+        };
 
-    <div class="space-y-4 p-4 sm:p-6 md:hidden" id="mobileMetaCards"></div>
+        const withDoczIds = (fields) => fields.map(label => ({ label, id: doczFieldIds[label] || 'C0' }));
 
-    <footer class="flex flex-col gap-3 border-t border-zinc-200 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between">
-      <div class="text-sm text-zinc-500" aria-live="polite">
-        <p id="paginationInfo">Exibindo 0-0 de 0 metadados</p>
-        <p class="mt-0.5">Página <span id="currentPageDisplay">1</span> de <span id="totalPagesDisplay">1</span></p>
-      </div>
-      <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-        <button id="prevPageBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-500 w-full sm:w-auto" disabled> Anterior </button>
-        <button id="nextPageBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-500 w-full sm:w-auto" disabled> Próxima </button>
-      </div>
-    </footer>
-  </section>
+        let rules = [{
+            id: 1,
+            nome: 'Regra Generica',
+            status: 'Ativa',
+            metadados: 3,
+            projeto: 'DEMO',
+            valorChave: 'VALUE001',
+            campoProjeto: 'Nome do Paciente',
+            chaveDecisao: 'tipodocumento',
+            selecionar: '1| Resolução',
+            exigirTipologia: false,
+            ativarValidacao: true,
+            assinaturaUltimaPagina: false,
+            carimboTempo: false,
+            statusFinal: 'Enviar para o SEI',
+            statusRegra: 'Ativa',
+            rows: [
+                ['Autor (nome)', 'Campo unico', 'Identificador SOS', 'C7', '—', 'Ignorar nulos', 'Sim'],
+                ['Assunto', 'Campo unico', 'Identificador SOS', 'C10', '—', 'Ignorar nulos', 'Sim'],
+                ['Autor (nome)', 'Concatenacao dinamica', 'Identificador SOS + Localização + Status', 'C11', '—',
+                    'Ignorar nulos', 'Sim'
+                ]
+            ]
+        }, {
+            id: 2,
+            nome: 'Regra Fábio',
+            status: 'Ativa',
+            metadados: 2,
+            projeto: 'Presi',
+            valorChave: 'VALUE002',
+            campoProjeto: 'Número da Guia',
+            chaveDecisao: 'TipologiaArquivo',
+            selecionar: '2| Contrato',
+            exigirTipologia: true,
+            ativarValidacao: false,
+            assinaturaUltimaPagina: true,
+            carimboTempo: false,
+            statusFinal: 'Enviar para o Eternal',
+            statusRegra: 'Ativa',
+            rows: [
+                ['Título', 'Campo unico', 'Número da Guia', 'C5', '—', 'Ignorar nulos', 'Sim'],
+                ['Classe', 'Preenchimento manual', 'Código de classificação', 'C7', '—', 'Ignorar nulos', 'Sim']
+            ]
+        }];
 
-</main>
+        let currentRuleId = 1;
+        let currentPage = 1;
+        const itemsPerPage = 5;
 
-<!-- MODAL ADICIONAR METADADO -->
-<div id="modalOverlay" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Adicionar Metadado</h2>
-      <span class="modal-close" id="modalCloseBtn">×</span>
-    </div>
-    
-    <div class="info-strip">Defina o metadado de destino, a origem do valor e como o sistema deve tratar campos vazios, concatenação e obrigatoriedade.</div>
-    
-    <div class="form-grid-3">
-      <div class="field">
-        <label>Metadado destino *</label>
-        <select id="modalDestino">
-          <option>Assunto</option>
-          <option>Título</option>
-          <option>Autor (nome)</option>
-          <option>Classe</option>
-          <option>Data de produção</option>
-          <option>Destinação final</option>
-          <option>Prazo de guarda</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Origem do valor *</label>
-        <select id="modalOrigem">
-          <option>Campo Único</option>
-          <option>Múltiplos Campos</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Obrigatoriedade *</label>
-        <select id="modalObrigatorio">
-          <option>Sim</option>
-          <option>Não</option>
-        </select>
-      </div>
-    </div>
-    
-    <div class="field">
-      <label>Separador da concatenação</label>
-      <select id="modalSeparador">
-        <option>Pipe |</option>
-        <option>Hífen -</option>
-        <option>Barra /</option>
-        <option>Vírgula ,</option>
-        <option>Sem separador</option>
-      </select>
-    </div>
-    
-    <div>
-      <div class="field">
-        <label>Campos selecionados para a fórmula</label>
-        <div class="formula-box" id="modalFormulaChips"></div>
-      </div>
-    </div>
-    
-    <div>
-      <label>Campos disponíveis do DocZ</label>
-      <div class="pill-list" id="modalAvailableFields"></div>
-      <div class="formula-preview" id="modalFormulaPreview"></div>
-    </div>
-    
-    <div class="form-grid-3" style="margin-top:16px">
-      <div class="field">
-        <label>Tratamento de nulos *</label>
-        <select id="modalNulos">
-          <option>Ignorar nulos</option>
-          <option>Substituir por valor padrão</option>
-          <option>Bloquear gravação</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Valor padrão para nulos</label>
-        <input id="modalValorPadrao" placeholder="Ex.: NÃO INFORMADO">
-      </div>
-      <div class="field">
-        <label>Formato da saída</label>
-        <select id="modalFormato">
-          <option>Data - DD/MM/AAAA</option>
-          <option>Caixa Alta (Maiúsculo)</option>
-          <option>Caixa Baixa (Minúsculo)</option>
-        </select>
-      </div>
-    </div>
-    
-    <div class="field">
-      <label class="flex items-center gap-2 cursor-pointer">
-        <input type="checkbox" id="modalTrim" checked> 
-        <span>Aplicar Trim Automático (Remover espaços desnecessários)</span>
-      </label>
-    </div>
-    
-    <div class="modal-footer">
-      <button class="btn btn-secondary" id="modalCancelBtn">Cancelar</button>
-      <button class="btn btn-primary" id="modalSaveBtn">Adicionar metadado</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ===== DADOS =====
-const doczFieldIds = {
-  'Tipo Documental': 'C1',
-  'Nome do Paciente': 'C2',
-  'Nome da Mãe': 'C3',
-  'Data do Atendimento': 'C4',
-  'Número da Guia': 'C5',
-  'Médico Responsável': 'C6',
-  'Código de classificação': 'C7',
-  'Destinação final': 'C8',
-  'Prazo de guarda': 'C9',
-  'Data da Última Movimentação': 'C10',
-  'Nome do Servidor': 'C11',
-  'Unidade de Saúde': 'C12',
-  'Matrícula': 'C13',
-  'Órgão': 'C14',
-  'Setor': 'C15'
-};
-
-const withDoczIds = (fields) => fields.map(label => ({ label, id: doczFieldIds[label] || 'C0' }));
-
-let rules = [
-  {
-    id: 1,
-    nome: 'Regra Generica',
-    status: 'Ativa',
-    metadados: 3,
-    projeto: 'DEMO',
-    valorChave: 'VALUE001',
-    campoProjeto: 'Nome do Paciente',
-    chaveDecisao: 'tipodocumento',
-    selecionar: '1| Resolução',
-    campoFixo: 'nao',
-    valorFixo: '',
-    exigirTipologia: false,
-    ativarValidacao: true,
-    assinaturaUltimaPagina: false,
-    carimboTempo: false,
-    statusFinal: 'Enviar para o SEI',
-    statusRegra: 'Ativa',
-    rows: [
-      ['Autor (nome)', 'Campo unico', 'Identificador SOS', 'C7', '—', 'Ignorar nulos', 'Sim'],
-      ['Assunto', 'Campo unico', 'Identificador SOS', 'C10', '—', 'Ignorar nulos', 'Sim'],
-      ['Autor (nome)', 'Concatenacao dinamica', 'Identificador SOS + Localização + Status', 'C11', '—', 'Ignorar nulos', 'Sim']
-    ]
-  },
-  {
-    id: 2,
-    nome: 'Regra Fábio',
-    status: 'Ativa',
-    metadados: 2,
-    projeto: 'Presi',
-    valorChave: 'VALUE002',
-    campoProjeto: 'Número da Guia',
-    chaveDecisao: 'TipologiaArquivo',
-    selecionar: '2| Contrato',
-    campoFixo: 'sim',
-    valorFixo: 'Valor Fixo Exemplo',
-    exigirTipologia: true,
-    ativarValidacao: false,
-    assinaturaUltimaPagina: true,
-    carimboTempo: false,
-    statusFinal: 'Enviar para o Eternal',
-    statusRegra: 'Ativa',
-    rows: [
-      ['Título', 'Campo unico', 'Número da Guia', 'C5', '—', 'Ignorar nulos', 'Sim'],
-      ['Classe', 'Preenchimento manual', 'Código de classificação', 'C7', '—', 'Ignorar nulos', 'Sim']
-    ]
-  }
-];
-
-let currentRuleId = 1;
-let currentPage = 1;
-const itemsPerPage = 5;
-
-// ===== RENDER =====
-function getRule(id) {
-  return rules.find(r => r.id === id);
-}
-
-function getCurrentRule() {
-  return getRule(currentRuleId);
-}
-
-function renderRules() {
-  const container = document.getElementById('ruleList');
-  container.innerHTML = '';
-  
-  rules.forEach(rule => {
-    const isActive = rule.id === currentRuleId;
-    const li = document.createElement('li');
-    li.className = `flex items-stretch border-l-4 ${isActive ? 'border-lime-500 bg-lime-50/60' : 'border-transparent bg-white'}`;
-    
-    li.innerHTML = `
-      <button type="button" class="flex min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left transition hover:bg-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset sm:px-6" data-rule-id="${rule.id}">
-        <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-blue-600">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
-        </span>
-        <span class="min-w-0 flex-1">
-          <span class="flex flex-wrap items-center gap-2">
-            <span class="font-semibold text-blue-700">${rule.nome}</span>
-            <span class="bg-emerald-100 text-emerald-700 border border-emerald-200 inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold">${rule.status.toUpperCase()}</span>
-          </span>
-          <span class="mt-1 block text-sm italic text-zinc-500">${rule.metadados} metadados mapeados</span>
-        </span>
-      </button>
-      <button type="button" class="delete-rule inline-flex w-14 shrink-0 items-center justify-center text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-inset" data-rule-id="${rule.id}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-      </button>
-    `;
-    
-    container.appendChild(li);
-  });
-  
-  // Event listeners
-  document.querySelectorAll('[data-rule-id]').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      if (e.target.closest('.delete-rule')) return;
-      const id = parseInt(this.dataset.ruleId);
-      currentRuleId = id;
-      renderAll();
-    });
-  });
-  
-  document.querySelectorAll('.delete-rule').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const id = parseInt(this.dataset.ruleId);
-      if (confirm(`Remover regra "${getRule(id).nome}"?`)) {
-        rules = rules.filter(r => r.id !== id);
-        if (currentRuleId === id) {
-          currentRuleId = rules.length > 0 ? rules[0].id : null;
+        // ===== RENDER =====
+        function getRule(id) {
+            return rules.find(r => r.id === id);
         }
+
+        function getCurrentRule() {
+            return getRule(currentRuleId);
+        }
+
+        function renderRules() {
+            const container = document.getElementById('ruleList');
+            container.innerHTML = '';
+
+            rules.forEach(rule => {
+                const isActive = rule.id === currentRuleId;
+                const li = document.createElement('li');
+                li.className =
+                    `flex items-stretch border-l-4 ${isActive ? 'border-lime-500 bg-lime-50/60' : 'border-transparent bg-white'}`;
+
+                li.innerHTML = `
+                    <button type="button" class="flex min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left transition hover:bg-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset sm:px-6" data-rule-id="${rule.id}">
+                        <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-blue-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
+                        </span>
+                        <span class="min-w-0 flex-1">
+                            <span class="flex flex-wrap items-center gap-2">
+                                <span class="font-semibold text-blue-700">${rule.nome}</span>
+                                <span class="bg-emerald-100 text-emerald-700 border border-emerald-200 inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold">${rule.status.toUpperCase()}</span>
+                            </span>
+                            <span class="mt-1 block text-sm italic text-zinc-500">${rule.metadados} metadados mapeados</span>
+                        </span>
+                    </button>
+                    <button type="button" class="delete-rule inline-flex w-14 shrink-0 items-center justify-center text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-inset" data-rule-id="${rule.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                    </button>
+                `;
+
+                container.appendChild(li);
+            });
+
+            // Event listeners
+            document.querySelectorAll('[data-rule-id]').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    if (e.target.closest('.delete-rule')) return;
+                    const id = parseInt(this.dataset.ruleId);
+                    currentRuleId = id;
+                    renderAll();
+                });
+            });
+
+            document.querySelectorAll('.delete-rule').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = parseInt(this.dataset.ruleId);
+                    if (confirm(`Remover regra "${getRule(id).nome}"?`)) {
+                        rules = rules.filter(r => r.id !== id);
+                        if (currentRuleId === id) {
+                            currentRuleId = rules.length > 0 ? rules[0].id : null;
+                        }
+                        renderAll();
+                    }
+                });
+            });
+        }
+
+        function renderConfigForm() {
+            const rule = getCurrentRule();
+            if (!rule) return;
+
+            document.getElementById('projetoField').value = rule.projeto || '';
+            document.getElementById('valorChaveField').value = rule.valorChave || '';
+            document.getElementById('campoProjetoField').value = rule.campoProjeto || '';
+            document.getElementById('chaveDecisaoField').value = rule.chaveDecisao || '';
+            document.getElementById('selecionarField').value = rule.selecionar || '';
+            document.getElementById('exigirTipologia').checked = rule.exigirTipologia || false;
+            document.getElementById('ativarValidacao').checked = rule.ativarValidacao || false;
+            document.getElementById('assinaturaUltimaPagina').checked = rule.assinaturaUltimaPagina || false;
+            document.getElementById('carimboTempo').checked = rule.carimboTempo || false;
+            document.getElementById('statusFinalField').value = rule.statusFinal || '';
+            document.getElementById('statusRegraField').value = rule.statusRegra || 'Ativa';
+        }
+
+        function saveConfigForm() {
+            const rule = getCurrentRule();
+            if (!rule) return;
+
+            rule.projeto = document.getElementById('projetoField').value;
+            rule.valorChave = document.getElementById('valorChaveField').value;
+            rule.campoProjeto = document.getElementById('campoProjetoField').value;
+            rule.chaveDecisao = document.getElementById('chaveDecisaoField').value;
+            rule.selecionar = document.getElementById('selecionarField').value;
+            rule.exigirTipologia = document.getElementById('exigirTipologia').checked;
+            rule.ativarValidacao = document.getElementById('ativarValidacao').checked;
+            rule.assinaturaUltimaPagina = document.getElementById('assinaturaUltimaPagina').checked;
+            rule.carimboTempo = document.getElementById('carimboTempo').checked;
+            rule.statusFinal = document.getElementById('statusFinalField').value;
+            rule.statusRegra = document.getElementById('statusRegraField').value;
+        }
+
+        // Event listeners para salvar automaticamente
+        document.querySelectorAll('#configForm input, #configForm select').forEach(el => {
+            el.addEventListener('change', saveConfigForm);
+            el.addEventListener('input', saveConfigForm);
+        });
+
+        function renderTable() {
+            const rule = getCurrentRule();
+            const tbody = document.getElementById('metaTable');
+            const mobileContainer = document.getElementById('mobileMetaCards');
+
+            if (!rule) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-zinc-500">Nenhuma regra selecionada</td></tr>';
+                mobileContainer.innerHTML = '<div class="text-center py-8 text-zinc-500">Nenhuma regra selecionada</div>';
+                return;
+            }
+
+            const rows = rule.rows || [];
+            const totalItems = rows.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = Math.min(start + itemsPerPage, totalItems);
+            const pageItems = rows.slice(start, end);
+
+            // Tabela desktop
+            tbody.innerHTML = '';
+            if (pageItems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-zinc-500">Nenhum metadado configurado</td></tr>';
+            } else {
+                pageItems.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-zinc-50';
+                    tr.innerHTML = `
+                        <th scope="row" class="px-5 py-4 font-semibold text-zinc-700">${row[0]}</th>
+                        <td class="px-5 py-4 text-zinc-700">${row[1]}</td>
+                        <td class="px-5 py-4 text-zinc-700">${row[2]}</td>
+                        <td class="px-5 py-4 text-center text-zinc-700">${row[3]}</td>
+                        <td class="px-5 py-4 text-center text-zinc-700">${row[4]}</td>
+                        <td class="px-5 py-4 text-center text-zinc-700">${row[5]}</td>
+                        <td class="px-5 py-4 text-center font-semibold text-blue-700">${row[6]}</td>
+                        <td class="px-5 py-4 text-center">
+                            <button type="button" class="delete-meta inline-flex h-9 w-9 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${start + pageItems.indexOf(row)}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Mobile cards
+            mobileContainer.innerHTML = '';
+            if (pageItems.length === 0) {
+                mobileContainer.innerHTML = '<div class="text-center py-8 text-zinc-500">Nenhum metadado configurado</div>';
+            } else {
+                pageItems.forEach((row, idx) => {
+                    const card = document.createElement('article');
+                    card.className = 'rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm';
+                    card.innerHTML = `
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="text-xs font-medium uppercase tracking-wide text-zinc-500">Metadado destino</p>
+                                <h3 class="break-words text-base font-semibold text-zinc-900">${row[0]}</h3>
+                            </div>
+                            <button type="button" class="delete-meta-mobile inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${start + idx}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                            </button>
+                        </div>
+                        <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-zinc-700 sm:grid-cols-2">
+                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Origem</dt><dd>${row[1]}</dd></div>
+                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Campo DocZ</dt><dd>${row[2]}</dd></div>
+                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">ID banco</dt><dd>${row[3]}</dd></div>
+                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Obrigatório</dt><dd class="font-semibold text-blue-700">${row[6]}</dd></div>
+                        </dl>
+                    `;
+                    mobileContainer.appendChild(card);
+                });
+            }
+
+            // Event listeners para deletar metadados
+            document.querySelectorAll('.delete-meta').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    deleteMeta(index);
+                });
+            });
+
+            document.querySelectorAll('.delete-meta-mobile').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    deleteMeta(index);
+                });
+            });
+
+            // Paginação
+            document.getElementById('paginationInfo').textContent =
+                `Exibindo ${totalItems > 0 ? start + 1 : 0}-${end} de ${totalItems} metadados`;
+            document.getElementById('currentPageDisplay').textContent = currentPage;
+            document.getElementById('totalPagesDisplay').textContent = totalPages;
+
+            document.getElementById('prevPageBtn').disabled = currentPage <= 1;
+            document.getElementById('nextPageBtn').disabled = currentPage >= totalPages;
+        }
+
+        function deleteMeta(index) {
+            const rule = getCurrentRule();
+            if (!rule) return;
+            if (confirm('Remover este metadado?')) {
+                rule.rows.splice(index, 1);
+                rule.metadados = rule.rows.length;
+                if (rule.metadados === 0) {
+                    rule.rows = [];
+                }
+                renderAll();
+            }
+        }
+
+        function renderAll() {
+            renderRules();
+            renderConfigForm();
+            renderTable();
+            renderRules(); // Re-render para atualizar contagem
+        }
+
+        // ===== PAGINAÇÃO =====
+        document.getElementById('prevPageBtn').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        });
+
+        document.getElementById('nextPageBtn').addEventListener('click', () => {
+            const rule = getCurrentRule();
+            if (rule && currentPage < Math.ceil(rule.rows.length / itemsPerPage)) {
+                currentPage++;
+                renderTable();
+            }
+        });
+
+        // ===== MODAL =====
+        let formulaFields = ['Tipo Documental', 'Nome do Paciente'];
+
+        function openModal() {
+            const rule = getCurrentRule();
+            if (!rule) {
+                alert('Selecione uma regra primeiro');
+                return;
+            }
+
+            formulaFields = ['Tipo Documental', 'Nome do Paciente'];
+            document.getElementById('modalDestino').value = 'Assunto';
+            document.getElementById('modalOrigem').value = 'Campo Único';
+            document.getElementById('modalObrigatorio').value = 'Sim';
+            document.getElementById('modalSeparador').value = 'Pipe |';
+            document.getElementById('modalNulos').value = 'Ignorar nulos';
+            document.getElementById('modalFormato').value = 'Texto simples';
+            document.getElementById('modalTrim').checked = true;
+            document.getElementById('modalValorPadrao').value = '';
+            document.getElementById('modalValorFixo').value = '';
+
+            // Resetar visibilidade
+            document.getElementById('valorFixoContainer').style.display = 'none';
+            document.getElementById('camposSelecionadosContainer').style.display = 'block';
+
+            renderModalFields();
+            renderFormulaUI();
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+        }
+
+        function renderModalFields() {
+            const container = document.getElementById('modalAvailableFields');
+            container.innerHTML = '';
+
+            const fields = ['Tipo Documental', 'Nome do Paciente', 'Nome da Mãe', 'Data do Atendimento',
+                'Número da Guia', 'Médico Responsável', 'Código de classificação',
+                'Destinação final', 'Prazo de guarda', 'Data da Última Movimentação',
+                'Nome do Servidor', 'Unidade de Saúde', 'Matrícula', 'Órgão', 'Setor'
+            ];
+
+            const origemSelecionada = document.getElementById('modalOrigem').value;
+            const isCampoFixo = origemSelecionada === 'Campo Fixo';
+
+            fields.forEach(label => {
+                const pill = document.createElement('div');
+                pill.className = `pill ${isCampoFixo ? 'pill-disabled' : ''}`;
+                pill.textContent = `${label} (${doczFieldIds[label] || 'C0'})`;
+                if (!isCampoFixo) {
+                    pill.onclick = () => {
+                        if (document.getElementById('modalOrigem').value === 'Campo Único') {
+                            formulaFields = [label];
+                        } else if (!formulaFields.includes(label)) {
+                            formulaFields.push(label);
+                        }
+                        renderFormulaUI();
+                    };
+                }
+                container.appendChild(pill);
+            });
+        }
+
+        function renderFormulaUI() {
+            const chipsDiv = document.getElementById('modalFormulaChips');
+            chipsDiv.innerHTML = '';
+
+            const isCampoFixo = document.getElementById('modalOrigem').value === 'Campo Fixo';
+
+            // Mostrar/esconder containers
+            document.getElementById('valorFixoContainer').style.display = isCampoFixo ? 'block' : 'none';
+            document.getElementById('camposSelecionadosContainer').style.display = isCampoFixo ? 'none' : 'block';
+
+            if (isCampoFixo) {
+                return;
+            }
+
+            formulaFields.forEach((f, i) => {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+                chip.innerHTML = `${i + 1}. ${f} <span>✕</span>`;
+                chip.onclick = () => {
+                    formulaFields.splice(i, 1);
+                    renderFormulaUI();
+                };
+                chipsDiv.appendChild(chip);
+            });
+
+            if (formulaFields.length === 0) {
+                chipsDiv.innerHTML = '<span style="color:#888;">Nenhum campo selecionado</span>';
+            }
+
+            const sepMap = {
+                'Pipe |': ' | ',
+                'Hífen -': ' - ',
+                'Barra /': ' / ',
+                'Vírgula ,': ', ',
+                'Sem separador': ''
+            };
+            const sep = sepMap[document.getElementById('modalSeparador').value] || ' | ';
+            document.getElementById('modalFormulaPreview').innerHTML =
+                `<strong>Prévia da fórmula:</strong><br>${formulaFields.join(sep) || '—'}`;
+        }
+
+        function saveModal() {
+            const rule = getCurrentRule();
+            if (!rule) return;
+
+            const destino = document.getElementById('modalDestino').value;
+            const origem = document.getElementById('modalOrigem').value;
+            const obrig = document.getElementById('modalObrigatorio').value;
+            const nulos = document.getElementById('modalNulos').value;
+
+            let campoDocz = '';
+            let idBanco = '';
+            let valorFixo = '';
+
+            if (origem === 'Campo Fixo') {
+                valorFixo = document.getElementById('modalValorFixo').value.trim();
+                if (!valorFixo) {
+                    alert('Por favor, informe um valor fixo.');
+                    return;
+                }
+                campoDocz = valorFixo;
+                idBanco = '—';
+            } else {
+                const separadorRaw = document.getElementById('modalSeparador').value;
+                const sepMap = {
+                    'Pipe |': ' | ',
+                    'Hífen -': ' - ',
+                    'Barra /': ' / ',
+                    'Vírgula ,': ', ',
+                    'Sem separador': ''
+                };
+                const separador = sepMap[separadorRaw] || ' ';
+                campoDocz = formulaFields.join(separador);
+                idBanco = formulaFields.map(f => doczFieldIds[f] || 'C0').filter(id => id).join(' + ') || '—';
+            }
+
+            const novaRow = [destino, origem, campoDocz, idBanco, valorFixo || '—', nulos, obrig];
+            rule.rows.unshift(novaRow);
+            rule.metadados = rule.rows.length;
+
+            closeModal();
+            renderAll();
+        }
+
+        // ===== EVENT LISTENERS =====
+        document.getElementById('addMetaBtn').addEventListener('click', openModal);
+        document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+        document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+        document.getElementById('modalSaveBtn').addEventListener('click', saveModal);
+
+        document.getElementById('modalOrigem').addEventListener('change', () => {
+            const origem = document.getElementById('modalOrigem').value;
+            const single = origem === 'Campo Único';
+            const isCampoFixo = origem === 'Campo Fixo';
+
+            if (single && formulaFields.length > 1) {
+                formulaFields = [formulaFields[0]];
+            }
+            if (isCampoFixo) {
+                formulaFields = [];
+            }
+
+            renderModalFields();
+            renderFormulaUI();
+        });
+
+        document.getElementById('modalSeparador').addEventListener('change', renderFormulaUI);
+
+        document.getElementById('newRuleBtn').addEventListener('click', () => {
+            const newId = Math.max(...rules.map(r => r.id)) + 1;
+            rules.push({
+                id: newId,
+                nome: `Nova Regra ${newId}`,
+                status: 'Rascunho',
+                metadados: 0,
+                projeto: 'DEMO',
+                valorChave: '',
+                campoProjeto: '',
+                chaveDecisao: '',
+                selecionar: '',
+                exigirTipologia: false,
+                ativarValidacao: false,
+                assinaturaUltimaPagina: false,
+                carimboTempo: false,
+                statusFinal: '',
+                statusRegra: 'Rascunho',
+                rows: []
+            });
+            currentRuleId = newId;
+            renderAll();
+        });
+
+        // ===== SEARCH =====
+        document.getElementById('searchField').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rule = getCurrentRule();
+            if (!rule) return;
+
+            const filtered = rule.rows.filter(row =>
+                row[0].toLowerCase().includes(searchTerm) ||
+                row[1].toLowerCase().includes(searchTerm) ||
+                row[2].toLowerCase().includes(searchTerm)
+            );
+
+            // Atualizar tabela com resultados filtrados
+            const tbody = document.getElementById('metaTable');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-zinc-500">Nenhum resultado encontrado</td></tr>';
+            } else {
+                filtered.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-zinc-50';
+                    tr.innerHTML = `
+                        <th scope="row" class="px-5 py-4 font-semibold text-zinc-700">${row[0]}</th>
+                        <td class="px-5 py-4 text-zinc-700">${row[1]}</td>
+                        <td class="px-5 py-4 text-zinc-700">${row[2]}</td>
+                        <td class="px-5 py-4 text-center text-zinc-700">${row[3]}</td>
+                        <td class="px-5 py-4 text-center text-zinc-700">${row[4]}</td>
+                        <td class="px-5 py-4 text-center text-zinc-700">${row[5]}</td>
+                        <td class="px-5 py-4 text-center font-semibold text-blue-700">${row[6]}</td>
+                        <td class="px-5 py-4 text-center">
+                            <button type="button" class="delete-meta inline-flex h-9 w-9 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${rule.rows.indexOf(row)}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Atualizar mobile
+            const mobileContainer = document.getElementById('mobileMetaCards');
+            mobileContainer.innerHTML = '';
+            if (filtered.length === 0) {
+                mobileContainer.innerHTML = '<div class="text-center py-8 text-zinc-500">Nenhum resultado encontrado</div>';
+            } else {
+                filtered.forEach((row, idx) => {
+                    const card = document.createElement('article');
+                    card.className = 'rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm';
+                    card.innerHTML = `
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="text-xs font-medium uppercase tracking-wide text-zinc-500">Metadado destino</p>
+                                <h3 class="break-words text-base font-semibold text-zinc-900">${row[0]}</h3>
+                            </div>
+                            <button type="button" class="delete-meta-mobile inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${rule.rows.indexOf(row)}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                            </button>
+                        </div>
+                        <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-zinc-700 sm:grid-cols-2">
+                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Origem</dt><dd>${row[1]}</dd></div>
+                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Campo DocZ</dt><dd>${row[2]}</dd></div>
+                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">ID banco</dt><dd>${row[3]}</dd></div>
+                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Obrigatório</dt><dd class="font-semibold text-blue-700">${row[6]}</dd></div>
+                        </dl>
+                    `;
+                    mobileContainer.appendChild(card);
+                });
+            }
+
+            // Re-add delete events
+            document.querySelectorAll('.delete-meta').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    deleteMeta(index);
+                });
+            });
+            document.querySelectorAll('.delete-meta-mobile').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    deleteMeta(index);
+                });
+            });
+        });
+
+        // ===== FECHAR MODAL CLICK OUTSIDE =====
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // ===== INICIALIZAR =====
         renderAll();
-      }
-    });
-  });
-}
-
-function renderConfigForm() {
-  const rule = getCurrentRule();
-  if (!rule) return;
-  
-  document.getElementById('projetoField').value = rule.projeto || '';
-  document.getElementById('valorChaveField').value = rule.valorChave || '';
-  document.getElementById('campoProjetoField').value = rule.campoProjeto || '';
-  document.getElementById('chaveDecisaoField').value = rule.chaveDecisao || '';
-  document.getElementById('selecionarField').value = rule.selecionar || '';
-  document.getElementById('campoFixoField').value = rule.campoFixo || 'nao';
-  document.getElementById('valorFixoField').value = rule.valorFixo || '';
-  document.getElementById('exigirTipologia').checked = rule.exigirTipologia || false;
-  document.getElementById('ativarValidacao').checked = rule.ativarValidacao || false;
-  document.getElementById('assinaturaUltimaPagina').checked = rule.assinaturaUltimaPagina || false;
-  document.getElementById('carimboTempo').checked = rule.carimboTempo || false;
-  document.getElementById('statusFinalField').value = rule.statusFinal || '';
-  document.getElementById('statusRegraField').value = rule.statusRegra || 'Ativa';
-  
-  // Controlar visibilidade do Valor Fixo
-  toggleValorFixo(rule.campoFixo === 'sim');
-}
-
-function toggleValorFixo(show) {
-  const container = document.getElementById('valorFixoContainer');
-  const fields = document.querySelectorAll('#selecionarField, #chaveDecisaoField, #campoProjetoField, #exigirTipologia, #ativarValidacao, #assinaturaUltimaPagina, #carimboTempo, #statusFinalField, #statusRegraField, #projetoField, #valorChaveField');
-  
-  if (show) {
-    container.classList.remove('hidden');
-    // Desabilitar todos os campos abaixo (exceto Valor Fixo)
-    fields.forEach(field => field.disabled = true);
-    // O campo Valor Fixo deve ficar habilitado
-    document.getElementById('valorFixoField').disabled = false;
-  } else {
-    container.classList.add('hidden');
-    fields.forEach(field => field.disabled = false);
-    document.getElementById('valorFixoField').disabled = true;
-  }
-}
-
-function saveConfigForm() {
-  const rule = getCurrentRule();
-  if (!rule) return;
-  
-  rule.projeto = document.getElementById('projetoField').value;
-  rule.valorChave = document.getElementById('valorChaveField').value;
-  rule.campoProjeto = document.getElementById('campoProjetoField').value;
-  rule.chaveDecisao = document.getElementById('chaveDecisaoField').value;
-  rule.selecionar = document.getElementById('selecionarField').value;
-  rule.campoFixo = document.getElementById('campoFixoField').value;
-  rule.valorFixo = document.getElementById('valorFixoField').value;
-  rule.exigirTipologia = document.getElementById('exigirTipologia').checked;
-  rule.ativarValidacao = document.getElementById('ativarValidacao').checked;
-  rule.assinaturaUltimaPagina = document.getElementById('assinaturaUltimaPagina').checked;
-  rule.carimboTempo = document.getElementById('carimboTempo').checked;
-  rule.statusFinal = document.getElementById('statusFinalField').value;
-  rule.statusRegra = document.getElementById('statusRegraField').value;
-}
-
-// Event listener para Campo Fixo
-document.getElementById('campoFixoField').addEventListener('change', function() {
-  const show = this.value === 'sim';
-  toggleValorFixo(show);
-  saveConfigForm();
-});
-
-// Event listeners para salvar automaticamente
-document.querySelectorAll('#configForm input, #configForm select').forEach(el => {
-  el.addEventListener('change', saveConfigForm);
-  el.addEventListener('input', saveConfigForm);
-});
-
-function renderTable() {
-  const rule = getCurrentRule();
-  const tbody = document.getElementById('metaTable');
-  const mobileContainer = document.getElementById('mobileMetaCards');
-  
-  if (!rule) {
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-zinc-500">Nenhuma regra selecionada</td></tr>';
-    mobileContainer.innerHTML = '<div class="text-center py-8 text-zinc-500">Nenhuma regra selecionada</div>';
-    return;
-  }
-  
-  const rows = rule.rows || [];
-  const totalItems = rows.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
-  
-  if (currentPage > totalPages) currentPage = totalPages;
-  
-  const start = (currentPage - 1) * itemsPerPage;
-  const end = Math.min(start + itemsPerPage, totalItems);
-  const pageItems = rows.slice(start, end);
-  
-  // Tabela desktop
-  tbody.innerHTML = '';
-  if (pageItems.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-zinc-500">Nenhum metadado configurado</td></tr>';
-  } else {
-    pageItems.forEach(row => {
-      const tr = document.createElement('tr');
-      tr.className = 'hover:bg-zinc-50';
-      tr.innerHTML = `
-        <th scope="row" class="px-5 py-4 font-semibold text-zinc-700">${row[0]}</th>
-        <td class="px-5 py-4 text-zinc-700">${row[1]}</td>
-        <td class="px-5 py-4 text-zinc-700">${row[2]}</td>
-        <td class="px-5 py-4 text-center text-zinc-700">${row[3]}</td>
-        <td class="px-5 py-4 text-center text-zinc-700">${row[4]}</td>
-        <td class="px-5 py-4 text-center text-zinc-700">${row[5]}</td>
-        <td class="px-5 py-4 text-center font-semibold text-blue-700">${row[6]}</td>
-        <td class="px-5 py-4 text-center">
-          <button type="button" class="delete-meta inline-flex h-9 w-9 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${start + pageItems.indexOf(row)}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
-          </button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-  
-  // Mobile cards
-  mobileContainer.innerHTML = '';
-  if (pageItems.length === 0) {
-    mobileContainer.innerHTML = '<div class="text-center py-8 text-zinc-500">Nenhum metadado configurado</div>';
-  } else {
-    pageItems.forEach((row, idx) => {
-      const card = document.createElement('article');
-      card.className = 'rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm';
-      card.innerHTML = `
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <p class="text-xs font-medium uppercase tracking-wide text-zinc-500">Metadado destino</p>
-            <h3 class="break-words text-base font-semibold text-zinc-900">${row[0]}</h3>
-          </div>
-          <button type="button" class="delete-meta-mobile inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${start + idx}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-          </button>
-        </div>
-        <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-zinc-700 sm:grid-cols-2">
-          <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Origem</dt><dd>${row[1]}</dd></div>
-          <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Campo DocZ</dt><dd>${row[2]}</dd></div>
-          <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">ID banco</dt><dd>${row[3]}</dd></div>
-          <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Obrigatório</dt><dd class="font-semibold text-blue-700">${row[6]}</dd></div>
-        </dl>
-      `;
-      mobileContainer.appendChild(card);
-    });
-  }
-  
-  // Event listeners para deletar metadados
-  document.querySelectorAll('.delete-meta').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const index = parseInt(this.dataset.index);
-      deleteMeta(index);
-    });
-  });
-  
-  document.querySelectorAll('.delete-meta-mobile').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const index = parseInt(this.dataset.index);
-      deleteMeta(index);
-    });
-  });
-  
-  // Paginação
-  document.getElementById('paginationInfo').textContent = `Exibindo ${totalItems > 0 ? start + 1 : 0}-${end} de ${totalItems} metadados`;
-  document.getElementById('currentPageDisplay').textContent = currentPage;
-  document.getElementById('totalPagesDisplay').textContent = totalPages;
-  
-  document.getElementById('prevPageBtn').disabled = currentPage <= 1;
-  document.getElementById('nextPageBtn').disabled = currentPage >= totalPages;
-}
-
-function deleteMeta(index) {
-  const rule = getCurrentRule();
-  if (!rule) return;
-  if (confirm('Remover este metadado?')) {
-    rule.rows.splice(index, 1);
-    rule.metadados = rule.rows.length;
-    if (rule.metadados === 0) {
-      rule.rows = [];
-    }
-    renderAll();
-  }
-}
-
-function renderAll() {
-  renderRules();
-  renderConfigForm();
-  renderTable();
-  renderRules(); // Re-render para atualizar contagem
-}
-
-// ===== PAGINAÇÃO =====
-document.getElementById('prevPageBtn').addEventListener('click', () => {
-  if (currentPage > 1) {
-    currentPage--;
-    renderTable();
-  }
-});
-
-document.getElementById('nextPageBtn').addEventListener('click', () => {
-  const rule = getCurrentRule();
-  if (rule && currentPage < Math.ceil(rule.rows.length / itemsPerPage)) {
-    currentPage++;
-    renderTable();
-  }
-});
-
-// ===== MODAL =====
-let formulaFields = ['Tipo Documental', 'Nome do Paciente'];
-
-function openModal() {
-  const rule = getCurrentRule();
-  if (!rule) {
-    alert('Selecione uma regra primeiro');
-    return;
-  }
-  
-  formulaFields = ['Tipo Documental', 'Nome do Paciente'];
-  document.getElementById('modalDestino').value = 'Assunto';
-  document.getElementById('modalOrigem').value = 'Múltiplos Campos';
-  document.getElementById('modalObrigatorio').value = 'Sim';
-  document.getElementById('modalSeparador').value = 'Pipe |';
-  document.getElementById('modalNulos').value = 'Ignorar nulos';
-  document.getElementById('modalFormato').value = 'Texto simples';
-  document.getElementById('modalTrim').checked = true;
-  document.getElementById('modalValorPadrao').value = '';
-  
-  renderModalFields();
-  renderFormulaUI();
-  document.getElementById('modalOverlay').classList.add('show');
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('show');
-}
-
-function renderModalFields() {
-  const container = document.getElementById('modalAvailableFields');
-  container.innerHTML = '';
-  
-  const fields = ['Tipo Documental', 'Nome do Paciente', 'Nome da Mãe', 'Data do Atendimento', 
-                  'Número da Guia', 'Médico Responsável', 'Código de classificação', 
-                  'Destinação final', 'Prazo de guarda', 'Data da Última Movimentação',
-                  'Nome do Servidor', 'Unidade de Saúde', 'Matrícula', 'Órgão', 'Setor'];
-  
-  fields.forEach(label => {
-    const pill = document.createElement('div');
-    pill.className = 'pill';
-    pill.textContent = `${label} (${doczFieldIds[label] || 'C0'})`;
-    pill.onclick = () => {
-      if (document.getElementById('modalOrigem').value === 'Campo Único') {
-        formulaFields = [label];
-      } else if (!formulaFields.includes(label)) {
-        formulaFields.push(label);
-      }
-      renderFormulaUI();
-    };
-    container.appendChild(pill);
-  });
-}
-
-function renderFormulaUI() {
-  const chipsDiv = document.getElementById('modalFormulaChips');
-  chipsDiv.innerHTML = '';
-  
-  formulaFields.forEach((f, i) => {
-    const chip = document.createElement('div');
-    chip.className = 'chip';
-    chip.innerHTML = `${i + 1}. ${f} <span>✕</span>`;
-    chip.onclick = () => {
-      formulaFields.splice(i, 1);
-      renderFormulaUI();
-    };
-    chipsDiv.appendChild(chip);
-  });
-  
-  if (formulaFields.length === 0) {
-    chipsDiv.innerHTML = '<span style="color:#888;">Nenhum campo selecionado</span>';
-  }
-  
-  const sepMap = {
-    'Pipe |': ' | ',
-    'Hífen -': ' - ',
-    'Barra /': ' / ',
-    'Vírgula ,': ', ',
-    'Sem separador': ''
-  };
-  const sep = sepMap[document.getElementById('modalSeparador').value] || ' | ';
-  document.getElementById('modalFormulaPreview').innerHTML = 
-    `<strong>Prévia da fórmula:</strong><br>${formulaFields.join(sep) || '—'}`;
-}
-
-function saveModal() {
-  const rule = getCurrentRule();
-  if (!rule) return;
-  
-  const destino = document.getElementById('modalDestino').value;
-  const origem = document.getElementById('modalOrigem').value;
-  const obrig = document.getElementById('modalObrigatorio').value;
-  const nulos = document.getElementById('modalNulos').value;
-  const separadorRaw = document.getElementById('modalSeparador').value;
-  const sepMap = {
-    'Pipe |': ' | ',
-    'Hífen -': ' - ',
-    'Barra /': ' / ',
-    'Vírgula ,': ', ',
-    'Sem separador': ''
-  };
-  const separador = sepMap[separadorRaw] || ' ';
-  
-  const campoDocz = formulaFields.join(separador);
-  const idBanco = formulaFields.map(f => doczFieldIds[f] || 'C0').filter(id => id).join(' + ') || '—';
-  const novaRow = [destino, origem, campoDocz, idBanco, '—', nulos, obrig];
-  
-  rule.rows.unshift(novaRow);
-  rule.metadados = rule.rows.length;
-  
-  closeModal();
-  renderAll();
-}
-
-// ===== EVENT LISTENERS =====
-document.getElementById('addMetaBtn').addEventListener('click', openModal);
-document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
-document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
-document.getElementById('modalSaveBtn').addEventListener('click', saveModal);
-
-document.getElementById('modalOrigem').addEventListener('change', () => {
-  const single = document.getElementById('modalOrigem').value === 'Campo Único';
-  if (single && formulaFields.length > 1) {
-    formulaFields = [formulaFields[0]];
-  }
-  renderFormulaUI();
-});
-
-document.getElementById('modalSeparador').addEventListener('change', renderFormulaUI);
-
-document.getElementById('newRuleBtn').addEventListener('click', () => {
-  const newId = Math.max(...rules.map(r => r.id)) + 1;
-  rules.push({
-    id: newId,
-    nome: `Nova Regra ${newId}`,
-    status: 'Rascunho',
-    metadados: 0,
-    projeto: 'DEMO',
-    valorChave: '',
-    campoProjeto: '',
-    chaveDecisao: '',
-    selecionar: '',
-    campoFixo: 'nao',
-    valorFixo: '',
-    exigirTipologia: false,
-    ativarValidacao: false,
-    assinaturaUltimaPagina: false,
-    carimboTempo: false,
-    statusFinal: '',
-    statusRegra: 'Rascunho',
-    rows: []
-  });
-  currentRuleId = newId;
-  renderAll();
-});
-
-// ===== SEARCH =====
-document.getElementById('searchField').addEventListener('input', function() {
-  const searchTerm = this.value.toLowerCase();
-  const rule = getCurrentRule();
-  if (!rule) return;
-  
-  const filtered = rule.rows.filter(row => 
-    row[0].toLowerCase().includes(searchTerm) ||
-    row[1].toLowerCase().includes(searchTerm) ||
-    row[2].toLowerCase().includes(searchTerm)
-  );
-  
-  // Atualizar tabela com resultados filtrados
-  const tbody = document.getElementById('metaTable');
-  tbody.innerHTML = '';
-  
-  if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-zinc-500">Nenhum resultado encontrado</td></tr>';
-  } else {
-    filtered.forEach(row => {
-      const tr = document.createElement('tr');
-      tr.className = 'hover:bg-zinc-50';
-      tr.innerHTML = `
-        <th scope="row" class="px-5 py-4 font-semibold text-zinc-700">${row[0]}</th>
-        <td class="px-5 py-4 text-zinc-700">${row[1]}</td>
-        <td class="px-5 py-4 text-zinc-700">${row[2]}</td>
-        <td class="px-5 py-4 text-center text-zinc-700">${row[3]}</td>
-        <td class="px-5 py-4 text-center text-zinc-700">${row[4]}</td>
-        <td class="px-5 py-4 text-center text-zinc-700">${row[5]}</td>
-        <td class="px-5 py-4 text-center font-semibold text-blue-700">${row[6]}</td>
-        <td class="px-5 py-4 text-center">
-          <button type="button" class="delete-meta inline-flex h-9 w-9 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${rule.rows.indexOf(row)}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
-          </button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-  
-  // Atualizar mobile
-  const mobileContainer = document.getElementById('mobileMetaCards');
-  mobileContainer.innerHTML = '';
-  if (filtered.length === 0) {
-    mobileContainer.innerHTML = '<div class="text-center py-8 text-zinc-500">Nenhum resultado encontrado</div>';
-  } else {
-    filtered.forEach((row, idx) => {
-      const card = document.createElement('article');
-      card.className = 'rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm';
-      card.innerHTML = `
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <p class="text-xs font-medium uppercase tracking-wide text-zinc-500">Metadado destino</p>
-            <h3 class="break-words text-base font-semibold text-zinc-900">${row[0]}</h3>
-          </div>
-          <button type="button" class="delete-meta-mobile inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${rule.rows.indexOf(row)}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-          </button>
-        </div>
-        <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-zinc-700 sm:grid-cols-2">
-          <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Origem</dt><dd>${row[1]}</dd></div>
-          <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Campo DocZ</dt><dd>${row[2]}</dd></div>
-          <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">ID banco</dt><dd>${row[3]}</dd></div>
-          <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Obrigatório</dt><dd class="font-semibold text-blue-700">${row[6]}</dd></div>
-        </dl>
-      `;
-      mobileContainer.appendChild(card);
-    });
-  }
-  
-  // Re-add delete events
-  document.querySelectorAll('.delete-meta').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const index = parseInt(this.dataset.index);
-      deleteMeta(index);
-    });
-  });
-  document.querySelectorAll('.delete-meta-mobile').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const index = parseInt(this.dataset.index);
-      deleteMeta(index);
-    });
-  });
-});
-
-// ===== FECHAR MODAL CLICK OUTSIDE =====
-document.getElementById('modalOverlay').addEventListener('click', function(e) {
-  if (e.target === this) {
-    closeModal();
-  }
-});
-
-// ===== INICIALIZAR =====
-renderAll();
-</script>
+    </script>
 
 </body>
 </html>
