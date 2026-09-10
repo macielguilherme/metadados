@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocZ — Embarque de Metadados</title>
+    <style>
+        :root {
+            --blue: #0b57e3;
+            --green: #08bf63;
+            --green-dark: #069c51;
+            --lime: #66db23;
+            --ink: #202124;
+            --muted: #727780;
+            --line: #dfe2e7;
+            --surface: #fff;
+            --surface-soft: #f7f7f8;
+            --canvas: #f4f4f5;
+            --danger: #ff1744;
+            font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-width: 320px;
+            color: var(--ink);
+            background: var(--canvas);
+            font-size: 14px;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 2px solid #4c90ff;
+            outline-offset: 2px;
+        }
+
+        .app-bar {
+            height: 52px;
+            display: flex;
+            align-items: stretch;
+            justify-content: flex-end;
+            color: #edf1f4;
+            background: #26323a;
+            border-bottom: 1px solid #0e161b;
+            box-shadow: inset 0 -1px #40505b;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .app-bar>div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 52px;
+            padding: 0 14px;
+            border-left: 1px solid #111c23;
+        }
+
+        .env {
+            color: #f6ba13;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .app-home {
+            color: #edf1f4;
+            text-decoration: none;
+        }
+
+        .project-context {
+            min-width: 250px;
+            align-items: flex-start !important;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1px !important;
+        }
+
+        .project-context strong {
+            font-size: 12px;
+            line-height: 1.1;
+        }
+
+        .project-context small {
+            font-size: 10px;
+            color: #c5ccd1;
+        }
+
+        main {
+            width: 100%;
+            padding: 0 28px 36px;
+        }
+
+        .page-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 18px 0 12px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.15;
+        }
+
+        .subtitle {
+            margin: 5px 0 0;
+            color: var(--muted);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #575d65;
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin-top: 20px;
+            align-items: stretch;
+        }
+
+        .panel {
+            min-width: 0;
+            overflow: hidden;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(20, 27, 34, .08);
+        }
+
+        .panel-head {
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--line);
+            background: #fbfbfc;
+        }
+
+        .panel-head h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .panel-icon {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            color: #666d76;
+            background: #fff;
+        }
+
+        .rule-panel {
+            display: flex;
+            flex-direction: column;
+            min-height: 765px;
+        }
+
+        .rule-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .rule-item {
+            display: grid;
+            grid-template-columns: 1fr 50px;
+            min-height: 74px;
+            border-bottom: 1px solid var(--line);
+            border-left: 4px solid transparent;
+            background: #fff;
+        }
+
+        .rule-item.active {
+            border-left-color: var(--lime);
+            background: #f8ffed;
+        }
+
+        .rule-select {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 0;
+            color: inherit;
+            text-align: left;
+            background: transparent;
+            padding: 13px 14px 13px 18px;
+        }
+
+        .rule-select:hover {
+            background: rgba(11, 87, 227, .035);
+        }
+
+        .doc-icon {
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            border: 1px solid #cfe0ff;
+            border-radius: 8px;
+            color: var(--blue);
+            background: #eef5ff;
+            flex: 0 0 auto;
+        }
+
+        .rule-copy {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .rule-line {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .rule-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 700;
+            color: #174ee4;
+            white-space: nowrap;
+        }
+
+        .rule-copy small {
+            display: block;
+            margin-top: 6px;
+            color: #666d76;
+            font-style: italic;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-flex;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            line-height: 1;
+            font-weight: 800;
+            text-transform: uppercase;
+            border: 1px solid transparent;
+        }
+
+        .badge.active {
+            color: #08794d;
+            background: #c9f7df;
+            border-color: #9ce9c0;
+        }
+
+        .badge.draft {
+            color: #555a62;
+            background: #f0f1f3;
+            border-color: #d9dce1;
+        }
+
+        .badge.inactive {
+            color: #e31c47;
+            background: #ffe0e7;
+            border-color: #ffc1cf;
+        }
+
+        .badge.generic {
+            color: #164bcc;
+            background: #dbe8ff;
+            border-color: #bdd5ff;
+        }
+
+        .rule-delete {
+            border: 0;
+            color: var(--danger);
+            background: transparent;
+            font-size: 23px;
+        }
+
+        .rule-delete:hover {
+            background: #fff1f3;
+        }
+
+        .rule-footer {
+            margin-top: auto;
+            padding: 15px 20px;
+            border-top: 1px solid var(--line);
+        }
+
+        .new-rule {
+            width: 100%;
+            min-height: 42px;
+            color: #154de2;
+            font-weight: 700;
+            border: 1px dashed #cbd0d7;
+            border-radius: 9px;
+            background: #fff;
+        }
+
+        .new-rule:hover {
+            border-color: #8ab3ff;
+            background: #f5f9ff;
+        }
+
+        .config-body {
+            padding: 22px 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            min-width: 0;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .field>label,
+        .field-label {
+            color: #4d535b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .control {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #d6d9de;
+            border-radius: 9px;
+            padding: 0 13px;
+            color: #4c5159;
+            background: #fff;
+        }
+
+        .control:disabled {
+            color: #969ba3;
+            background: #f2f3f5;
+            cursor: not-allowed;
+        }
+
+        .help {
+            margin: 0;
+            color: #8b9098;
+            font-size: 10px;
+        }
+
+        .check-card {
+            min-height: 62px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 11px 12px;
+            border: 1px solid #dfe1e5;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .check-card input {
+            width: 16px;
+            height: 16px;
+            margin: 1px 0 0;
+            accent-color: #0a66e9;
+        }
+
+        .check-copy strong {
+            display: block;
+            color: #555a62;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .check-copy small {
+            display: block;
+            margin-top: 3px;
+            color: #8a8f97;
+            font-size: 10px;
+            line-height: 1.3;
+        }
+
+        .warning {
+            color: #ff2020 !important;
+        }
+
+        .requires {
+            color: #d36c00 !important;
+        }
+
+        .section-title {
+            margin: 19px 0 10px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+            font-size: 12px;
+            color: #4d535b;
+            font-weight: 700;
+        }
+
+        .status-grid {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+        }
+
+        .meta-panel {
+            margin-top: 22px;
+        }
+
+        .meta-head {
+            justify-content: space-between;
+        }
+
+        .meta-head-copy {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .meta-head-copy p {
+            margin: 3px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 36px;
+            padding: 0 15px;
+            border: 0;
+            border-radius: 8px;
+            color: #fff;
+            background: var(--green);
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .primary:hover {
+            background: var(--green-dark);
+        }
+
+        .primary:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .table-filter {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface-soft);
+        }
+
+        .table-filter label {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 650;
+            color: #545a62;
+        }
+
+        .table-filter input {
+            width: 310px;
+            height: 38px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1040px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px 16px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            font-size: 12px;
+            vertical-align: top;
+        }
+
+        thead th {
+            color: #60666e;
+            background: #fafafa;
+            font-weight: 750;
+        }
+
+        td.center,
+        th.center {
+            text-align: center;
+        }
+
+        .empty {
+            padding: 34px;
+            text-align: center;
+            color: #7b8189;
+        }
+
+        .remove-row {
+            border: 0;
+            background: transparent;
+            color: var(--danger);
+            font-size: 19px;
+        }
+
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 13px 20px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .pager {
+            display: flex;
+            gap: 8px;
+        }
+
+        .secondary {
+            min-height: 34px;
+            padding: 0 14px;
+            border: 1px solid #0b5ee6;
+            border-radius: 8px;
+            color: #0b5ee6;
+            background: #fff;
+            font-weight: 650;
+        }
+
+        .secondary:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
+        /* ===== MODAL COMPACTO (SEM SCROLL) ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 100;
+            background: rgba(16, 20, 24, .55);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            width: min(880px, 100%);
+            height: min(620px, 92vh);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 22px 80px rgba(0, 0, 0, .32);
+        }
+
+        .modal-head {
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .modal-head h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .modal-close {
+            width: 30px;
+            height: 30px;
+            border: 0;
+            color: #70767e;
+            background: transparent;
+            font-size: 22px;
+            line-height: 1;
+            border-radius: 6px;
+        }
+
+        .modal-close:hover {
+            background: #f2f3f5;
+        }
+
+        /* Abas */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            padding: 8px 20px 0;
+            border-bottom: 1px solid var(--line);
+            background: #fbfbfc;
+        }
+
+        .tab {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            color: #666d76;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .tab:hover {
+            color: #0b57e3;
+        }
+
+        .tab.active {
+            color: #0b57e3;
+            border-bottom-color: #0b57e3;
+        }
+
+        .tab .tab-num {
+            display: grid;
+            place-items: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #e8ebef;
+            color: #555b63;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .tab.active .tab-num {
+            background: #0b57e3;
+            color: #fff;
+        }
+
+        .tab.done .tab-num {
+            background: var(--green);
+            color: #fff;
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 16px 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-panel {
+            display: none;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .tab-panel.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-strip {
+            margin-bottom: 12px;
+            padding: 9px 12px;
+            border: 1px solid #bae86a;
+            border-radius: 8px;
+            color: #3f6c1b;
+            background: #f5ffe8;
+            font-size: 11px;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-grid.three {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .modal .control {
+            height: 36px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 0 11px;
+        }
+
+        .modal .field>label,
+        .modal .field-label {
+            font-size: 11px;
+        }
+
+        .modal-field {
+            margin-top: 8px;
+        }
+
+        .formula-box {
+            min-height: 44px;
+            display: flex;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 7px 8px;
+            border: 1px solid #d9dce1;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .formula-empty {
+            color: #999ea6;
+            font-size: 11px;
+        }
+
+        .formula-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 9px;
+            border: 1px solid #b6d0ff;
+            border-radius: 999px;
+            color: #174dbd;
+            background: #eaf2ff;
+            font-size: 11px;
+        }
+
+        .formula-chip button {
+            border: 0;
+            color: inherit;
+            background: transparent;
+            padding: 0;
+        }
+
+        .selection-note {
+            margin: 6px 0 8px;
+            color: #ff1717;
+            font-size: 11px;
+        }
+
+        /* ===== ACORDEÃO DE GRUPOS ===== */
+        .accordion {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            padding-right: 2px;
+            scrollbar-width: thin;
+        }
+
+        .acc-item {
+            border: 1px solid #e0e2e6;
+            border-radius: 8px;
+            background: #fff;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .acc-item.open {
+            box-shadow: 0 1px 3px rgba(11, 87, 227, .08);
+            border-color: #c9d8f5;
+        }
+
+        .acc-item.disabled {
+            opacity: .55;
+            pointer-events: none;
+        }
+
+        .acc-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 9px 12px;
+            border: 0;
+            background: #fbfbfc;
+            color: #373c42;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            transition: background .15s;
+        }
+
+        .acc-head:hover {
+            background: #f2f6fd;
+        }
+
+        .acc-item.open .acc-head {
+            background: #eef4ff;
+            color: #0b57e3;
+            border-bottom: 1px solid #dbe5fa;
+        }
+
+        /* SVG chevron sem fundo */
+        .acc-arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            flex: 0 0 auto;
+            color: #8b9098;
+            transition: transform .2s, color .15s;
+        }
+
+        .acc-arrow svg {
+            width: 14px;
+            height: 14px;
+            display: block;
+        }
+
+        .acc-item.open .acc-arrow {
+            transform: rotate(90deg);
+            color: #0b57e3;
+        }
+
+        .acc-title {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .acc-title h3 {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .acc-title .help {
+            display: block;
+            font-size: 10px;
+            color: #8b9098;
+            font-weight: 400;
+            margin-top: 1px;
+        }
+
+        .acc-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 18px;
+            padding: 0 6px;
+            border-radius: 999px;
+            background: #e8ebef;
+            color: #555b63;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .acc-item.open .acc-count {
+            background: #0b57e3;
+            color: #fff;
+        }
+
+        .acc-item.has-selection .acc-count {
+            background: var(--green);
+            color: #fff;
+        }
+
+        .acc-body {
+            display: none;
+            padding: 8px 10px 10px;
+            background: #fbfbfc;
+            border-top: 1px solid #eef1f5;
+        }
+
+        .acc-item.open .acc-body {
+            display: block;
+        }
+
+        .group-search {
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .group-search svg {
+            position: absolute;
+            left: 9px;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            transform: translateY(-50%);
+            color: #8a9098;
+            pointer-events: none;
+        }
+
+        .group-search input {
+            width: 100%;
+            height: 30px;
+            padding: 0 26px 0 28px;
+            border: 1px solid #cfd3d9;
+            border-radius: 999px;
+            color: #4b5057;
+            background: #fff;
+            font-size: 11px;
+        }
+
+        .clear-search {
+            display: none;
+            position: absolute;
+            top: 2px;
+            right: 3px;
+            width: 26px;
+            height: 26px;
+            border: 0;
+            border-radius: 50%;
+            color: #777d85;
+            background: transparent;
+        }
+
+        .clear-search.visible {
+            display: block;
+        }
+
+        .pill-list {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-height: 130px;
+            overflow-y: auto;
+            padding: 3px 1px 1px;
+            scrollbar-width: thin;
+        }
+
+        .pill {
+            flex: 0 0 auto;
+            padding: 4px 10px;
+            border: 1px solid #d9dce1;
+            border-radius: 999px;
+            color: #555b63;
+            background: #fff;
+            font-size: 10.5px;
+            white-space: nowrap;
+        }
+
+        .pill:hover,
+        .pill.selected {
+            color: #104fd0;
+            border-color: #83b0ff;
+            background: #edf5ff;
+        }
+
+        .no-fields {
+            padding: 6px 3px;
+            color: #8c9198;
+            font-size: 10.5px;
+        }
+
+        .formula-preview {
+            margin-top: 8px;
+            padding: 7px 10px;
+            border-left: 3px solid var(--lime);
+            color: #4e545b;
+            background: #fbfbfc;
+            font-size: 11px;
+            line-height: 1.35;
+            border-radius: 4px;
+        }
+
+        .formula-preview strong {
+            display: block;
+            color: #373c42;
+            font-size: 10.5px;
+        }
+
+        .modal-footer {
+            min-height: 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            border-top: 1px solid var(--line);
+            background: #fff;
+        }
+
+        .modal-footer .footer-right {
+            display: flex;
+            gap: 8px;
+        }
+
+        .cancel {
+            min-height: 34px;
+            padding: 0 14px;
+            border: 1px solid #075eff;
+            border-radius: 8px;
+            color: #075eff;
+            background: #fff;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .cancel:hover {
+            background: #f2f7ff;
+        }
+
+        .modal-footer .primary {
+            min-height: 34px;
+            padding: 0 16px;
+            font-size: 12px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-height: 620px) {
+            .modal-body {
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .top-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rule-panel {
+                min-height: auto;
+            }
+        }
+
+        @media (max-width: 720px) {
+            main {
+                padding: 0 14px 28px;
+            }
+
+            .app-bar .app-home,
+            .app-bar .env-wrap {
+                display: none;
+            }
+
+            .project-context {
+                min-width: 0;
+            }
+
+            .page-head {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .form-grid,
+            .modal-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .meta-head {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .primary {
+                width: 100%;
+            }
+
+            .table-filter input {
+                width: min(100%, 310px);
+            }
+
+            .table-footer {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .tabs {
+                padding: 8px 12px 0;
+                overflow-x: auto;
+            }
+
+            .tab {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="app-bar" aria-label="Barra do sistema DocZ">
+        <div class="env-wrap"><span class="env">HOMOLOGAÇÃO MYSQL</span></div>
+        <div><a class="app-home" href="#" aria-label="Voltar para Home">⌂ &nbsp; Voltar para Home</a></div>
+        <div class="project-context"><strong>Agência Nacional de Mineração</strong><small>ANM NACIONAL - REGIONAL SP
+                (146)</small></div>
+        <div aria-label="Ajuda">?</div>
+        <div aria-label="Menu">☰</div>
+    </header>
+    <main>
+        <header class="page-head">
+            <div>
+                <h1>Embarque de Metadados</h1>
+                <p class="subtitle">Configure regras, chaves e campos de metadados para exportação.</p>
+            </div>
+            <nav class="breadcrumb" aria-label="Navegação estrutural">
+                <span>⌂</span><span>/</span><span>Projetos</span><span>/</span><strong>Embarque de Metadados</strong>
+            </nav>
+        </header>
+        <div class="top-grid">
+            <section class="panel rule-panel" aria-labelledby="rules-title">
+                <header class="panel-head"><span class="panel-icon">♧</span>
+                    <h2 id="rules-title">Lista de Regras Cadastradas</h2>
+                </header>
+                <ul id="ruleList" class="rule-list"></ul>
+                <footer class="rule-footer"><button id="newRuleBtn" class="new-rule" type="button">☷＋ &nbsp; Nova regra
+                        dinâmica</button></footer>
+            </section>
+            <section class="panel" aria-labelledby="config-title">
+                <header class="panel-head"><span class="panel-icon">☰</span>
+                    <h2 id="config-title">Configuração do Modelo de Dados</h2>
+                </header>
+                <form id="configForm" class="config-body">
+                    <div class="form-grid">
+                        <div class="field full"><label for="projectField">Projeto</label><select id="projectField"
+                                class="control">
+                                <option>ANM NACIONAL - REGIONAL SP</option>
+                                <option>SES-DF</option>
+                                <option>DEMO</option>
+                            </select></div>
+                        <div class="field"><label for="ruleNameField">Nome da Regra</label><input id="ruleNameField"
+                                class="control" type="text"></div>
+                        <label class="check-card"><input id="genericRuleField" type="checkbox"><span
+                                class="check-copy"><strong>Regra Genérica</strong><small>Apenas uma por
+                                    projeto.</small></span></label>
+                        <div class="field"><label for="decisionKeyField">Chave de Decisão</label><select
+                                id="decisionKeyField" class="control">
+                                <option value="">Selecione uma chave</option>
+                                <option>TIPO DOCUMENTAL</option>
+                                <option>TIPOLOGIA DO ARQUIVO</option>
+                                <option>STATUS DA GESTÃO DOCUMENTAL</option>
+                            </select></div>
+                        <div class="field"><label for="decisionValueField">Selecionar</label><select
+                                id="decisionValueField" class="control">
+                                <option value="">Selecione uma opção</option>
+                                <option>DOSSIÊ</option>
+                                <option>PROCESSO</option>
+                                <option>DOCUMENTO</option>
+                            </select></div>
+                        <div class="field"><label for="projectObjectField">Selecione o Campo do Projeto</label><select
+                                id="projectObjectField" class="control">
+                                <option value="">Selecione um campo</option>
+                                <option>Identificador SOS</option>
+                                <option>Localização</option>
+                                <option>Status</option>
+                                <option>Serviço</option>
+                                <option>Tipo Objeto</option>
+                            </select>
+                            <p class="help">Identifica no documento o valor avaliado pela chave de decisão.</p>
+                        </div>
+                    </div>
+                    <h3 class="section-title">Parâmetros de assinatura</h3>
+                    <div class="form-grid">
+                        <label class="check-card"><input id="autoSignatureField" type="checkbox"><span
+                                class="check-copy"><strong>Assinatura Automática</strong><small>Habilita esta regra para
+                                    o robô de assinatura.</small></span></label>
+                        <label class="check-card"><input id="visibleSignatureField" type="checkbox"><span
+                                class="check-copy"><strong>Assinatura Visível</strong><small>Aplica a chancela visível
+                                    sobre a camada gráfica do PDF.</small></span></label>
+                        <label class="check-card"><input id="lastPageField" type="checkbox"><span
+                                class="check-copy"><strong>Assinatura na Última Página</strong><small>Requer assinatura
+                                    visível. Sem marcar, o assinador usa a primeira página.</small></span></label>
+                        <label class="check-card"><input id="requireTypologyField" type="checkbox"><span
+                                class="check-copy"><strong>Exigir Tipologia do Arquivo</strong><small>Verifica o tipo
+                                    documental antes de executar o motor.</small></span></label>
+                        <label class="check-card"><input id="timestampField" type="checkbox"><span
+                                class="check-copy"><strong>Carimbo de Tempo</strong><small>Sincroniza a data com a
+                                    autoridade certificadora oficial.</small><small class="warning">Atenção: a
+                                    utilização do Carimbo de Tempo possui custo e poderá gerar
+                                    cobrança.</small></span></label>
+                        <label class="check-card"><input id="activationField" type="checkbox"><span
+                                class="check-copy"><strong>Ativação da Configuração</strong><small>Autoriza o robô a ler
+                                    os parâmetros desta regra.</small><small class="requires">Requer uma Regra Genérica
+                                    ativa no projeto.</small></span></label>
+                    </div>
+                    <div class="form-grid status-grid">
+                        <div class="field"><label for="finalStatusField">Status Final pós Assinatura</label><select
+                                id="finalStatusField" class="control">
+                                <option>INDEXADO</option>
+                                <option>ASSINADO</option>
+                                <option>ENVIADO PARA PRESERVAÇÃO</option>
+                            </select></div>
+                        <div class="field"><label for="ruleStatusField">Status da Regra</label><select
+                                id="ruleStatusField" class="control">
+                                <option>Rascunho</option>
+                                <option>Ativa</option>
+                                <option>Inativa</option>
+                            </select></div>
+                    </div>
+                </form>
+            </section>
+        </div>
+        <section class="panel meta-panel" aria-labelledby="meta-title">
+            <header class="panel-head meta-head">
+                <div class="meta-head-copy"><span class="panel-icon">⚙</span>
+                    <div>
+                        <h2 id="meta-title">Campos Configurados por esta Regra</h2>
+                        <p>Preenchimento dinâmico conforme o tipo documental selecionado.</p>
+                    </div>
+                </div>
+                <button id="addMetadataBtn" class="primary" type="button">＋ &nbsp; Adicionar Metadado</button>
+            </header>
+            <div class="table-filter"><label>Buscar Metadado<input id="tableSearch" type="search"
+                        placeholder="Filtrar campos configurados..."></label></div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metadado Destino</th>
+                            <th>Origem</th>
+                            <th>Campo DocZ</th>
+                            <th class="center">ID Banco</th>
+                            <th class="center">Valor Fixo</th>
+                            <th class="center">Nulos</th>
+                            <th class="center">Obrig.</th>
+                            <th class="center">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metadataTable"></tbody>
+                </table>
+            </div>
+            <footer class="table-footer"><span id="paginationInfo">Exibindo 0-0 de 0 metadados</span>
+                <div class="pager"><button id="previousPage" class="secondary" type="button">Anterior</button><button
+                        id="nextPage" class="secondary" type="button">Próxima</button></div>
+            </footer>
+        </section>
+    </main>
+
+    <div id="metadataModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <section class="modal">
+            <header class="modal-head">
+                <h2 id="modalTitle">Adicionar Metadado</h2>
+                <button id="closeModal" class="modal-close" type="button" aria-label="Fechar">×</button>
+            </header>
+
+            <nav class="tabs" role="tablist" aria-label="Etapas do metadado">
+                <button class="tab active" role="tab" data-tab="tab-destino" aria-selected="true"><span
+                        class="tab-num">1</span> Destino</button>
+                <button class="tab" role="tab" data-tab="tab-origem" aria-selected="false"><span
+                        class="tab-num">2</span> Origem do Valor</button>
+                <button class="tab" role="tab" data-tab="tab-tratamento" aria-selected="false"><span
+                        class="tab-num">3</span> Tratamento</button>
+            </nav>
+
+            <div class="modal-body">
+                <!-- ABA 1: DESTINO -->
+                <div class="tab-panel active" id="tab-destino" role="tabpanel">
+                    <div class="info-strip">Selecione o metadado de destino e a origem do valor.</div>
+                    <div class="modal-grid three">
+                        <div class="field"><label for="destinationField">Metadado destino *</label><select
+                                id="destinationField" class="control">
+                                <option>Assunto</option>
+                                <option>Autor (nome)</option>
+                                <option>Classe</option>
+                                <option>Data de produção</option>
+                                <option>Destinação final</option>
+                                <option>Identificador do registro</option>
+                                <option>Prazo de guarda</option>
+                                <option>Título</option>
+                            </select></div>
+                        <div class="field"><label for="sourceField">Origem do valor *</label><select id="sourceField"
+                                class="control">
+                                <option>Campo Único</option>
+                                <option>Múltiplos Campos</option>
+                                <option>Campo Fixo</option>
+                            </select></div>
+                        <div class="field"><label for="fixedValueField">Valor Fixo *</label><input id="fixedValueField"
+                                class="control" type="text" placeholder="Habilite 'Campo Fixo'" disabled></div>
+                    </div>
+                    <p class="help" style="margin-top:10px">* Campos obrigatórios</p>
+                </div>
+
+                <!-- ABA 2: ORIGEM -->
+                <div class="tab-panel" id="tab-origem" role="tabpanel">
+                    <div class="field" style="margin-bottom:6px">
+                        <span class="field-label">Campos selecionados para a fórmula</span>
+                        <div id="formulaFields" class="formula-box"></div>
+                    </div>
+                    <p id="selectionNote" class="selection-note">ⓘ &nbsp; Selecione apenas um campo para Campo Único</p>
+                    <div id="fieldGroups" class="accordion"></div>
+                    <div id="formulaPreview" class="formula-preview"></div>
+                </div>
+
+                <!-- ABA 3: TRATAMENTO -->
+                <div class="tab-panel" id="tab-tratamento" role="tabpanel">
+                    <div class="modal-grid">
+                        <div class="field"><label for="requiredField">Obrigatoriedade *</label><select
+                                id="requiredField" class="control">
+                                <option>Sim</option>
+                                <option>Não</option>
+                            </select></div>
+                        <div class="field"><label for="formatField">Formato da saída</label><select id="formatField"
+                                class="control">
+                                <option>Data - DD/MM/AAAA</option>
+                                <option>Texto simples</option>
+                                <option>Caixa Alta (Maiúsculo)</option>
+                                <option>Caixa Baixa (Minúsculo)</option>
+                            </select></div>
+                        <div class="field"><label for="nullTreatmentField">Tratamento de nulos *</label><select
+                                id="nullTreatmentField" class="control">
+                                <option>Ignorar Campos Nulos</option>
+                                <option>Substituir por Valor Padrão</option>
+                                <option>Bloquear Gravação</option>
+                            </select></div>
+                        <div class="field"><label for="nullDefaultField">Valor padrão para nulos</label><input
+                                id="nullDefaultField" class="control" placeholder="Ex.: NÃO INFORMADO" disabled></div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="modal-footer">
+                <button id="prevTab" class="cancel hidden" type="button">← Anterior</button>
+                <div class="footer-right">
+                    <button id="cancelModal" class="cancel" type="button">Cancelar</button>
+                    <button id="nextTab" class="primary" type="button">Próximo →</button>
+                    <button id="saveMetadata" class="primary hidden" type="button">Adicionar Metadado</button>
+                </div>
+            </footer>
+        </section>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+            var fieldGroups = [
+                {id: "projectObjects", title: "Metadados de Objetos do Projeto", fields: [["Ano Final", "c16"], ["Ano Inicial", "c15"], ["Classificação", "c17"], ["Data Cadastro", "c21"], ["Descrição", "c6"], ["Destinação Final", "c20"], ["Fase Corrente", "c18"], ["Fase Intermediária", "c19"], ["ID Cliente", "c5"], ["Identificador SOS", "c1"], ["Lacre 01", "c9"], ["Localização", "c2"], ["Nome do Interessado", "c14"], ["Número do Processo", "c10"], ["Serviço", "c4"], ["Situação Processo", "c11"], ["Status", "c3"], ["Tipo Objeto", "c8"], ["Volume", "c12"], ["Anexo", "c13"]]},
+                {id: "fileMetadata", title: "Metadados do Arquivo", fields: [["Data de Criação", "A8"], ["Extensão", "A7"], ["Hash", "A6"], ["ID da Aplicação", "A2"], ["ID do Documento", "A5"], ["ID do Projeto", "A4"], ["ID do Usuário", "A3"], ["Identificador do Arquivo", "A1"], ["Nome do Arquivo", "A9"], ["Tamanho do Arquivo", "A10"]]},
+                {id: "projectInfo", title: "Informações do Projeto", fields: [["Código Guarda", "P2"], ["Descrição", "P4"], ["Id", "P1"], ["Idioma", "P5"], ["Projeto", "P3"]]},
+                {id: "folderInfo", title: "Informações de pastas", note: "Informação obtida a partir da pasta à qual o objeto pertence.", fields: [["Nome da Pasta", ""]]},
+                {id: "clientInfo", title: "Informações do Cliente", fields: [["Cliente (Razão Social)", "CL3"], ["CNPJ", "CL4"], ["ID do Cliente", "CL1"], ["ID do Cliente Alternativo", "CL2"], ["Nome Fantasia", "CL5"], ["Segmentação do Cliente", "CL6"]]}
+            ];
+            var rules = [
+                {id: 1, name: "Regra Genérica", status: "Rascunho", generic: true, project: "ANM NACIONAL - REGIONAL SP", decisionKey: "TIPO DOCUMENTAL", decisionValue: "DOSSIÊ", projectObject: "", autoSignature: true, visibleSignature: true, lastPage: false, requireTypology: true, timestamp: true, activation: false, finalStatus: "INDEXADO", rows: [["Assunto", "Campo Único", "Descrição", "c6", "—", "Ignorar", "Sim"], ["Título", "Campo Único", "Nome da Pasta", "—", "—", "Ignorar", "Sim"], ["Autor (nome)", "Campo Único", "Nome do Interessado", "c14", "—", "Ignorar", "Não"]]},
+                {id: 2, name: "Regra Genérica", status: "Ativa", generic: true, project: "ANM NACIONAL - REGIONAL SP", decisionKey: "", decisionValue: "", projectObject: "", autoSignature: true, visibleSignature: true, lastPage: false, requireTypology: true, timestamp: false, activation: true, finalStatus: "INDEXADO", rows: []},
+                {id: 3, name: "Nova Regra 3", status: "Inativa", generic: false, project: "ANM NACIONAL - REGIONAL SP", decisionKey: "TIPO DOCUMENTAL", decisionValue: "PROCESSO", projectObject: "Tipo Objeto", autoSignature: false, visibleSignature: false, lastPage: false, requireTypology: false, timestamp: false, activation: false, finalStatus: "INDEXADO", rows: []},
+                {id: 4, name: "Nova Regra 4", status: "Rascunho", generic: false, project: "ANM NACIONAL - REGIONAL SP", decisionKey: "TIPO DOCUMENTAL", decisionValue: "DOCUMENTO", projectObject: "Tipo Objeto", autoSignature: false, visibleSignature: false, lastPage: false, requireTypology: false, timestamp: false, activation: false, finalStatus: "INDEXADO", rows: []}
+            ];
+            var currentRuleId = 1, selectedFields = [], groupSearch = {}, page = 1, pageSize = 5;
+            var currentTab = 0;
+            var tabs = ["tab-destino", "tab-origem", "tab-tratamento"];
+            var openGroupId = "projectObjects";
+
+            function byId(id) {return document.getElementById(id);}
+            function currentRule() {return rules.find(function (rule) {return rule.id === currentRuleId;});}
+            function normalize(text) {return String(text || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();}
+            function escapeHtml(value) {return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");}
+            function statusClass(status) {return status === "Ativa" ? "active" : status === "Inativa" ? "inactive" : "draft";}
+            function renderRules() {
+                var list = byId("ruleList"); list.innerHTML = "";
+                rules.forEach(function (rule) {
+                    var item = document.createElement("li"); item.className = "rule-item" + (rule.id === currentRuleId ? " active" : "");
+                    var genericBadge = rule.generic ? '<span class="badge generic">Genérica</span>' : "";
+                    item.innerHTML = '<button class="rule-select" type="button" data-select-rule="' + rule.id + '"><span class="doc-icon">▤</span><span class="rule-copy"><span class="rule-line"><span class="rule-name">' + escapeHtml(rule.name) + '</span><span class="badge ' + statusClass(rule.status) + '">' + escapeHtml(rule.status) + '</span>' + genericBadge + '</span><small>' + rule.rows.length + ' metadados mapeados</small></span></button><button class="rule-delete" type="button" aria-label="Excluir regra" data-delete-rule="' + rule.id + '">×</button>';
+                    list.appendChild(item);
+                });
+            }
+            function fillConfig() {
+                var rule = currentRule(); if (!rule) return;
+                byId("projectField").value = rule.project; byId("ruleNameField").value = rule.name; byId("genericRuleField").checked = rule.generic;
+                byId("decisionKeyField").value = rule.decisionKey; byId("decisionValueField").value = rule.decisionValue; byId("projectObjectField").value = rule.projectObject;
+                byId("autoSignatureField").checked = rule.autoSignature; byId("visibleSignatureField").checked = rule.visibleSignature; byId("lastPageField").checked = rule.lastPage;
+                byId("requireTypologyField").checked = rule.requireTypology; byId("timestampField").checked = rule.timestamp; byId("activationField").checked = rule.activation;
+                byId("finalStatusField").value = rule.finalStatus; byId("ruleStatusField").value = rule.status;
+            }
+            function saveConfig() {
+                var rule = currentRule(); if (!rule) return;
+                rule.project = byId("projectField").value; rule.name = byId("ruleNameField").value || "Regra sem nome"; rule.generic = byId("genericRuleField").checked;
+                rule.decisionKey = byId("decisionKeyField").value; rule.decisionValue = byId("decisionValueField").value; rule.projectObject = byId("projectObjectField").value;
+                rule.autoSignature = byId("autoSignatureField").checked; rule.visibleSignature = byId("visibleSignatureField").checked; rule.lastPage = byId("lastPageField").checked;
+                rule.requireTypology = byId("requireTypologyField").checked; rule.timestamp = byId("timestampField").checked; rule.activation = byId("activationField").checked;
+                rule.finalStatus = byId("finalStatusField").value; rule.status = byId("ruleStatusField").value; renderRules();
+            }
+            function filteredRows() {
+                var rule = currentRule(), query = normalize(byId("tableSearch").value); if (!rule) return [];
+                return rule.rows.filter(function (row) {return !query || row.some(function (cell) {return normalize(cell).includes(query);});});
+            }
+            function renderTable() {
+                var tbody = byId("metadataTable"), rows = filteredRows(), totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+                if (page > totalPages) page = totalPages; var start = (page - 1) * pageSize, shown = rows.slice(start, start + pageSize); tbody.innerHTML = "";
+                if (!shown.length) {tbody.innerHTML = '<tr><td class="empty" colspan="8">Nenhum metadado encontrado para esta regra.</td></tr>';}
+                else {shown.forEach(function (row) {var actualIndex = currentRule().rows.indexOf(row), tr = document.createElement("tr"); tr.innerHTML = "<td><strong>" + escapeHtml(row[0]) + "</strong></td><td>" + escapeHtml(row[1]) + "</td><td>" + escapeHtml(row[2]) + '</td><td class="center">' + escapeHtml(row[3]) + '</td><td class="center">' + escapeHtml(row[4]) + '</td><td class="center">' + escapeHtml(row[5]) + '</td><td class="center"><strong>' + escapeHtml(row[6]) + '</strong></td><td class="center"><button class="remove-row" type="button" aria-label="Remover metadado" data-remove-row="' + actualIndex + '">×</button></td>'; tbody.appendChild(tr);});}
+                byId("paginationInfo").textContent = rows.length ? "Exibindo " + (start + 1) + "-" + Math.min(start + pageSize, rows.length) + " de " + rows.length + " metadados" : "Exibindo 0-0 de 0 metadados";
+                byId("previousPage").disabled = page <= 1; byId("nextPage").disabled = page >= totalPages;
+            }
+            function renderFormula() {
+                var holder = byId("formulaFields"); holder.innerHTML = "";
+                if (!selectedFields.length) {holder.innerHTML = '<span class="formula-empty">Selecione um ou mais campos abaixo</span>';}
+                else {selectedFields.forEach(function (field, index) {var chip = document.createElement("span"); chip.className = "formula-chip"; chip.innerHTML = (index + 1) + ". " + escapeHtml(field.label) + ' <button type="button" aria-label="Remover campo" data-remove-formula="' + index + '">×</button>'; holder.appendChild(chip);});}
+                byId("formulaPreview").innerHTML = "<strong>Prévia da fórmula:</strong>" + (selectedFields.length ? selectedFields.map(function (item) {return escapeHtml(item.label);}).join(" | ") : "Selecione campos para gerar a prévia");
+            }
+            function sortedFields(fields) {return fields.slice().sort(function (a, b) {return a[0].localeCompare(b[0], "pt-BR", {sensitivity: "base"});});}
+            function renderFieldGroups() {
+                var holder = byId("fieldGroups"), fixed = byId("sourceField").value === "Campo Fixo"; holder.innerHTML = "";
+                fieldGroups.forEach(function (group) {
+                    var query = groupSearch[group.id] || "";
+                    var filtered = sortedFields(group.fields).filter(function (field) {return normalize(field[0] + " " + field[1]).includes(normalize(query));});
+                    var isOpen = openGroupId === group.id;
+                    var selectedInGroup = selectedFields.filter(function (item) {return item.group === group.id;}).length;
+
+                    var section = document.createElement("section");
+                    section.className = "acc-item" + (isOpen ? " open" : "") + (fixed ? " disabled" : "") + (selectedInGroup ? " has-selection" : "");
+                    section.dataset.groupId = group.id;
+
+                    var countLabel = selectedInGroup ? selectedInGroup + " selecionado" + (selectedInGroup > 1 ? "s" : "") : group.fields.length + " campos";
+
+                    section.innerHTML =
+                        '<button type="button" class="acc-head" data-toggle-group="' + group.id + '" aria-expanded="' + (isOpen ? "true" : "false") + '"' + (fixed ? " disabled" : "") + '>' +
+                        '<span class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></span>' +
+                        '<span class="acc-title"><h3>' + escapeHtml(group.title) + '</h3>' + (group.note ? '<span class="help">' + escapeHtml(group.note) + '</span>' : '') + '</span>' +
+                        '<span class="acc-count">' + countLabel + '</span>' +
+                        '</button>' +
+                        '<div class="acc-body">' +
+                        '<div class="group-search">' +
+                        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>' +
+                        '<input type="search" data-group-search="' + group.id + '" aria-label="Pesquisar em ' + escapeHtml(group.title) + '" placeholder="Pesquisar campos..." value="' + escapeHtml(query) + '"' + (fixed ? " disabled" : "") + '>' +
+                        '<button class="clear-search' + (query ? " visible" : "") + '" type="button" aria-label="Limpar pesquisa" data-clear-search="' + group.id + '">×</button>' +
+                        '</div>' +
+                        '<div class="pill-list"></div>' +
+                        '</div>';
+
+                    var pills = section.querySelector(".pill-list");
+                    if (!filtered.length) {pills.innerHTML = '<span class="no-fields">Nenhum campo encontrado.</span>';}
+                    else {
+                        filtered.forEach(function (field) {
+                            var selected = selectedFields.some(function (item) {return item.label === field[0] && item.group === group.id;});
+                            var button = document.createElement("button");
+                            button.type = "button";
+                            button.className = "pill" + (selected ? " selected" : "");
+                            button.disabled = fixed;
+                            button.dataset.fieldLabel = field[0];
+                            button.dataset.fieldCode = field[1];
+                            button.dataset.fieldGroup = group.id;
+                            button.textContent = field[1] ? field[0] + " (" + field[1] + ")" : field[0];
+                            pills.appendChild(button);
+                        });
+                    }
+                    holder.appendChild(section);
+                });
+            }
+            function updateSourceState() {
+                var source = byId("sourceField").value, fixed = source === "Campo Fixo";
+                byId("fixedValueField").disabled = !fixed; byId("fixedValueField").placeholder = fixed ? "Informe o valor fixo" : "Habilite 'Campo Fixo'";
+                byId("requiredField").disabled = fixed; byId("nullTreatmentField").disabled = fixed; byId("formatField").disabled = fixed;
+                byId("selectionNote").textContent = source === "Campo Único" ? "ⓘ  Selecione apenas um campo para Campo Único" : "ⓘ  Selecione os campos na ordem desejada para a fórmula";
+                if (source === "Campo Único" && selectedFields.length > 1) selectedFields = selectedFields.slice(0, 1); if (fixed) selectedFields = []; renderFieldGroups(); renderFormula();
+            }
+
+            function renderTabs() {
+                document.querySelectorAll(".tab").forEach(function (tab, idx) {
+                    tab.classList.toggle("active", idx === currentTab);
+                    tab.setAttribute("aria-selected", idx === currentTab ? "true" : "false");
+                    tab.classList.toggle("done", idx < currentTab);
+                });
+                tabs.forEach(function (id, idx) {
+                    var panel = byId(id);
+                    if (panel) panel.classList.toggle("active", idx === currentTab);
+                });
+                byId("prevTab").classList.toggle("hidden", currentTab === 0);
+                var isLast = currentTab === tabs.length - 1;
+                byId("nextTab").classList.toggle("hidden", isLast);
+                byId("saveMetadata").classList.toggle("hidden", !isLast);
+            }
+            function validateCurrentTab() {
+                if (currentTab === 0) {
+                    var dest = byId("destinationField").value;
+                    var source = byId("sourceField").value;
+                    if (!dest) {alert("Selecione o metadado de destino."); return false;}
+                    if (source === "Campo Fixo") {
+                        if (!byId("fixedValueField").value.trim()) {alert("Informe o valor fixo."); return false;}
+                    }
+                }
+                if (currentTab === 1 && byId("sourceField").value !== "Campo Fixo") {
+                    if (!selectedFields.length) {alert("Selecione ao menos um campo."); return false;}
+                }
+                return true;
+            }
+            function nextTab() {
+                if (!validateCurrentTab()) return;
+                if (currentTab < tabs.length - 1) {currentTab++; renderTabs();}
+            }
+            function prevTab() {
+                if (currentTab > 0) {currentTab--; renderTabs();}
+            }
+
+            function openModal() {
+                currentTab = 0;
+                selectedFields = []; groupSearch = {};
+                openGroupId = "projectObjects";
+                byId("destinationField").value = "Assunto";
+                byId("sourceField").value = "Campo Único";
+                byId("requiredField").value = "Sim";
+                byId("fixedValueField").value = "";
+                byId("nullTreatmentField").value = "Ignorar Campos Nulos";
+                byId("nullDefaultField").value = "";
+                byId("formatField").value = "Data - DD/MM/AAAA";
+                updateSourceState();
+                renderTabs();
+                byId("metadataModal").classList.add("show");
+                document.body.style.overflow = "hidden";
+                setTimeout(function () {byId("destinationField").focus();}, 0);
+            }
+            function closeModal() {byId("metadataModal").classList.remove("show"); document.body.style.overflow = "";}
+            function saveMetadata() {
+                currentTab = 0;
+                if (!validateCurrentTab()) return;
+                currentTab = 1;
+                if (!validateCurrentTab()) {renderTabs(); return;}
+                currentTab = 2;
+
+                var rule = currentRule(), source = byId("sourceField").value;
+                if (!rule) return;
+                if (source === "Campo Fixo") {
+                    var fixedValue = byId("fixedValueField").value.trim();
+                    if (!fixedValue) {alert("Informe o valor fixo."); return;}
+                    rule.rows.unshift([byId("destinationField").value, source, "—", "—", fixedValue, "Não se aplica", "Não se aplica"]);
+                } else {
+                    if (!selectedFields.length) {alert("Selecione ao menos um campo."); return;}
+                    var labels = selectedFields.map(function (item) {return item.label;}).join(" | ");
+                    var codes = selectedFields.map(function (item) {return item.code || "—";}).join(" | ");
+                    rule.rows.unshift([byId("destinationField").value, source, labels, codes, "—", byId("nullTreatmentField").value.replace(" Campos Nulos", ""), byId("requiredField").value]);
+                }
+                page = 1; closeModal(); renderRules(); renderTable();
+            }
+
+            document.addEventListener("click", function (event) {
+                var selectRule = event.target.closest("[data-select-rule]"),
+                    deleteRule = event.target.closest("[data-delete-rule]"),
+                    removeRow = event.target.closest("[data-remove-row]"),
+                    removeFormula = event.target.closest("[data-remove-formula]"),
+                    fieldButton = event.target.closest("[data-field-label]"),
+                    clearSearch = event.target.closest("[data-clear-search]"),
+                    toggleGroup = event.target.closest("[data-toggle-group]"),
+                    tabBtn = event.target.closest(".tab");
+
+                if (tabBtn) {
+                    var idx = Array.prototype.indexOf.call(document.querySelectorAll(".tab"), tabBtn);
+                    if (idx >= 0) {currentTab = idx; renderTabs();}
+                }
+                if (toggleGroup) {
+                    var gid = toggleGroup.dataset.toggleGroup;
+                    openGroupId = (openGroupId === gid) ? null : gid;
+                    renderFieldGroups();
+                    return;
+                }
+                if (selectRule) {currentRuleId = Number(selectRule.dataset.selectRule); page = 1; renderRules(); fillConfig(); renderTable();}
+                if (deleteRule) {var deleteId = Number(deleteRule.dataset.deleteRule), deleteTarget = rules.find(function (rule) {return rule.id === deleteId;}); if (deleteTarget && confirm('Remover a regra "' + deleteTarget.name + '"?')) {rules = rules.filter(function (rule) {return rule.id !== deleteId;}); if (currentRuleId === deleteId) currentRuleId = rules.length ? rules[0].id : null; renderRules(); fillConfig(); renderTable();} }
+                if (removeRow) {currentRule().rows.splice(Number(removeRow.dataset.removeRow), 1); renderRules(); renderTable();}
+                if (removeFormula) {selectedFields.splice(Number(removeFormula.dataset.removeFormula), 1); renderFieldGroups(); renderFormula();}
+                if (fieldButton) {
+                    var field = {label: fieldButton.dataset.fieldLabel, code: fieldButton.dataset.fieldCode, group: fieldButton.dataset.fieldGroup},
+                        existing = selectedFields.findIndex(function (item) {return item.label === field.label && item.group === field.group;});
+                    if (existing >= 0) {selectedFields.splice(existing, 1);}
+                    else if (byId("sourceField").value === "Campo Único") {selectedFields = [field];}
+                    else {selectedFields.push(field);}
+                    renderFieldGroups(); renderFormula();
+                }
+                if (clearSearch) {groupSearch[clearSearch.dataset.clearSearch] = ""; renderFieldGroups(); var searchInput = document.querySelector('[data-group-search="' + clearSearch.dataset.clearSearch + '"]'); if (searchInput) searchInput.focus();}
+            });
+            byId("fieldGroups").addEventListener("input", function (event) {
+                if (event.target.matches("[data-group-search]")) {
+                    groupSearch[event.target.dataset.groupSearch] = event.target.value;
+                    var caret = event.target.selectionStart, groupId = event.target.dataset.groupSearch;
+                    renderFieldGroups();
+                    var replacement = document.querySelector('[data-group-search="' + groupId + '"]');
+                    if (replacement) {replacement.focus(); replacement.setSelectionRange(caret, caret);}
+                }
+            });
+            byId("configForm").addEventListener("input", saveConfig);
+            byId("configForm").addEventListener("change", saveConfig);
+            byId("sourceField").addEventListener("change", updateSourceState);
+            byId("nullTreatmentField").addEventListener("change", function () {var enabled = this.value === "Substituir por Valor Padrão"; byId("nullDefaultField").disabled = !enabled; if (!enabled) byId("nullDefaultField").value = "";});
+            byId("tableSearch").addEventListener("input", function () {page = 1; renderTable();});
+            byId("addMetadataBtn").addEventListener("click", openModal);
+            byId("closeModal").addEventListener("click", closeModal);
+            byId("cancelModal").addEventListener("click", closeModal);
+            byId("saveMetadata").addEventListener("click", saveMetadata);
+            byId("nextTab").addEventListener("click", nextTab);
+            byId("prevTab").addEventListener("click", prevTab);
+            byId("metadataModal").addEventListener("click", function (event) {if (event.target === this) closeModal();});
+            document.addEventListener("keydown", function (event) {if (event.key === "Escape" && byId("metadataModal").classList.contains("show")) closeModal();});
+            byId("previousPage").addEventListener("click", function () {if (page > 1) {page--; renderTable();} });
+            byId("nextPage").addEventListener("click", function () {var max = Math.max(1, Math.ceil(filteredRows().length / pageSize)); if (page < max) {page++; renderTable();} });
+            byId("newRuleBtn").addEventListener("click", function () {var id = rules.length ? Math.max.apply(null, rules.map(function (rule) {return rule.id;})) + 1 : 1; rules.push({id: id, name: "Nova Regra " + id, status: "Rascunho", generic: false, project: "ANM NACIONAL - REGIONAL SP", decisionKey: "", decisionValue: "", projectObject: "", autoSignature: false, visibleSignature: false, lastPage: false, requireTypology: false, timestamp: false, activation: false, finalStatus: "INDEXADO", rows: []}); currentRuleId = id; page = 1; renderRules(); fillConfig(); renderTable();});
+            renderRules(); fillConfig(); renderTable();
+        }());
+    </script>
+</body>
+
+</html>
