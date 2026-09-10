@@ -1,1413 +1,357 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocZ - Embarque de Metadados</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4">
-    </script>
+    <title>DocZ — Embarque de Metadados</title>
     <style>
         :root {
-            --default-font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --blue: #0b57e3;
+            --green: #08bf63;
+            --green-dark: #069c51;
+            --lime: #66db23;
+            --ink: #202124;
+            --muted: #727780;
+            --line: #dfe2e7;
+            --surface: #fff;
+            --surface-soft: #f7f7f8;
+            --canvas: #f4f4f5;
+            --danger: #ff1744;
+            font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        body {
-            font-family: var(--default-font-family);
-            background-color: #f4f4f5;
-        }
-        .checkbox-card {
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .checkbox-card:hover {
-            background-color: #f9fafb;
-            border-color: #94a3b8;
-        }
-        .checkbox-card:has(input:checked) {
-            border-color: #3b82f6;
-            background-color: #eff6ff;
-        }
-        .checkbox-card:has(input:checked) .card-content {
-            color: #1e40af;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-        /* Modal styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        .modal-overlay.show {
-            display: flex;
-        }
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            max-width: 780px;
-            width: 95%;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 16px;
-            margin-bottom: 20px;
-        }
-        .modal-header h2 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1f2937;
-        }
-        .modal-close {
-            cursor: pointer;
-            font-size: 24px;
-            color: #6b7280;
-            transition: color 0.2s;
-        }
-        .modal-close:hover {
-            color: #ef4444;
-        }
-        .form-grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        .field {
-            margin-bottom: 12px;
-        }
-        .field label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 4px;
-            font-size: 12px;
-            color: #374151;
-        }
-        .field input,
-        .field select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 13px;
-            background: white;
-            transition: border-color 0.2s;
-        }
-        .field input:focus,
-        .field select:focus {
-            border-color: #3b82f6;
-            outline: none;
-            ring: 2px solid #3b82f6;
-        }
-        .field input:disabled,
-        .field select:disabled {
-            background: #e5e7eb;
-            cursor: not-allowed;
-            opacity: 0.7;
-            color: #6b7280;
-        }
-        .field input:disabled::placeholder {
-            color: #9ca3af;
-        }
-        .formula-box {
-            border: 1px solid #d1d5db;
-            background: #f9fafb;
-            padding: 10px;
-            min-height: 60px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 4px;
-            border-radius: 8px;
-        }
-        .formula-box-disabled {
-            background: #f3f4f6;
-            border-color: #d1d5db;
-            opacity: 0.6;
-        }
-        .chip {
-            background: #dbeafe;
-            border: 1px solid #93c5fd;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 12px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: #1e40af;
-        }
-        .chip:hover {
-            background: #bfdbfe;
-        }
-        .chip-disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        .pill-list {
-            display: flex;
-            flex-wrap: nowrap;
-            gap: 8px;
-            margin-top: 8px;
-            overflow-x: auto;
-            padding: 8px 4px;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-        }
-        .pill-list::-webkit-scrollbar {
-            height: 4px;
-        }
-        .pill-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 2px;
-        }
-        .pill-list::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 2px;
-        }
-        .pill-list::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-        .pill {
-            background: #f3f4f6;
-            color: #4b5563;
-            border-radius: 20px;
-            padding: 6px 16px;
-            font-size: 12px;
-            cursor: pointer;
-            border: 1px solid #d1d5db;
-            transition: all 0.2s;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .pill:hover {
-            background: #e5e7eb;
-        }
-        .pill-disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            pointer-events: none;
-            background: #e5e7eb;
-        }
-        .pill-list-container {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 4px 8px;
-            margin-top: 4px;
-        }
-        .pill-list-container label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #374151;
-            display: block;
-            padding: 4px 0 2px 4px;
-        }
-        .pill-list-container-disabled {
-            opacity: 0.6;
-            background: #f3f4f6;
-        }
-        .formula-preview {
-            margin-top: 12px;
-            background: #f0fdf4;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            border-left: 3px solid #22c55e;
-            color: #166534;
-        }
-        .formula-preview-disabled {
-            opacity: 0.5;
-            background: #f3f4f6;
-            border-left-color: #9ca3af;
-            color: #6b7280;
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid #e5e7eb;
-        }
-        .btn {
-            padding: 8px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-        }
-        .btn-primary {
-            background: #22c55e;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #16a34a;
-        }
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #4b5563;
-        }
-        .btn-secondary:hover {
-            background: #d1d5db;
-        }
-        .info-strip {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            padding: 10px 14px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 13px;
-            color: #1e40af;
-        }
-        .hidden-field {
-            display: none;
-        }
-        .meta-block-divider {
-            border-top: 2px dashed #d1d5db;
-            margin: 20px 0 16px 0;
-        }
-        @media (max-width: 640px) {
-            .form-grid-3 {
-                grid-template-columns: 1fr;
-            }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-width: 320px; color: var(--ink); background: var(--canvas); font-size: 14px; }
+        button, input, select { font: inherit; }
+        button { cursor: pointer; }
+        button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #4c90ff; outline-offset: 2px; }
+        .app-bar { height: 52px; display: flex; align-items: stretch; justify-content: flex-end; color: #edf1f4; background: #26323a; border-bottom: 1px solid #0e161b; box-shadow: inset 0 -1px #40505b; position: sticky; top: 0; z-index: 20; }
+        .app-bar > div { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 14px; border-left: 1px solid #111c23; }
+        .env { color: #f6ba13; font-size: 11px; font-weight: 800; }
+        .app-home { color: #edf1f4; text-decoration: none; }
+        .project-context { min-width: 250px; align-items: flex-start !important; justify-content: center; flex-direction: column; gap: 1px !important; }
+        .project-context strong { font-size: 12px; line-height: 1.1; }
+        .project-context small { font-size: 10px; color: #c5ccd1; }
+        main { width: 100%; padding: 0 28px 36px; }
+        .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 18px 0 12px; border-bottom: 1px solid var(--line); }
+        h1 { margin: 0; font-size: 28px; line-height: 1.15; }
+        .subtitle { margin: 5px 0 0; color: var(--muted); }
+        .breadcrumb { display: flex; align-items: center; gap: 9px; color: #575d65; white-space: nowrap; font-size: 12px; }
+        .top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; align-items: stretch; }
+        .panel { min-width: 0; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 1px 2px rgba(20, 27, 34, .08); }
+        .panel-head { min-height: 60px; display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); background: #fbfbfc; }
+        .panel-head h2 { margin: 0; font-size: 16px; }
+        .panel-icon { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; border: 1px solid var(--line); border-radius: 8px; color: #666d76; background: #fff; }
+        .rule-panel { display: flex; flex-direction: column; min-height: 765px; }
+        .rule-list { margin: 0; padding: 0; list-style: none; }
+        .rule-item { display: grid; grid-template-columns: 1fr 50px; min-height: 74px; border-bottom: 1px solid var(--line); border-left: 4px solid transparent; background: #fff; }
+        .rule-item.active { border-left-color: var(--lime); background: #f8ffed; }
+        .rule-select { display: flex; align-items: center; gap: 12px; border: 0; color: inherit; text-align: left; background: transparent; padding: 13px 14px 13px 18px; }
+        .rule-select:hover { background: rgba(11, 87, 227, .035); }
+        .doc-icon { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid #cfe0ff; border-radius: 8px; color: var(--blue); background: #eef5ff; flex: 0 0 auto; }
+        .rule-copy { min-width: 0; flex: 1; }
+        .rule-line { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+        .rule-name { overflow: hidden; text-overflow: ellipsis; font-weight: 700; color: #174ee4; white-space: nowrap; }
+        .rule-copy small { display: block; margin-top: 6px; color: #666d76; font-style: italic; font-weight: 600; }
+        .badge { display: inline-flex; padding: 3px 8px; border-radius: 999px; font-size: 10px; line-height: 1; font-weight: 800; text-transform: uppercase; border: 1px solid transparent; }
+        .badge.active { color: #08794d; background: #c9f7df; border-color: #9ce9c0; }
+        .badge.draft { color: #555a62; background: #f0f1f3; border-color: #d9dce1; }
+        .badge.inactive { color: #e31c47; background: #ffe0e7; border-color: #ffc1cf; }
+        .badge.generic { color: #164bcc; background: #dbe8ff; border-color: #bdd5ff; }
+        .rule-delete { border: 0; color: var(--danger); background: transparent; font-size: 23px; }
+        .rule-delete:hover { background: #fff1f3; }
+        .rule-footer { margin-top: auto; padding: 15px 20px; border-top: 1px solid var(--line); }
+        .new-rule { width: 100%; min-height: 42px; color: #154de2; font-weight: 700; border: 1px dashed #cbd0d7; border-radius: 9px; background: #fff; }
+        .new-rule:hover { border-color: #8ab3ff; background: #f5f9ff; }
+        .config-body { padding: 22px 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+        .field.full { grid-column: 1 / -1; }
+        .field > label, .field-label { color: #4d535b; font-size: 12px; font-weight: 600; }
+        .control { width: 100%; height: 40px; border: 1px solid #d6d9de; border-radius: 9px; padding: 0 13px; color: #4c5159; background: #fff; }
+        .control:disabled { color: #969ba3; background: #f2f3f5; cursor: not-allowed; }
+        .help { margin: 0; color: #8b9098; font-size: 10px; }
+        .check-card { min-height: 62px; display: flex; align-items: flex-start; gap: 10px; padding: 11px 12px; border: 1px solid #dfe1e5; border-radius: 10px; background: #fff; }
+        .check-card input { width: 16px; height: 16px; margin: 1px 0 0; accent-color: #0a66e9; }
+        .check-copy strong { display: block; color: #555a62; font-size: 12px; font-weight: 500; }
+        .check-copy small { display: block; margin-top: 3px; color: #8a8f97; font-size: 10px; line-height: 1.3; }
+        .warning { color: #ff2020 !important; }
+        .requires { color: #d36c00 !important; }
+        .section-title { margin: 19px 0 10px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 12px; color: #4d535b; font-weight: 700; }
+        .status-grid { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+        .meta-panel { margin-top: 22px; }
+        .meta-head { justify-content: space-between; }
+        .meta-head-copy { display: flex; align-items: center; gap: 12px; }
+        .meta-head-copy p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+        .primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 36px; padding: 0 15px; border: 0; border-radius: 8px; color: #fff; background: var(--green); font-size: 12px; font-weight: 750; }
+        .primary:hover { background: var(--green-dark); }
+        .table-filter { padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--surface-soft); }
+        .table-filter label { display: inline-flex; flex-direction: column; gap: 6px; font-size: 11px; font-weight: 650; color: #545a62; }
+        .table-filter input { width: 310px; height: 38px; border: 1px solid var(--line); border-radius: 8px; padding: 0 12px; background: #fff; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; min-width: 1040px; border-collapse: collapse; }
+        th, td { padding: 13px 16px; border-bottom: 1px solid var(--line); text-align: left; font-size: 12px; vertical-align: top; }
+        thead th { color: #60666e; background: #fafafa; font-weight: 750; }
+        td.center, th.center { text-align: center; }
+        .empty { padding: 34px; text-align: center; color: #7b8189; }
+        .remove-row { border: 0; background: transparent; color: var(--danger); font-size: 19px; }
+        .table-footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 13px 20px; color: var(--muted); font-size: 12px; }
+        .pager { display: flex; gap: 8px; }
+        .secondary { min-height: 34px; padding: 0 14px; border: 1px solid #0b5ee6; border-radius: 8px; color: #0b5ee6; background: #fff; font-weight: 650; }
+        .secondary:disabled { opacity: .45; cursor: not-allowed; }
+        .modal-overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 14px; z-index: 100; background: rgba(16, 20, 24, .55); }
+        .modal-overlay.show { display: flex; }
+        .modal { width: min(980px, 100%); max-height: 96vh; display: flex; flex-direction: column; overflow: hidden; border-radius: 14px; background: #fff; box-shadow: 0 22px 80px rgba(0, 0, 0, .32); }
+        .modal-head { min-height: 53px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
+        .modal-head h2 { margin: 0; font-size: 17px; }
+        .modal-close { width: 32px; height: 32px; border: 0; color: #70767e; background: transparent; font-size: 24px; }
+        .modal-scroll { overflow-y: auto; padding: 0 15px 16px; }
+        .info-strip { margin-bottom: 10px; padding: 11px 15px; border: 1px solid #bae86a; border-radius: 8px; color: #3f6c1b; background: #f5ffe8; font-size: 12px; }
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+        .modal .control { height: 40px; font-size: 12px; font-weight: 600; }
+        .modal-field { margin-top: 10px; }
+        .formula-box { min-height: 70px; display: flex; align-items: flex-start; flex-wrap: wrap; gap: 7px; padding: 10px; border: 1px solid #d9dce1; border-radius: 8px; background: #fff; }
+        .formula-empty { color: #999ea6; font-size: 12px; }
+        .formula-chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border: 1px solid #b6d0ff; border-radius: 999px; color: #174dbd; background: #eaf2ff; font-size: 11px; }
+        .formula-chip button { border: 0; color: inherit; background: transparent; padding: 0; }
+        .selection-note { margin: 8px 0 9px; color: #ff1717; font-size: 12px; }
+        .field-group { margin-top: 8px; padding: 9px 10px 10px; border: 1px solid #e0e2e6; border-radius: 8px; background: #fbfbfc; }
+        .field-group.disabled { opacity: .55; }
+        .group-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 31px; }
+        .group-head h3 { margin: 0; color: #4d535b; font-size: 12px; }
+        .group-search { position: relative; width: min(235px, 43%); }
+        .group-search svg { position: absolute; left: 9px; top: 50%; width: 14px; height: 14px; transform: translateY(-50%); color: #8a9098; pointer-events: none; }
+        .group-search input { width: 100%; height: 31px; padding: 0 28px 0 29px; border: 1px solid #cfd3d9; border-radius: 999px; color: #4b5057; background: #fff; font-size: 11px; }
+        .clear-search { display: none; position: absolute; top: 3px; right: 4px; width: 25px; height: 25px; border: 0; border-radius: 50%; color: #777d85; background: transparent; }
+        .clear-search.visible { display: block; }
+        .pill-list { display: flex; align-items: center; gap: 8px; padding: 7px 1px 4px; overflow-x: auto; scrollbar-width: thin; min-height: 47px; }
+        .pill { flex: 0 0 auto; padding: 6px 11px; border: 1px solid #d9dce1; border-radius: 999px; color: #555b63; background: #fff; font-size: 11px; white-space: nowrap; }
+        .pill:hover, .pill.selected { color: #104fd0; border-color: #83b0ff; background: #edf5ff; }
+        .no-fields { padding: 8px 3px; color: #8c9198; font-size: 11px; }
+        .formula-preview { margin-top: 9px; padding: 8px 10px; border-left: 3px solid var(--lime); color: #4e545b; background: #fbfbfc; font-size: 11px; line-height: 1.4; }
+        .formula-preview strong { display: block; color: #373c42; }
+        .modal-footer { min-height: 62px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 10px 15px; border-top: 1px solid var(--line); background: #fff; }
+        .cancel { min-height: 36px; padding: 0 15px; border: 1px solid #075eff; border-radius: 8px; color: #075eff; background: #fff; font-size: 12px; font-weight: 700; }
+        .hidden { display: none !important; }
+        @media (max-width: 1100px) { .top-grid { grid-template-columns: 1fr; } .rule-panel { min-height: auto; } }
+        @media (max-width: 720px) {
+            main { padding: 0 14px 28px; }
+            .app-bar .app-home, .app-bar .env-wrap { display: none; }
+            .project-context { min-width: 0; }
+            .page-head { align-items: flex-start; flex-direction: column; }
+            h1 { font-size: 24px; }
+            .form-grid, .modal-grid { grid-template-columns: 1fr; }
+            .field.full { grid-column: auto; }
+            .meta-head { align-items: flex-start; flex-direction: column; }
+            .primary { width: 100%; }
+            .group-head { align-items: flex-start; flex-direction: column; }
+            .group-search { width: 100%; }
+            .table-filter input { width: min(100%, 310px); }
+            .table-footer { align-items: flex-start; flex-direction: column; }
         }
     </style>
 </head>
 <body>
-
-    <main class="h-full min-w-0 w-full overflow-x-hidden overflow-y-auto bg-zinc-100 px-3 py-4 sm:px-4 lg:px-8" aria-labelledby="embarque-title">
-
-        <!-- CABEÇALHO -->
-        <div class="flex flex-col gap-3 border-b border-zinc-200 pb-3 md:flex-row md:items-center md:justify-between">
-            <div>
-                <h1 id="embarque-title" class="text-2xl font-semibold text-zinc-900 sm:text-3xl">Embarque de Metadados</h1>
-                <p class="mt-1 text-sm text-zinc-500">Configure regras, chaves e campos de metadados para exportação.</p>
-            </div>
-            <nav class="text-sm text-muted-foreground" aria-label="Breadcrumb">
-                <ol class="flex flex-wrap items-center gap-1">
-                    <li class="flex items-center gap-1">
-                        <a href="/Docz/app/painel" class="hover:underline hover:text-foreground text-foreground/70 transition-colors font-normal">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                        </a>
-                        <span class="mx-1 text-foreground/40">/</span>
-                    </li>
-                    <li class="flex items-center gap-1">
-                        <span class="text-zinc-500">Configurações</span>
-                        <span class="mx-1 text-foreground/40">/</span>
-                    </li>
-                    <li class="flex items-center gap-1">
-                        <span class="text-zinc-700 font-medium">Embarque de Metadados</span>
-                    </li>
-                </ol>
-            </nav>
-        </div>
-
-        <!-- DOIS CARDS -->
-        <div class="mt-6 grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-2">
-
-            <!-- Card 1: Lista de Regras -->
-            <section class="min-w-0 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm flex flex-col" aria-labelledby="regras-title">
-                <header class="flex items-center justify-between gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-6">
-                    <div class="flex min-w-0 items-center gap-3">
-                        <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                        </span>
-                        <h2 id="regras-title" class="truncate text-lg font-semibold text-zinc-900">Lista de Regras Cadastradas</h2>
-                    </div>
-                </header>
-
-                <ul class="divide-y divide-zinc-200 flex-1" id="ruleList" aria-label="Regras cadastradas"></ul>
-
-                <div class="border-t border-zinc-200 p-4 sm:px-6 mt-auto">
-                    <button type="button" id="newRuleBtn" class="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 px-4 py-3 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 12H3"></path><path d="M16 6H3"></path><path d="M16 18H3"></path><path d="M18 9v6"></path><path d="M21 12h-6"></path></svg> Nova Regra Dinâmica
-                    </button>
-                </div>
+    <header class="app-bar" aria-label="Barra do sistema DocZ">
+        <div class="env-wrap"><span class="env">HOMOLOGAÇÃO MYSQL</span></div>
+        <div><a class="app-home" href="#" aria-label="Voltar para Home">⌂ &nbsp; Voltar para Home</a></div>
+        <div class="project-context"><strong>Agência Nacional de Mineração</strong><small>ANM NACIONAL - REGIONAL SP (146)</small></div>
+        <div aria-label="Ajuda">?</div><div aria-label="Menu">☰</div>
+    </header>
+    <main>
+        <header class="page-head">
+            <div><h1>Embarque de Metadados</h1><p class="subtitle">Configure regras, chaves e campos de metadados para exportação.</p></div>
+            <nav class="breadcrumb" aria-label="Navegação estrutural"><span>⌂</span><span>/</span><span>Projetos</span><span>/</span><strong>Embarque de Metadados</strong></nav>
+        </header>
+        <div class="top-grid">
+            <section class="panel rule-panel" aria-labelledby="rules-title">
+                <header class="panel-head"><span class="panel-icon">♧</span><h2 id="rules-title">Lista de Regras Cadastradas</h2></header>
+                <ul id="ruleList" class="rule-list"></ul>
+                <footer class="rule-footer"><button id="newRuleBtn" class="new-rule" type="button">☷＋ &nbsp; Nova regra dinâmica</button></footer>
             </section>
-
-            <!-- Card 2: Configurações do Modelo de Dados -->
-            <section class="min-w-0 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm flex flex-col" aria-labelledby="configuracao-title">
-                <header class="flex items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-6">
-                    <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500" aria-hidden="true">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-                    </span>
-                    <h2 id="configuracao-title" class="text-lg font-semibold text-zinc-900">Configurações do Modelo de Dados</h2>
-                </header>
-
-                <form class="space-y-4 p-4 sm:p-6 flex-1" id="configForm" aria-describedby="regra-selecionada">
-                    <p id="regra-selecionada" class="sr-only">Editando regra selecionada</p>
-
-                    <!-- Linha 1: Projeto (linha completa) -->
-                    <div class="grid grid-cols-1 gap-4">
-                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-                            <span>Projeto</span>
-                            <select id="projetoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-                                <option disabled>Selecione um projeto</option>
-                                <option>DEMO</option>
-                                <option>Presi</option>
-                                <option>GDI Connect</option>
-                            </select>
-                        </label>
+            <section class="panel" aria-labelledby="config-title">
+                <header class="panel-head"><span class="panel-icon">☰</span><h2 id="config-title">Configuração do Modelo de Dados</h2></header>
+                <form id="configForm" class="config-body">
+                    <div class="form-grid">
+                        <div class="field full"><label for="projectField">Projeto</label><select id="projectField" class="control"><option>ANM NACIONAL - REGIONAL SP</option><option>SES-DF</option><option>DEMO</option></select></div>
+                        <div class="field"><label for="ruleNameField">Nome da Regra</label><input id="ruleNameField" class="control" type="text"></div>
+                        <label class="check-card"><input id="genericRuleField" type="checkbox"><span class="check-copy"><strong>Regra Genérica</strong><small>Apenas uma por projeto.</small></span></label>
+                        <div class="field"><label for="decisionKeyField">Chave de Decisão</label><select id="decisionKeyField" class="control"><option value="">Selecione uma chave</option><option>TIPO DOCUMENTAL</option><option>TIPOLOGIA DO ARQUIVO</option><option>STATUS DA GESTÃO DOCUMENTAL</option></select></div>
+                        <div class="field"><label for="decisionValueField">Selecionar</label><select id="decisionValueField" class="control"><option value="">Selecione uma opção</option><option>DOSSIÊ</option><option>PROCESSO</option><option>DOCUMENTO</option></select></div>
+                        <div class="field"><label for="projectObjectField">Selecione o Campo do Projeto</label><select id="projectObjectField" class="control"><option value="">Selecione um campo</option><option>Identificador SOS</option><option>Localização</option><option>Status</option><option>Serviço</option><option>Tipo Objeto</option></select><p class="help">Identifica no documento o valor avaliado pela chave de decisão.</p></div>
                     </div>
-
-                    <!-- Linha 2: Nome da Regra + Regra Genérica (checkbox card) -->
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-                            <span>Nome da Regra</span>
-                            <input type="text" id="nomeRegraField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500" placeholder="Informe o nome da regra">
-                        </label>
-                        <div class="flex items-end">
-                            <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition w-full">
-                                <input type="checkbox" id="regraGenericaCheckbox" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
-                                <div class="card-content">
-                                    <span class="font-medium text-zinc-700">Regra Genérica</span>
-                                    <p class="text-xs text-zinc-500">Define se a regra é genérica</p>
-                                </div>
-                            </label>
-                        </div>
+                    <h3 class="section-title">Parâmetros de assinatura</h3>
+                    <div class="form-grid">
+                        <label class="check-card"><input id="autoSignatureField" type="checkbox"><span class="check-copy"><strong>Assinatura Automática</strong><small>Habilita esta regra para o robô de assinatura.</small></span></label>
+                        <label class="check-card"><input id="visibleSignatureField" type="checkbox"><span class="check-copy"><strong>Assinatura Visível</strong><small>Aplica a chancela visível sobre a camada gráfica do PDF.</small></span></label>
+                        <label class="check-card"><input id="lastPageField" type="checkbox"><span class="check-copy"><strong>Assinatura na Última Página</strong><small>Requer assinatura visível. Sem marcar, o assinador usa a primeira página.</small></span></label>
+                        <label class="check-card"><input id="requireTypologyField" type="checkbox"><span class="check-copy"><strong>Exigir Tipologia do Arquivo</strong><small>Verifica o tipo documental antes de executar o motor.</small></span></label>
+                        <label class="check-card"><input id="timestampField" type="checkbox"><span class="check-copy"><strong>Carimbo de Tempo</strong><small>Sincroniza a data com a autoridade certificadora oficial.</small><small class="warning">Atenção: a utilização do Carimbo de Tempo possui custo e poderá gerar cobrança.</small></span></label>
+                        <label class="check-card"><input id="activationField" type="checkbox"><span class="check-copy"><strong>Ativação da Configuração</strong><small>Autoriza o robô a ler os parâmetros desta regra.</small><small class="requires">Requer uma Regra Genérica ativa no projeto.</small></span></label>
                     </div>
-
-                    <!-- Linha 3: Selecione o Campo do Projeto + Chave de Decisão -->
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-                            <span>Selecione o Campo do Projeto</span>
-                            <select id="campoProjetoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-                                <option disabled selected>Selecione um campo</option>
-                                <option value="Identificador SOS">Identificador SOS</option>
-                                <option value="Localização">Localização</option>
-                                <option value="Status">Status</option>
-                                <option value="Serviço">Serviço</option>
-                                <option value="ID Cliente">ID Cliente</option>
-                                <option value="Descrição">Descrição</option>
-                                <option value="Departamento">Departamento</option>
-                                <option value="Tipo Objeto">Tipo Objeto</option>
-                                <option value="Lacre 01">Lacre 01</option>
-                                <option value="Número do Processo">Número do Processo</option>
-                                <option value="Situação Processo">Situação Processo</option>
-                                <option value="Volume">Volume</option>
-                                <option value="Anexo">Anexo</option>
-                                <option value="Nome do Interessado">Nome do Interessado</option>
-                                <option value="Ano Inicial">Ano Inicial</option>
-                                <option value="Ano Final">Ano Final</option>
-                                <option value="Classificação">Classificação</option>
-                                <option value="Fase Corrente">Fase Corrente</option>
-                                <option value="Fase Intermediária">Fase Intermediária</option>
-                                <option value="Destinação Final">Destinação Final</option>
-                                <option value="Data Cadastro">Data Cadastro</option>
-                            </select>
-                        </label>
-                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-                            <span>Chave de Decisão</span>
-                            <select id="chaveDecisaoField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-                                <option>Selecione uma chave</option>
-                                <option>Tipo Documento</option>
-                                <option>Tipologia Arquivo</option>
-                            </select>
-                        </label>
+                    <div class="form-grid status-grid">
+                        <div class="field"><label for="finalStatusField">Status Final pós Assinatura</label><select id="finalStatusField" class="control"><option>INDEXADO</option><option>ASSINADO</option><option>ENVIADO PARA PRESERVAÇÃO</option></select></div>
+                        <div class="field"><label for="ruleStatusField">Status da Regra</label><select id="ruleStatusField" class="control"><option>Rascunho</option><option>Ativa</option><option>Inativa</option></select></div>
                     </div>
-
-                    <!-- Linha 4: Selecionar -->
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-                            <span>Selecionar</span>
-                            <select id="selecionarField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-                                <option disabled selected>Selecione um tipo</option>
-                                <option>1| Resolução</option>
-                                <option>2| Contrato</option>
-                                <option>3| Ofício</option>
-                                <option>4| Portaria</option>
-                            </select>
-                        </label>
-                    </div>
-
-                    <hr class="border-zinc-200">
-
-                    <!-- Linha 5: Checkboxes Validações -->
-                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                        <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
-                            <input type="checkbox" id="exigirTipologia" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
-                            <div class="card-content">
-                                <span class="font-medium text-zinc-700">Exigir Tipologia do Arquivo</span>
-                                <p class="text-xs text-zinc-500">Obriga a seleção da tipologia</p>
-                            </div>
-                        </label>
-                        <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
-                            <input type="checkbox" id="ativarValidacao" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
-                            <div class="card-content">
-                                <span class="font-medium text-zinc-700">Ativar Validação</span>
-                                <p class="text-xs text-zinc-500">Valida os campos obrigatórios</p>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- Linha 6: Checkboxes Assinatura -->
-                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                        <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
-                            <input type="checkbox" id="assinaturaUltimaPagina" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
-                            <div class="card-content">
-                                <span class="font-medium text-zinc-700">Assinatura na Última Página</span>
-                                <p class="text-xs text-zinc-500">Adiciona assinatura digital</p>
-                            </div>
-                        </label>
-                        <label class="checkbox-card flex items-start gap-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 transition">
-                            <input type="checkbox" id="carimboTempo" class="mt-1 h-5 w-5 rounded border-zinc-300 text-blue-600 focus:ring-2 focus:ring-blue-500">
-                            <div class="card-content">
-                                <span class="font-medium text-zinc-700">Carimbo de Tempo</span>
-                                <p class="text-xs text-zinc-500">Adiciona timestamp de validação</p>
-                            </div>
-                        </label>
-                    </div>
-
-                    <hr class="border-zinc-200">
-
-                    <!-- Linha 7: Status Final + Status da Regra -->
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-                            <span>Status Final</span>
-                            <select id="statusFinalField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-                                <option disabled selected>Selecione um status</option>
-                                <option>Enviar para o SEI</option>
-                                <option>Enviar para o Eternal</option>
-                            </select>
-                        </label>
-                        <label class="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
-                            <span>Status da Regra</span>
-                            <select id="statusRegraField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500">
-                                <option>Ativa</option>
-                                <option>Rascunho</option>
-                                <option>Inativa</option>
-                            </select>
-                        </label>
-                    </div>
-
                 </form>
             </section>
-
         </div>
-
-        <!-- TABELA DE CAMPOS CONFIGURADOS -->
-        <section class="mt-6 min-w-0 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm" aria-labelledby="campos-title">
-            <header class="flex flex-col gap-4 border-b border-zinc-200 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
-                <div class="min-w-0">
-                    <div class="flex items-center gap-3">
-                        <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-500" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                        </span>
-                        <div>
-                            <h2 id="campos-title" class="text-lg font-semibold text-zinc-900">Campos Configurados por Esta Regra</h2>
-                            <p class="mt-1 text-sm text-zinc-500">Preenchimento dinâmico conforme a tabela do tipo documental selecionado.</p>
-                        </div>
-                    </div>
-                </div>
-                <button id="addMetaBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer bg-green-500 hover:bg-green-600 text-white focus-visible:ring-green-400 w-full lg:w-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    Adicionar Metadado
-                </button>
+        <section class="panel meta-panel" aria-labelledby="meta-title">
+            <header class="panel-head meta-head">
+                <div class="meta-head-copy"><span class="panel-icon">⚙</span><div><h2 id="meta-title">Campos Configurados por esta Regra</h2><p>Preenchimento dinâmico conforme o tipo documental selecionado.</p></div></div>
+                <button id="addMetadataBtn" class="primary" type="button">＋ &nbsp; Adicionar Metadado</button>
             </header>
-
-            <div class="border-b border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-6">
-                <label class="flex max-w-sm flex-col gap-2 text-sm font-medium text-zinc-700">
-                    <span>Buscar Metadado</span>
-                    <span class="relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                        <input id="searchField" class="h-11 w-full rounded-xl border border-zinc-200 bg-white pl-10 pr-3 text-sm outline-none transition focus:border-blue-500" placeholder="Filtrar..." aria-label="Filtrar campos configurados">
-                    </span>
-                </label>
-            </div>
-
-            <div class="hidden min-w-0 overflow-x-auto md:block">
-                <table class="min-w-full divide-y divide-zinc-200 text-sm">
-                    <thead class="bg-zinc-50 text-left text-zinc-500">
-                        <tr>
-                            <th scope="col" class="px-5 py-4 font-bold">Metadado Destino</th>
-                            <th scope="col" class="px-5 py-4 font-bold">Origem</th>
-                            <th scope="col" class="px-5 py-4 font-bold">Campo DocZ</th>
-                            <th scope="col" class="px-5 py-4 text-center font-bold">ID Banco</th>
-                            <th scope="col" class="px-5 py-4 text-center font-bold">Valor Fixo</th>
-                            <th scope="col" class="px-5 py-4 text-center font-bold">Nulos</th>
-                            <th scope="col" class="px-5 py-4 text-center font-bold">Obrig.</th>
-                            <th scope="col" class="px-5 py-4 text-center font-bold">Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="metaTable" class="divide-y divide-zinc-200 bg-white"></tbody>
-                </table>
-            </div>
-
-            <div class="space-y-4 p-4 sm:p-6 md:hidden" id="mobileMetaCards"></div>
-
-            <footer class="flex flex-col gap-3 border-t border-zinc-200 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between">
-                <div class="text-sm text-zinc-500" aria-live="polite">
-                    <p id="paginationInfo">Exibindo 0-0 de 0 metadados</p>
-                    <p class="mt-0.5">Página <span id="currentPageDisplay">1</span> de <span id="totalPagesDisplay">1</span></p>
-                </div>
-                <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-                    <button id="prevPageBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-500 w-full sm:w-auto" disabled>Anterior</button>
-                    <button id="nextPageBtn" class="inline-flex items-center justify-center gap-2 font-semibold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-blue-600 text-blue-600 hover:bg-blue-50 focus-visible:ring-blue-500 w-full sm:w-auto" disabled>Próxima</button>
-                </div>
-            </footer>
+            <div class="table-filter"><label>Buscar Metadado<input id="tableSearch" type="search" placeholder="Filtrar campos configurados..."></label></div>
+            <div class="table-wrap"><table>
+                <thead><tr><th>Metadado Destino</th><th>Origem</th><th>Campo DocZ</th><th class="center">ID Banco</th><th class="center">Valor Fixo</th><th class="center">Nulos</th><th class="center">Obrig.</th><th class="center">Ação</th></tr></thead>
+                <tbody id="metadataTable"></tbody>
+            </table></div>
+            <footer class="table-footer"><span id="paginationInfo">Exibindo 0-0 de 0 metadados</span><div class="pager"><button id="previousPage" class="secondary" type="button">Anterior</button><button id="nextPage" class="secondary" type="button">Próxima</button></div></footer>
         </section>
-
     </main>
-
-    <!-- MODAL ADICIONAR METADADO -->
-    <div id="modalOverlay" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Adicionar Metadado</h2>
-                <span class="modal-close" id="modalCloseBtn">×</span>
-            </div>
-
-            <div class="info-strip">Defina o metadado de destino, a origem do valor e como o sistema deve tratar campos vazios, concatenação e obrigatoriedade.</div>
-
-            <div class="form-grid-3">
-                <div class="field">
-                    <label>Metadado Destino *</label>
-                    <select id="modalDestino">
-                        <option>Assunto</option>
-                        <option>Título</option>
-                        <option>Autor (Nome)</option>
-                        <option>Classe</option>
-                        <option>Data de Produção</option>
-                        <option>Destinação Final</option>
-                        <option>Prazo de Guarda</option>
-                    </select>
+    <div id="metadataModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <section class="modal">
+            <header class="modal-head"><h2 id="modalTitle">Adicionar Metadado</h2><button id="closeModal" class="modal-close" type="button" aria-label="Fechar">×</button></header>
+            <div class="modal-scroll">
+                <div class="info-strip">Defina o metadado de destino, a origem do valor e como o sistema deve tratar campos vazios, concatenação e obrigatoriedade.</div>
+                <div class="modal-grid">
+                    <div class="field"><label for="destinationField">Metadado destino *</label><select id="destinationField" class="control"><option>Assunto</option><option>Autor (nome)</option><option>Classe</option><option>Data de produção</option><option>Destinação final</option><option>Identificador do registro</option><option>Prazo de guarda</option><option>Título</option></select></div>
+                    <div class="field"><label for="sourceField">Origem do valor *</label><select id="sourceField" class="control"><option>Campo Único</option><option>Múltiplos Campos</option><option>Campo Fixo</option></select></div>
+                    <div class="field"><label for="requiredField">Obrigatoriedade *</label><select id="requiredField" class="control"><option>Sim</option><option>Não</option></select></div>
                 </div>
-                <div class="field">
-                    <label>Origem do Valor *</label>
-                    <select id="modalOrigem">
-                        <option>Campo Único</option>
-                        <option>Múltiplos Campos</option>
-                        <option>Campo Fixo</option>
-                    </select>
+                <div class="field modal-field"><label for="fixedValueField">Valor Fixo *</label><input id="fixedValueField" class="control" type="text" placeholder="Selecione 'Campo Fixo' para habilitar" disabled></div>
+                <div id="formulaArea">
+                    <div class="field modal-field"><span class="field-label">Campos selecionados para a fórmula</span><div id="formulaFields" class="formula-box"></div></div>
+                    <p id="selectionNote" class="selection-note">ⓘ &nbsp; Selecione apenas um campo para Campo Único</p>
+                    <div id="fieldGroups"></div><div id="formulaPreview" class="formula-preview"></div>
                 </div>
-                <div class="field">
-                    <label>Obrigatoriedade *</label>
-                    <select id="modalObrigatorio">
-                        <option>Sim</option>
-                        <option>Não</option>
-                    </select>
+                <div class="modal-grid modal-field">
+                    <div class="field"><label for="nullTreatmentField">Tratamento de nulos *</label><select id="nullTreatmentField" class="control"><option>Ignorar Campos Nulos</option><option>Substituir por Valor Padrão</option><option>Bloquear Gravação</option></select></div>
+                    <div class="field"><label for="nullDefaultField">Valor padrão para nulos</label><input id="nullDefaultField" class="control" placeholder="Ex.: NÃO INFORMADO" disabled></div>
+                    <div class="field"><label for="formatField">Formato da saída</label><select id="formatField" class="control"><option>Data - DD/MM/AAAA</option><option>Texto simples</option><option>Caixa Alta (Maiúsculo)</option><option>Caixa Baixa (Minúsculo)</option></select></div>
                 </div>
             </div>
-
-            <!-- Campo Fixo -->
-            <div class="field" id="valorFixoContainer">
-                <label>Valor Fixo *</label>
-                <input type="text" id="modalValorFixo" placeholder="Digite o valor fixo" class="w-full">
-            </div>
-
-            <div class="field">
-                <label>Separador da Concatenação</label>
-                <select id="modalSeparador">
-                    <option>Pipe |</option>
-                    <option>Hífen -</option>
-                    <option>Barra /</option>
-                    <option>Vírgula ,</option>
-                    <option>Sem Separador</option>
-                </select>
-            </div>
-
-            <div id="camposSelecionadosContainer">
-                <div class="field">
-                    <label>Campos Selecionados para a Fórmula</label>
-                    <div class="formula-box" id="modalFormulaChips"></div>
-                </div>
-
-                <!-- BLOCO 1: METADADOS DE OBJETOS DO PROJETO (com siglas) -->
-                <div class="pill-list-container" id="pillContainer1">
-                    <label>Metadados de Objetos do Projeto</label>
-                    <div class="pill-list" id="modalAvailableFields1"></div>
-                </div>
-
-                <!-- BLOCO 2: METADADOS DO ARQUIVO (sem siglas) -->
-                <div class="pill-list-container" id="pillContainer2">
-                    <label>Metadados do Arquivo</label>
-                    <div class="pill-list" id="modalAvailableFields2"></div>
-                </div>
-
-                <!-- BLOCO 3: INFORMAÇÕES DO PROJETO (sem siglas) -->
-                <div class="pill-list-container" id="pillContainer3">
-                    <label>Informações do Projeto</label>
-                    <div class="pill-list" id="modalAvailableFields3"></div>
-                </div>
-
-                <!-- BLOCO 4: INFORMAÇÕES DO CLIENTE (sem siglas) -->
-                <div class="pill-list-container" id="pillContainer4">
-                    <label>Informações do Cliente</label>
-                    <div class="pill-list" id="modalAvailableFields4"></div>
-                </div>
-
-                <div class="formula-preview" id="modalFormulaPreview"></div>
-            </div>
-
-            <div class="form-grid-3" style="margin-top:16px">
-                <div class="field">
-                    <label>Tratamento de Nulos *</label>
-                    <select id="modalNulos">
-                        <option>Ignorar Nulos</option>
-                        <option>Substituir por Valor Padrão</option>
-                        <option>Bloquear Gravação</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label>Valor Padrão para Nulos</label>
-                    <input id="modalValorPadrao" placeholder="Ex.: NÃO INFORMADO">
-                </div>
-                <div class="field">
-                    <label>Formato da Saída</label>
-                    <select id="modalFormato">
-                        <option>Data - DD/MM/AAAA</option>
-                        <option>Caixa Alta (Maiúsculo)</option>
-                        <option>Caixa Baixa (Minúsculo)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="field">
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" id="modalTrim" checked>
-                    <span>Aplicar Trim Automático (Remover espaços desnecessários)</span>
-                </label>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="modalCancelBtn">Cancelar</button>
-                <button class="btn btn-primary" id="modalSaveBtn">Adicionar Metadado</button>
-            </div>
-        </div>
+            <footer class="modal-footer"><button id="cancelModal" class="cancel" type="button">Cancelar</button><button id="saveMetadata" class="primary" type="button">Adicionar Metadado</button></footer>
+        </section>
     </div>
-
     <script>
-        // ===== DADOS =====
-        // Mapeamento dos IDs para o card "Metadados de Objetos do Projeto" (com siglas)
-        const doczFieldIdsWithSiglas = {
-            'Tipo Documental': 'C1',
-            'Nome do Paciente': 'C2',
-            'Nome da Mãe': 'C3',
-            'Data do Atendimento': 'C4',
-            'Número da Guia': 'C5',
-            'Médico Responsável': 'C6',
-            'Código de Classificação': 'C7',
-            'Destinação Final': 'C8',
-            'Prazo de Guarda': 'C9',
-            'Data da Última Movimentação': 'C10',
-            'Nome do Servidor': 'C11',
-            'Unidade de Saúde': 'C12',
-            'Matrícula': 'C13',
-            'Órgão': 'C14',
-            'Setor': 'C15'
-        };
-
-        // Mapeamento para os demais cards (sem siglas)
-        const doczFieldIdsWithoutSiglas = {
-            'Tipologia': 'Tipologia',
-            'Data': 'Data',
-            'Ano': 'Ano',
-            'Número': 'Número',
-            'Volume': 'Volume',
-            'Páginas': 'Páginas',
-            'Cliente': 'Cliente',
-            'Produtor': 'Produtor',
-            'Idioma': 'Idioma',
-            'Projeto': 'Projeto',
-            'Código do Projeto': 'Código do Projeto',
-            'Nome do Cliente': 'Nome do Cliente',
-            'CPF/CNPJ': 'CPF/CNPJ',
-            'Endereço': 'Endereço',
-            'Telefone': 'Telefone',
-            'E-mail': 'E-mail'
-        };
-
-        // Definição dos grupos de campos
-        const fieldGroups = {
-            group1: ['Tipo Documental', 'Nome do Paciente', 'Nome da Mãe', 'Data do Atendimento', 'Número da Guia',
-                'Médico Responsável', 'Código de Classificação', 'Destinação Final', 'Prazo de Guarda',
-                'Data da Última Movimentação', 'Nome do Servidor', 'Unidade de Saúde', 'Matrícula', 'Órgão',
-                'Setor'
-            ],
-            group2: ['Tipologia', 'Data', 'Ano', 'Número', 'Volume', 'Páginas'],
-            group3: ['Cliente', 'Produtor', 'Idioma', 'Projeto', 'Código do Projeto'],
-            group4: ['Nome do Cliente', 'CPF/CNPJ', 'Endereço', 'Telefone', 'E-mail']
-        };
-
-        let rules = [{
-            id: 1,
-            nome: 'Regra Genérica',
-            status: 'Ativa',
-            metadados: 3,
-            projeto: 'DEMO',
-            nomeRegra: 'Minha Regra 1',
-            regraGenerica: false,
-            campoProjeto: 'Nome do Paciente',
-            chaveDecisao: 'Tipo Documento',
-            selecionar: '1| Resolução',
-            exigirTipologia: false,
-            ativarValidacao: true,
-            assinaturaUltimaPagina: false,
-            carimboTempo: false,
-            statusFinal: 'Enviar para o SEI',
-            statusRegra: 'Ativa',
-            rows: [
-                ['Autor (Nome)', 'Campo Único', 'Identificador SOS', 'Identificador SOS', '—', 'Ignorar Nulos', 'Sim'],
-                ['Assunto', 'Campo Único', 'Identificador SOS', 'Identificador SOS', '—', 'Ignorar Nulos', 'Sim'],
-                ['Autor (Nome)', 'Concatenação Dinâmica', 'Identificador SOS + Localização + Status', 'Identificador SOS + Localização + Status', '—',
-                    'Ignorar Nulos', 'Sim'
-                ]
-            ]
-        }, {
-            id: 2,
-            nome: 'Regra Fábio',
-            status: 'Ativa',
-            metadados: 2,
-            projeto: 'Presi',
-            nomeRegra: 'Regra do Fábio',
-            regraGenerica: true,
-            campoProjeto: 'Número da Guia',
-            chaveDecisao: 'Tipologia Arquivo',
-            selecionar: '2| Contrato',
-            exigirTipologia: true,
-            ativarValidacao: false,
-            assinaturaUltimaPagina: true,
-            carimboTempo: false,
-            statusFinal: 'Enviar para o Eternal',
-            statusRegra: 'Ativa',
-            rows: [
-                ['Título', 'Campo Único', 'Número da Guia', 'Número da Guia', '—', 'Ignorar Nulos', 'Sim'],
-                ['Classe', 'Preenchimento Manual', 'Código de Classificação', 'Código de Classificação', '—', 'Ignorar Nulos', 'Sim']
-            ]
-        }];
-
-        let currentRuleId = 1;
-        let currentPage = 1;
-        const itemsPerPage = 5;
-
-        // ===== RENDER =====
-        function getRule(id) {
-            return rules.find(r => r.id === id);
-        }
-
-        function getCurrentRule() {
-            return getRule(currentRuleId);
-        }
-
-        function renderRules() {
-            const container = document.getElementById('ruleList');
-            container.innerHTML = '';
-
-            rules.forEach(rule => {
-                const isActive = rule.id === currentRuleId;
-                const li = document.createElement('li');
-                li.className =
-                    `flex items-stretch border-l-4 ${isActive ? 'border-lime-500 bg-lime-50/60' : 'border-transparent bg-white'}`;
-
-                li.innerHTML = `
-                    <button type="button" class="flex min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left transition hover:bg-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset sm:px-6" data-rule-id="${rule.id}">
-                        <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-blue-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
-                        </span>
-                        <span class="min-w-0 flex-1">
-                            <span class="flex flex-wrap items-center gap-2">
-                                <span class="font-semibold text-blue-700">${rule.nome}</span>
-                                <span class="bg-emerald-100 text-emerald-700 border border-emerald-200 inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold">${rule.status.toUpperCase()}</span>
-                            </span>
-                            <span class="mt-1 block text-sm italic text-zinc-500">${rule.metadados} metadados mapeados</span>
-                        </span>
-                    </button>
-                    <button type="button" class="delete-rule inline-flex w-14 shrink-0 items-center justify-center text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-inset" data-rule-id="${rule.id}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-                    </button>
-                `;
-
-                container.appendChild(li);
-            });
-
-            // Event listeners
-            document.querySelectorAll('[data-rule-id]').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    if (e.target.closest('.delete-rule')) return;
-                    const id = parseInt(this.dataset.ruleId);
-                    currentRuleId = id;
-                    renderAll();
-                });
-            });
-
-            document.querySelectorAll('.delete-rule').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const id = parseInt(this.dataset.ruleId);
-                    if (confirm(`Remover regra "${getRule(id).nome}"?`)) {
-                        rules = rules.filter(r => r.id !== id);
-                        if (currentRuleId === id) {
-                            currentRuleId = rules.length > 0 ? rules[0].id : null;
-                        }
-                        renderAll();
-                    }
-                });
-            });
-        }
-
-        function renderConfigForm() {
-            const rule = getCurrentRule();
-            if (!rule) return;
-
-            document.getElementById('projetoField').value = rule.projeto || '';
-            document.getElementById('nomeRegraField').value = rule.nomeRegra || '';
-            document.getElementById('regraGenericaCheckbox').checked = rule.regraGenerica || false;
-            document.getElementById('campoProjetoField').value = rule.campoProjeto || '';
-            document.getElementById('chaveDecisaoField').value = rule.chaveDecisao || '';
-            document.getElementById('selecionarField').value = rule.selecionar || '';
-            document.getElementById('exigirTipologia').checked = rule.exigirTipologia || false;
-            document.getElementById('ativarValidacao').checked = rule.ativarValidacao || false;
-            document.getElementById('assinaturaUltimaPagina').checked = rule.assinaturaUltimaPagina || false;
-            document.getElementById('carimboTempo').checked = rule.carimboTempo || false;
-            document.getElementById('statusFinalField').value = rule.statusFinal || '';
-            document.getElementById('statusRegraField').value = rule.statusRegra || 'Ativa';
-        }
-
-        function saveConfigForm() {
-            const rule = getCurrentRule();
-            if (!rule) return;
-
-            rule.projeto = document.getElementById('projetoField').value;
-            rule.nomeRegra = document.getElementById('nomeRegraField').value;
-            rule.regraGenerica = document.getElementById('regraGenericaCheckbox').checked;
-            rule.campoProjeto = document.getElementById('campoProjetoField').value;
-            rule.chaveDecisao = document.getElementById('chaveDecisaoField').value;
-            rule.selecionar = document.getElementById('selecionarField').value;
-            rule.exigirTipologia = document.getElementById('exigirTipologia').checked;
-            rule.ativarValidacao = document.getElementById('ativarValidacao').checked;
-            rule.assinaturaUltimaPagina = document.getElementById('assinaturaUltimaPagina').checked;
-            rule.carimboTempo = document.getElementById('carimboTempo').checked;
-            rule.statusFinal = document.getElementById('statusFinalField').value;
-            rule.statusRegra = document.getElementById('statusRegraField').value;
-        }
-
-        // Event listeners para salvar automaticamente
-        document.querySelectorAll('#configForm input, #configForm select').forEach(el => {
-            el.addEventListener('change', saveConfigForm);
-            el.addEventListener('input', saveConfigForm);
-        });
-
-        function renderTable() {
-            const rule = getCurrentRule();
-            const tbody = document.getElementById('metaTable');
-            const mobileContainer = document.getElementById('mobileMetaCards');
-
-            if (!rule) {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-zinc-500">Nenhuma regra selecionada</td></tr>';
-                mobileContainer.innerHTML = '<div class="text-center py-8 text-zinc-500">Nenhuma regra selecionada</div>';
-                return;
-            }
-
-            const rows = rule.rows || [];
-            const totalItems = rows.length;
-            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
-
-            if (currentPage > totalPages) currentPage = totalPages;
-
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = Math.min(start + itemsPerPage, totalItems);
-            const pageItems = rows.slice(start, end);
-
-            // Tabela desktop
-            tbody.innerHTML = '';
-            if (pageItems.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-zinc-500">Nenhum metadado configurado</td></tr>';
-            } else {
-                pageItems.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-zinc-50';
-                    tr.innerHTML = `
-                        <th scope="row" class="px-5 py-4 font-semibold text-zinc-700">${row[0]}</th>
-                        <td class="px-5 py-4 text-zinc-700">${row[1]}</td>
-                        <td class="px-5 py-4 text-zinc-700">${row[2]}</td>
-                        <td class="px-5 py-4 text-center text-zinc-700">${row[3]}</td>
-                        <td class="px-5 py-4 text-center text-zinc-700">${row[4]}</td>
-                        <td class="px-5 py-4 text-center text-zinc-700">${row[5]}</td>
-                        <td class="px-5 py-4 text-center font-semibold text-blue-700">${row[6]}</td>
-                        <td class="px-5 py-4 text-center">
-                            <button type="button" class="delete-meta inline-flex h-9 w-9 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${start + pageItems.indexOf(row)}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            // Mobile cards
-            mobileContainer.innerHTML = '';
-            if (pageItems.length === 0) {
-                mobileContainer.innerHTML = '<div class="text-center py-8 text-zinc-500">Nenhum metadado configurado</div>';
-            } else {
-                pageItems.forEach((row, idx) => {
-                    const card = document.createElement('article');
-                    card.className = 'rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm';
-                    card.innerHTML = `
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="min-w-0">
-                                <p class="text-xs font-medium uppercase tracking-wide text-zinc-500">Metadado Destino</p>
-                                <h3 class="break-words text-base font-semibold text-zinc-900">${row[0]}</h3>
-                            </div>
-                            <button type="button" class="delete-meta-mobile inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${start + idx}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-                            </button>
-                        </div>
-                        <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-zinc-700 sm:grid-cols-2">
-                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Origem</dt><dd>${row[1]}</dd></div>
-                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Campo DocZ</dt><dd>${row[2]}</dd></div>
-                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">ID Banco</dt><dd>${row[3]}</dd></div>
-                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Obrigatório</dt><dd class="font-semibold text-blue-700">${row[6]}</dd></div>
-                        </dl>
-                    `;
-                    mobileContainer.appendChild(card);
-                });
-            }
-
-            // Event listeners para deletar metadados
-            document.querySelectorAll('.delete-meta').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.dataset.index);
-                    deleteMeta(index);
-                });
-            });
-
-            document.querySelectorAll('.delete-meta-mobile').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.dataset.index);
-                    deleteMeta(index);
-                });
-            });
-
-            // Paginação
-            document.getElementById('paginationInfo').textContent =
-                `Exibindo ${totalItems > 0 ? start + 1 : 0}-${end} de ${totalItems} metadados`;
-            document.getElementById('currentPageDisplay').textContent = currentPage;
-            document.getElementById('totalPagesDisplay').textContent = totalPages;
-
-            document.getElementById('prevPageBtn').disabled = currentPage <= 1;
-            document.getElementById('nextPageBtn').disabled = currentPage >= totalPages;
-        }
-
-        function deleteMeta(index) {
-            const rule = getCurrentRule();
-            if (!rule) return;
-            if (confirm('Remover este metadado?')) {
-                rule.rows.splice(index, 1);
-                rule.metadados = rule.rows.length;
-                if (rule.metadados === 0) {
-                    rule.rows = [];
-                }
-                renderAll();
-            }
-        }
-
-        function renderAll() {
-            renderRules();
-            renderConfigForm();
-            renderTable();
-            renderRules(); // Re-render para atualizar contagem
-        }
-
-        // ===== PAGINAÇÃO =====
-        document.getElementById('prevPageBtn').addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderTable();
-            }
-        });
-
-        document.getElementById('nextPageBtn').addEventListener('click', () => {
-            const rule = getCurrentRule();
-            if (rule && currentPage < Math.ceil(rule.rows.length / itemsPerPage)) {
-                currentPage++;
-                renderTable();
-            }
-        });
-
-        // ===== MODAL =====
-        let formulaFields = ['Tipo Documental', 'Nome do Paciente'];
-
-        function openModal() {
-            const rule = getCurrentRule();
-            if (!rule) {
-                alert('Selecione uma regra primeiro');
-                return;
-            }
-
-            formulaFields = ['Tipo Documental', 'Nome do Paciente'];
-            document.getElementById('modalDestino').value = 'Assunto';
-            document.getElementById('modalOrigem').value = 'Campo Único';
-            document.getElementById('modalObrigatorio').value = 'Sim';
-            document.getElementById('modalSeparador').value = 'Pipe |';
-            document.getElementById('modalNulos').value = 'Ignorar Nulos';
-            document.getElementById('modalFormato').value = 'Texto simples';
-            document.getElementById('modalTrim').checked = true;
-            document.getElementById('modalValorPadrao').value = '';
-            document.getElementById('modalValorFixo').value = '';
-
-            // Resetar visibilidade - todos os campos ficam visíveis
-            document.getElementById('valorFixoContainer').style.display = 'block';
-            document.getElementById('camposSelecionadosContainer').style.display = 'block';
-
-            renderModalFields();
-            renderFormulaUI();
-            document.getElementById('modalOverlay').classList.add('show');
-        }
-
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('show');
-        }
-
-        function renderModalFields() {
-            const isCampoFixo = document.getElementById('modalOrigem').value === 'Campo Fixo';
-
-            // Renderizar cada grupo de campos
-            const containers = [
-                { list: document.getElementById('modalAvailableFields1'), container: document.getElementById('pillContainer1'), withSigla: true },
-                { list: document.getElementById('modalAvailableFields2'), container: document.getElementById('pillContainer2'), withSigla: false },
-                { list: document.getElementById('modalAvailableFields3'), container: document.getElementById('pillContainer3'), withSigla: false },
-                { list: document.getElementById('modalAvailableFields4'), container: document.getElementById('pillContainer4'), withSigla: false }
+        (function () {
+            "use strict";
+            var fieldGroups = [
+                { id: "projectObjects", title: "Metadados de Objetos do Projeto", fields: [["Ano Final","c16"],["Ano Inicial","c15"],["Classificação","c17"],["Data Cadastro","c21"],["Descrição","c6"],["Destinação Final","c20"],["Fase Corrente","c18"],["Fase Intermediária","c19"],["ID Cliente","c5"],["Identificador SOS","c1"],["Lacre 01","c9"],["Localização","c2"],["Nome do Interessado","c14"],["Número do Processo","c10"],["Serviço","c4"],["Situação Processo","c11"],["Status","c3"],["Tipo Objeto","c8"],["Volume","c12"],["Anexo","c13"]] },
+                { id: "fileMetadata", title: "Metadados do Arquivo", fields: [["Data de Criação","A8"],["Extensão","A7"],["Hash","A6"],["ID da Aplicação","A2"],["ID do Documento","A5"],["ID do Projeto","A4"],["ID do Usuário","A3"],["Identificador do Arquivo","A1"],["Nome do Arquivo","A9"],["Tamanho do Arquivo","A10"]] },
+                { id: "projectInfo", title: "Informações do Projeto", fields: [["Código Guarda","P2"],["Descrição","P4"],["Id","P1"],["Idioma","P5"],["Projeto","P3"]] },
+                { id: "folderInfo", title: "Informações de pastas", note: "Informação obtida a partir da pasta à qual o objeto pertence.", fields: [["Nome da Pasta",""]] },
+                { id: "clientInfo", title: "Informações do Cliente", fields: [["Cliente (Razão Social)","CL3"],["CNPJ","CL4"],["ID do Cliente","CL1"],["ID do Cliente Alternativo","CL2"],["Nome Fantasia","CL5"],["Segmentação do Cliente","CL6"]] }
             ];
-
-            const groups = [fieldGroups.group1, fieldGroups.group2, fieldGroups.group3, fieldGroups.group4];
-
-            containers.forEach((item, index) => {
-                const container = item.container;
-                const list = item.list;
-                list.innerHTML = '';
-                const fields = groups[index] || [];
-
-                // Aplicar classe disabled no container
-                if (isCampoFixo) {
-                    container.classList.add('pill-list-container-disabled');
-                } else {
-                    container.classList.remove('pill-list-container-disabled');
-                }
-
-                fields.forEach(label => {
-                    const pill = document.createElement('div');
-                    pill.className = `pill ${isCampoFixo ? 'pill-disabled' : ''}`;
-                    
-                    // Adiciona a sigla apenas para o primeiro grupo (Metadados de Objetos do Projeto)
-                    if (item.withSigla && doczFieldIdsWithSiglas[label]) {
-                        pill.textContent = `${label} (${doczFieldIdsWithSiglas[label]})`;
-                    } else {
-                        pill.textContent = label;
-                    }
-                    
-                    if (!isCampoFixo) {
-                        pill.onclick = () => {
-                            if (document.getElementById('modalOrigem').value === 'Campo Único') {
-                                formulaFields = [label];
-                            } else if (!formulaFields.includes(label)) {
-                                formulaFields.push(label);
-                            }
-                            renderFormulaUI();
-                        };
-                    }
-                    list.appendChild(pill);
-                });
-            });
-
-            // Desabilitar campos relacionados
-            const formulaChips = document.getElementById('modalFormulaChips');
-            if (isCampoFixo) {
-                formulaChips.classList.add('formula-box-disabled');
-            } else {
-                formulaChips.classList.remove('formula-box-disabled');
-            }
-
-            // Desabilitar preview
-            const preview = document.getElementById('modalFormulaPreview');
-            if (isCampoFixo) {
-                preview.classList.add('formula-preview-disabled');
-            } else {
-                preview.classList.remove('formula-preview-disabled');
-            }
-
-            // Habilitar/desabilitar obrigatoriedade
-            document.getElementById('modalObrigatorio').disabled = isCampoFixo;
-
-            // Valor Fixo - sempre visível, mas só habilita quando Campo Fixo
-            const valorFixoInput = document.getElementById('modalValorFixo');
-            if (isCampoFixo) {
-                valorFixoInput.disabled = false;
-                valorFixoInput.placeholder = 'Digite o valor fixo';
-            } else {
-                valorFixoInput.disabled = true;
-                valorFixoInput.placeholder = 'Selecione "Campo Fixo" para habilitar';
-                valorFixoInput.value = '';
-            }
-
-            // Separador - desabilitado quando Campo Fixo
-            document.getElementById('modalSeparador').disabled = isCampoFixo;
-
-            // Tratamento de Nulos - desabilitado quando Campo Fixo
-            document.getElementById('modalNulos').disabled = isCampoFixo;
-
-            // Valor Padrão para Nulos - desabilitado quando Campo Fixo
-            document.getElementById('modalValorPadrao').disabled = isCampoFixo;
-
-            // Formato da Saída - desabilitado quando Campo Fixo
-            document.getElementById('modalFormato').disabled = isCampoFixo;
-        }
-
-        function renderFormulaUI() {
-            const chipsDiv = document.getElementById('modalFormulaChips');
-            chipsDiv.innerHTML = '';
-
-            const isCampoFixo = document.getElementById('modalOrigem').value === 'Campo Fixo';
-
-            if (isCampoFixo) {
-                chipsDiv.innerHTML = '<span style="color:#888; font-style:italic;">Campos desabilitados para valor fixo</span>';
-                document.getElementById('modalFormulaPreview').innerHTML =
-                    '<strong>Prévia da Fórmula:</strong><br><span style="color:#888;">—</span>';
-                return;
-            }
-
-            formulaFields.forEach((f, i) => {
-                const chip = document.createElement('div');
-                chip.className = 'chip';
-                chip.innerHTML = `${i + 1}. ${f} <span>✕</span>`;
-                chip.onclick = () => {
-                    formulaFields.splice(i, 1);
-                    renderFormulaUI();
-                };
-                chipsDiv.appendChild(chip);
-            });
-
-            if (formulaFields.length === 0) {
-                chipsDiv.innerHTML = '<span style="color:#888;">Nenhum campo selecionado</span>';
-            }
-
-            const sepMap = {
-                'Pipe |': ' | ',
-                'Hífen -': ' - ',
-                'Barra /': ' / ',
-                'Vírgula ,': ', ',
-                'Sem Separador': ''
-            };
-            const sep = sepMap[document.getElementById('modalSeparador').value] || ' | ';
-            document.getElementById('modalFormulaPreview').innerHTML =
-                `<strong>Prévia da Fórmula:</strong><br>${formulaFields.join(sep) || '—'}`;
-        }
-
-        function saveModal() {
-            const rule = getCurrentRule();
-            if (!rule) return;
-
-            const destino = document.getElementById('modalDestino').value;
-            const origem = document.getElementById('modalOrigem').value;
-            const obrig = document.getElementById('modalObrigatorio').value;
-            const nulos = document.getElementById('modalNulos').value;
-
-            let campoDocz = '';
-            let idBanco = '';
-            let valorFixo = '';
-
-            if (origem === 'Campo Fixo') {
-                valorFixo = document.getElementById('modalValorFixo').value.trim();
-                if (!valorFixo) {
-                    alert('Por favor, informe um valor fixo.');
-                    return;
-                }
-                campoDocz = valorFixo;
-                idBanco = '—';
-            } else {
-                const separadorRaw = document.getElementById('modalSeparador').value;
-                const sepMap = {
-                    'Pipe |': ' | ',
-                    'Hífen -': ' - ',
-                    'Barra /': ' / ',
-                    'Vírgula ,': ', ',
-                    'Sem Separador': ''
-                };
-                const separador = sepMap[separadorRaw] || ' ';
-                campoDocz = formulaFields.join(separador);
-                idBanco = formulaFields.join(separador);
-            }
-
-            const novaRow = [destino, origem, campoDocz, idBanco, valorFixo || '—', nulos, obrig];
-            rule.rows.unshift(novaRow);
-            rule.metadados = rule.rows.length;
-
-            closeModal();
-            renderAll();
-        }
-
-        // ===== EVENT LISTENERS =====
-        document.getElementById('addMetaBtn').addEventListener('click', openModal);
-        document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
-        document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
-        document.getElementById('modalSaveBtn').addEventListener('click', saveModal);
-
-        document.getElementById('modalOrigem').addEventListener('change', () => {
-            const origem = document.getElementById('modalOrigem').value;
-            const single = origem === 'Campo Único';
-            const isCampoFixo = origem === 'Campo Fixo';
-
-            if (single && formulaFields.length > 1) {
-                formulaFields = [formulaFields[0]];
-            }
-            if (isCampoFixo) {
-                formulaFields = [];
-            }
-
-            renderModalFields();
-            renderFormulaUI();
-        });
-
-        document.getElementById('modalSeparador').addEventListener('change', renderFormulaUI);
-
-        document.getElementById('newRuleBtn').addEventListener('click', () => {
-            const newId = Math.max(...rules.map(r => r.id)) + 1;
-            rules.push({
-                id: newId,
-                nome: `Nova Regra ${newId}`,
-                status: 'Rascunho',
-                metadados: 0,
-                projeto: 'DEMO',
-                nomeRegra: '',
-                regraGenerica: false,
-                campoProjeto: '',
-                chaveDecisao: '',
-                selecionar: '',
-                exigirTipologia: false,
-                ativarValidacao: false,
-                assinaturaUltimaPagina: false,
-                carimboTempo: false,
-                statusFinal: '',
-                statusRegra: 'Rascunho',
-                rows: []
-            });
-            currentRuleId = newId;
-            renderAll();
-        });
-
-        // ===== SEARCH =====
-        document.getElementById('searchField').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rule = getCurrentRule();
-            if (!rule) return;
-
-            const filtered = rule.rows.filter(row =>
-                row[0].toLowerCase().includes(searchTerm) ||
-                row[1].toLowerCase().includes(searchTerm) ||
-                row[2].toLowerCase().includes(searchTerm)
-            );
-
-            // Atualizar tabela com resultados filtrados
-            const tbody = document.getElementById('metaTable');
-            tbody.innerHTML = '';
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-zinc-500">Nenhum resultado encontrado</td></tr>';
-            } else {
-                filtered.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-zinc-50';
-                    tr.innerHTML = `
-                        <th scope="row" class="px-5 py-4 font-semibold text-zinc-700">${row[0]}</th>
-                        <td class="px-5 py-4 text-zinc-700">${row[1]}</td>
-                        <td class="px-5 py-4 text-zinc-700">${row[2]}</td>
-                        <td class="px-5 py-4 text-center text-zinc-700">${row[3]}</td>
-                        <td class="px-5 py-4 text-center text-zinc-700">${row[4]}</td>
-                        <td class="px-5 py-4 text-center text-zinc-700">${row[5]}</td>
-                        <td class="px-5 py-4 text-center font-semibold text-blue-700">${row[6]}</td>
-                        <td class="px-5 py-4 text-center">
-                            <button type="button" class="delete-meta inline-flex h-9 w-9 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${rule.rows.indexOf(row)}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
+            var rules = [
+                { id:1,name:"Regra Genérica",status:"Rascunho",generic:true,project:"ANM NACIONAL - REGIONAL SP",decisionKey:"TIPO DOCUMENTAL",decisionValue:"DOSSIÊ",projectObject:"",autoSignature:true,visibleSignature:true,lastPage:false,requireTypology:true,timestamp:true,activation:false,finalStatus:"INDEXADO",rows:[["Assunto","Campo Único","Descrição","c6","—","Ignorar","Sim"],["Título","Campo Único","Nome da Pasta","—","—","Ignorar","Sim"],["Autor (nome)","Campo Único","Nome do Interessado","c14","—","Ignorar","Não"]] },
+                { id:2,name:"Regra Genérica",status:"Ativa",generic:true,project:"ANM NACIONAL - REGIONAL SP",decisionKey:"",decisionValue:"",projectObject:"",autoSignature:true,visibleSignature:true,lastPage:false,requireTypology:true,timestamp:false,activation:true,finalStatus:"INDEXADO",rows:[] },
+                { id:3,name:"Nova Regra 3",status:"Inativa",generic:false,project:"ANM NACIONAL - REGIONAL SP",decisionKey:"TIPO DOCUMENTAL",decisionValue:"PROCESSO",projectObject:"Tipo Objeto",autoSignature:false,visibleSignature:false,lastPage:false,requireTypology:false,timestamp:false,activation:false,finalStatus:"INDEXADO",rows:[] },
+                { id:4,name:"Nova Regra 4",status:"Rascunho",generic:false,project:"ANM NACIONAL - REGIONAL SP",decisionKey:"TIPO DOCUMENTAL",decisionValue:"DOCUMENTO",projectObject:"Tipo Objeto",autoSignature:false,visibleSignature:false,lastPage:false,requireTypology:false,timestamp:false,activation:false,finalStatus:"INDEXADO",rows:[] }
+            ];
+            var currentRuleId=1, selectedFields=[], groupSearch={}, page=1, pageSize=5;
+            function byId(id){return document.getElementById(id);}
+            function currentRule(){return rules.find(function(rule){return rule.id===currentRuleId;});}
+            function normalize(text){return String(text||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}
+            function escapeHtml(value){return String(value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+            function statusClass(status){return status==="Ativa"?"active":status==="Inativa"?"inactive":"draft";}
+            function renderRules(){
+                var list=byId("ruleList"); list.innerHTML="";
+                rules.forEach(function(rule){
+                    var item=document.createElement("li"); item.className="rule-item"+(rule.id===currentRuleId?" active":"");
+                    var genericBadge=rule.generic?'<span class="badge generic">Genérica</span>':"";
+                    item.innerHTML='<button class="rule-select" type="button" data-select-rule="'+rule.id+'"><span class="doc-icon">▤</span><span class="rule-copy"><span class="rule-line"><span class="rule-name">'+escapeHtml(rule.name)+'</span><span class="badge '+statusClass(rule.status)+'">'+escapeHtml(rule.status)+'</span>'+genericBadge+'</span><small>'+rule.rows.length+' metadados mapeados</small></span></button><button class="rule-delete" type="button" aria-label="Excluir regra" data-delete-rule="'+rule.id+'">×</button>';
+                    list.appendChild(item);
                 });
             }
-
-            // Atualizar mobile
-            const mobileContainer = document.getElementById('mobileMetaCards');
-            mobileContainer.innerHTML = '';
-            if (filtered.length === 0) {
-                mobileContainer.innerHTML = '<div class="text-center py-8 text-zinc-500">Nenhum resultado encontrado</div>';
-            } else {
-                filtered.forEach((row, idx) => {
-                    const card = document.createElement('article');
-                    card.className = 'rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm';
-                    card.innerHTML = `
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="min-w-0">
-                                <p class="text-xs font-medium uppercase tracking-wide text-zinc-500">Metadado Destino</p>
-                                <h3 class="break-words text-base font-semibold text-zinc-900">${row[0]}</h3>
-                            </div>
-                            <button type="button" class="delete-meta-mobile inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-rose-600 transition hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" data-index="${rule.rows.indexOf(row)}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-                            </button>
-                        </div>
-                        <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-zinc-700 sm:grid-cols-2">
-                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Origem</dt><dd>${row[1]}</dd></div>
-                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Campo DocZ</dt><dd>${row[2]}</dd></div>
-                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">ID Banco</dt><dd>${row[3]}</dd></div>
-                            <div><dt class="text-xs font-medium uppercase tracking-wide text-zinc-500">Obrigatório</dt><dd class="font-semibold text-blue-700">${row[6]}</dd></div>
-                        </dl>
-                    `;
-                    mobileContainer.appendChild(card);
+            function applyGenericState(){
+                /* A demanda DOCZ-2245 não altera o comportamento atual destes campos. */
+            }
+            function fillConfig(){
+                var rule=currentRule(); if(!rule)return;
+                byId("projectField").value=rule.project; byId("ruleNameField").value=rule.name; byId("genericRuleField").checked=rule.generic;
+                byId("decisionKeyField").value=rule.decisionKey; byId("decisionValueField").value=rule.decisionValue; byId("projectObjectField").value=rule.projectObject;
+                byId("autoSignatureField").checked=rule.autoSignature; byId("visibleSignatureField").checked=rule.visibleSignature; byId("lastPageField").checked=rule.lastPage;
+                byId("requireTypologyField").checked=rule.requireTypology; byId("timestampField").checked=rule.timestamp; byId("activationField").checked=rule.activation;
+                byId("finalStatusField").value=rule.finalStatus; byId("ruleStatusField").value=rule.status; applyGenericState();
+            }
+            function saveConfig(){
+                var rule=currentRule(); if(!rule)return;
+                rule.project=byId("projectField").value; rule.name=byId("ruleNameField").value||"Regra sem nome"; rule.generic=byId("genericRuleField").checked;
+                rule.decisionKey=byId("decisionKeyField").value; rule.decisionValue=byId("decisionValueField").value; rule.projectObject=byId("projectObjectField").value;
+                rule.autoSignature=byId("autoSignatureField").checked; rule.visibleSignature=byId("visibleSignatureField").checked; rule.lastPage=byId("lastPageField").checked;
+                rule.requireTypology=byId("requireTypologyField").checked; rule.timestamp=byId("timestampField").checked; rule.activation=byId("activationField").checked;
+                rule.finalStatus=byId("finalStatusField").value; rule.status=byId("ruleStatusField").value; applyGenericState(); renderRules();
+            }
+            function filteredRows(){
+                var rule=currentRule(), query=normalize(byId("tableSearch").value); if(!rule)return[];
+                return rule.rows.filter(function(row){return !query||row.some(function(cell){return normalize(cell).includes(query);});});
+            }
+            function renderTable(){
+                var tbody=byId("metadataTable"),rows=filteredRows(),totalPages=Math.max(1,Math.ceil(rows.length/pageSize));
+                if(page>totalPages)page=totalPages; var start=(page-1)*pageSize,shown=rows.slice(start,start+pageSize); tbody.innerHTML="";
+                if(!shown.length){tbody.innerHTML='<tr><td class="empty" colspan="8">Nenhum metadado encontrado para esta regra.</td></tr>';}
+                else{shown.forEach(function(row){var actualIndex=currentRule().rows.indexOf(row),tr=document.createElement("tr");tr.innerHTML="<td><strong>"+escapeHtml(row[0])+"</strong></td><td>"+escapeHtml(row[1])+"</td><td>"+escapeHtml(row[2])+'</td><td class="center">'+escapeHtml(row[3])+'</td><td class="center">'+escapeHtml(row[4])+'</td><td class="center">'+escapeHtml(row[5])+'</td><td class="center"><strong>'+escapeHtml(row[6])+'</strong></td><td class="center"><button class="remove-row" type="button" aria-label="Remover metadado" data-remove-row="'+actualIndex+'">×</button></td>';tbody.appendChild(tr);});}
+                byId("paginationInfo").textContent=rows.length?"Exibindo "+(start+1)+"-"+Math.min(start+pageSize,rows.length)+" de "+rows.length+" metadados":"Exibindo 0-0 de 0 metadados";
+                byId("previousPage").disabled=page<=1; byId("nextPage").disabled=page>=totalPages;
+            }
+            function renderFormula(){
+                var holder=byId("formulaFields");holder.innerHTML="";
+                if(!selectedFields.length){holder.innerHTML='<span class="formula-empty">Selecione um ou mais campos abaixo</span>';}
+                else{selectedFields.forEach(function(field,index){var chip=document.createElement("span");chip.className="formula-chip";chip.innerHTML=(index+1)+". "+escapeHtml(field.label)+' <button type="button" aria-label="Remover campo" data-remove-formula="'+index+'">×</button>';holder.appendChild(chip);});}
+                byId("formulaPreview").innerHTML="<strong>Prévia da fórmula:</strong>"+(selectedFields.length?selectedFields.map(function(item){return escapeHtml(item.label);}).join(" | "):"Selecione campos para gerar a prévia");
+            }
+            function sortedFields(fields){return fields.slice().sort(function(a,b){return a[0].localeCompare(b[0],"pt-BR",{sensitivity:"base"});});}
+            function renderFieldGroups(){
+                var holder=byId("fieldGroups"),fixed=byId("sourceField").value==="Campo Fixo";holder.innerHTML="";
+                fieldGroups.forEach(function(group){
+                    var query=groupSearch[group.id]||"",filtered=sortedFields(group.fields).filter(function(field){return normalize(field[0]+" "+field[1]).includes(normalize(query));});
+                    var section=document.createElement("section");section.className="field-group"+(fixed?" disabled":"");section.dataset.groupId=group.id;
+                    section.innerHTML='<div class="group-head"><div><h3>'+escapeHtml(group.title)+'</h3>'+(group.note?'<span class="help">'+escapeHtml(group.note)+'</span>':'')+'</div><div class="group-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg><input type="search" data-group-search="'+group.id+'" aria-label="Pesquisar em '+escapeHtml(group.title)+'" placeholder="Pesquisar campos..." value="'+escapeHtml(query)+'"'+(fixed?" disabled":"")+'><button class="clear-search'+(query?" visible":"")+'" type="button" aria-label="Limpar pesquisa" data-clear-search="'+group.id+'">×</button></div></div><div class="pill-list"></div>';
+                    var pills=section.querySelector(".pill-list");
+                    if(!filtered.length){pills.innerHTML='<span class="no-fields">Nenhum campo encontrado.</span>';}
+                    else{filtered.forEach(function(field){var selected=selectedFields.some(function(item){return item.label===field[0]&&item.group===group.id;}),button=document.createElement("button");button.type="button";button.className="pill"+(selected?" selected":"");button.disabled=fixed;button.dataset.fieldLabel=field[0];button.dataset.fieldCode=field[1];button.dataset.fieldGroup=group.id;button.textContent=field[1]?field[0]+" ("+field[1]+")":field[0];pills.appendChild(button);});}
+                    holder.appendChild(section);
                 });
             }
-
-            // Re-add delete events
-            document.querySelectorAll('.delete-meta').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.dataset.index);
-                    deleteMeta(index);
-                });
-            });
-            document.querySelectorAll('.delete-meta-mobile').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.dataset.index);
-                    deleteMeta(index);
-                });
-            });
-        });
-
-        // ===== FECHAR MODAL CLICK OUTSIDE =====
-        document.getElementById('modalOverlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
+            function updateSourceState(){
+                var source=byId("sourceField").value,fixed=source==="Campo Fixo";
+                byId("fixedValueField").disabled=!fixed;byId("fixedValueField").placeholder=fixed?"Informe o valor fixo":"Selecione 'Campo Fixo' para habilitar";
+                byId("formulaArea").classList.toggle("hidden",fixed);byId("requiredField").disabled=fixed;byId("nullTreatmentField").disabled=fixed;byId("formatField").disabled=fixed;
+                byId("selectionNote").textContent=source==="Campo Único"?"ⓘ  Selecione apenas um campo para Campo Único":"ⓘ  Selecione os campos na ordem desejada para a fórmula";
+                if(source==="Campo Único"&&selectedFields.length>1)selectedFields=selectedFields.slice(0,1);if(fixed)selectedFields=[];renderFieldGroups();renderFormula();
             }
-        });
-
-        // ===== INICIALIZAR =====
-        renderAll();
+            function openModal(){
+                selectedFields=[];groupSearch={};byId("destinationField").value="Assunto";byId("sourceField").value="Campo Único";byId("requiredField").value="Sim";byId("fixedValueField").value="";
+                byId("nullTreatmentField").value="Ignorar Campos Nulos";byId("nullDefaultField").value="";byId("formatField").value="Data - DD/MM/AAAA";updateSourceState();
+                byId("metadataModal").classList.add("show");document.body.style.overflow="hidden";setTimeout(function(){byId("destinationField").focus();},0);
+            }
+            function closeModal(){byId("metadataModal").classList.remove("show");document.body.style.overflow="";}
+            function saveMetadata(){
+                var rule=currentRule(),source=byId("sourceField").value;if(!rule)return;
+                if(source==="Campo Fixo"){var fixedValue=byId("fixedValueField").value.trim();if(!fixedValue){alert("Informe o valor fixo.");return;}rule.rows.unshift([byId("destinationField").value,source,"—","—",fixedValue,"Não se aplica","Não se aplica"]);}
+                else{if(!selectedFields.length){alert("Selecione ao menos um campo.");return;}var labels=selectedFields.map(function(item){return item.label;}).join(" | "),codes=selectedFields.map(function(item){return item.code||"—";}).join(" | ");rule.rows.unshift([byId("destinationField").value,source,labels,codes,"—",byId("nullTreatmentField").value.replace(" Campos Nulos",""),byId("requiredField").value]);}
+                page=1;closeModal();renderRules();renderTable();
+            }
+            document.addEventListener("click",function(event){
+                var selectRule=event.target.closest("[data-select-rule]"),deleteRule=event.target.closest("[data-delete-rule]"),removeRow=event.target.closest("[data-remove-row]"),removeFormula=event.target.closest("[data-remove-formula]"),fieldButton=event.target.closest("[data-field-label]"),clearSearch=event.target.closest("[data-clear-search]");
+                if(selectRule){currentRuleId=Number(selectRule.dataset.selectRule);page=1;renderRules();fillConfig();renderTable();}
+                if(deleteRule){var deleteId=Number(deleteRule.dataset.deleteRule),deleteTarget=rules.find(function(rule){return rule.id===deleteId;});if(deleteTarget&&confirm('Remover a regra "'+deleteTarget.name+'"?')){rules=rules.filter(function(rule){return rule.id!==deleteId;});if(currentRuleId===deleteId)currentRuleId=rules.length?rules[0].id:null;renderRules();fillConfig();renderTable();}}
+                if(removeRow){currentRule().rows.splice(Number(removeRow.dataset.removeRow),1);renderRules();renderTable();}
+                if(removeFormula){selectedFields.splice(Number(removeFormula.dataset.removeFormula),1);renderFieldGroups();renderFormula();}
+                if(fieldButton){var field={label:fieldButton.dataset.fieldLabel,code:fieldButton.dataset.fieldCode,group:fieldButton.dataset.fieldGroup},existing=selectedFields.findIndex(function(item){return item.label===field.label&&item.group===field.group;});if(existing>=0){selectedFields.splice(existing,1);}else if(byId("sourceField").value==="Campo Único"){selectedFields=[field];}else{selectedFields.push(field);}renderFieldGroups();renderFormula();}
+                if(clearSearch){groupSearch[clearSearch.dataset.clearSearch]="";renderFieldGroups();var searchInput=document.querySelector('[data-group-search="'+clearSearch.dataset.clearSearch+'"]');if(searchInput)searchInput.focus();}
+            });
+            byId("fieldGroups").addEventListener("input",function(event){if(event.target.matches("[data-group-search]")){groupSearch[event.target.dataset.groupSearch]=event.target.value;var caret=event.target.selectionStart,groupId=event.target.dataset.groupSearch;renderFieldGroups();var replacement=document.querySelector('[data-group-search="'+groupId+'"]');if(replacement){replacement.focus();replacement.setSelectionRange(caret,caret);}}});
+            byId("configForm").addEventListener("input",saveConfig);byId("configForm").addEventListener("change",saveConfig);byId("sourceField").addEventListener("change",updateSourceState);
+            byId("nullTreatmentField").addEventListener("change",function(){var enabled=this.value==="Substituir por Valor Padrão";byId("nullDefaultField").disabled=!enabled;if(!enabled)byId("nullDefaultField").value="";});
+            byId("tableSearch").addEventListener("input",function(){page=1;renderTable();});byId("addMetadataBtn").addEventListener("click",openModal);byId("closeModal").addEventListener("click",closeModal);byId("cancelModal").addEventListener("click",closeModal);byId("saveMetadata").addEventListener("click",saveMetadata);
+            byId("metadataModal").addEventListener("click",function(event){if(event.target===this)closeModal();});document.addEventListener("keydown",function(event){if(event.key==="Escape"&&byId("metadataModal").classList.contains("show"))closeModal();});
+            byId("previousPage").addEventListener("click",function(){if(page>1){page--;renderTable();}});byId("nextPage").addEventListener("click",function(){var max=Math.max(1,Math.ceil(filteredRows().length/pageSize));if(page<max){page++;renderTable();}});
+            byId("newRuleBtn").addEventListener("click",function(){var id=rules.length?Math.max.apply(null,rules.map(function(rule){return rule.id;}))+1:1;rules.push({id:id,name:"Nova Regra "+id,status:"Rascunho",generic:false,project:"ANM NACIONAL - REGIONAL SP",decisionKey:"",decisionValue:"",projectObject:"",autoSignature:false,visibleSignature:false,lastPage:false,requireTypology:false,timestamp:false,activation:false,finalStatus:"INDEXADO",rows:[]});currentRuleId=id;page=1;renderRules();fillConfig();renderTable();});
+            renderRules();fillConfig();renderTable();
+        }());
     </script>
-
 </body>
 </html>
